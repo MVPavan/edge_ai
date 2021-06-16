@@ -1,0 +1,37 @@
+Use cms
+
+EXEC hsc_sp_GenerateAlarm
+@Category = 7,
+@Condition = 'CHANGE',
+@Operator = @Operator,
+@Description = 'Modified by API',
+@Value = 'Cardholder data modified',
+@OldValue = '',
+@Source = @Surname,
+@CardholderID = @ID ,
+@CardholderFirstName = '',
+@CardholderLastName = '',
+@CardNumber = '',
+@LocationTagName = '',
+@AlarmMode = 2,
+@Priority = 0
+
+
+
+Use cms
+
+EXEC hsc_sp_GenerateAlarm
+@Category = 7,
+@Condition = 'CHANGE',
+@Operator = 'Administrator',
+@Description = 'Modified by API',
+@Value = 'Cardholder data modified',
+@OldValue = '',
+@Source = 'Shetty',
+@CardholderID = 21 ,
+@CardholderFirstName = '',
+@CardholderLastName = '',
+@CardNumber = '',
+@LocationTagName = '',
+@AlarmMode = 2,
+@Priority = 0

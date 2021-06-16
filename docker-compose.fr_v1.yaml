@@ -1,0 +1,99 @@
+version: '3.5'
+
+services:
+
+    # fr_image:
+    #     build: 
+    #         context: ./FRDockers/
+    #         dockerfile: fr_base_v1.dockerfile
+    #     image: fr_base:v1
+
+    fr_fd:
+        build: 
+            context: ./FRDockers/FDContainer
+            dockerfile: fd_v1.dockerfile
+        image: fr_fd:v1
+        container_name: fd
+        # depends_on: 
+        #     - nima_image
+        networks:
+            - fr_network
+
+        volumes:
+            - type: volume
+              source: fr_data
+              target: /app/Data/
+              volume:
+                nocopy: true
+            # - type: bind
+            #   source: ./AppData/filesystem/NIMAIQA
+            #   target: /app/data/
+                
+        env_file:
+            - fr.env
+        
+    
+    fr_fe:
+        build: 
+            context: ./FRDockers/FEContainer
+            dockerfile: fe_v1.dockerfile
+        image: fr_fe:v1
+        container_name: fe
+        depends_on: 
+            - fr_fd
+        networks:
+            - fr_network
+        volumes:
+            - type: volume
+              source: fr_data
+              target: /app/Data/
+              volume:
+                nocopy: true
+            # - type: bind
+            #   source: ./AppData/filesystem/NIMAIQA
+            #   target: /app/data/
+                
+        env_file:
+            - fr.env
+    
+
+    fr_es:
+        build: 
+            context: ./FRDockers/ESContainer
+            dockerfile: es_v1.dockerfile
+        image: fr_es:v1
+        container_name: es
+        depends_on: 
+            - fr_fe
+        networks:
+            - fr_network
+
+        volumes:
+            - type: volume
+              source: fr_data
+              target: /app/Data/
+              volume:
+                nocopy: true
+            - type: volume
+              source: fr_data_db
+              target: /app/FRModule/FRFeatures/DB
+              volume:
+                nocopy: true
+            # - type: bind
+            #   source: ./AppData/filesystem/NIMAIQA
+            #   target: /app/data/
+                
+        env_file:
+            - fr.env
+
+networks:
+    fr_network:
+        external: True
+        name: fr_network
+
+volumes:
+    fr_data:
+        name: fr_data
+    fr_data_db:
+        name: fr_data_db
+        
