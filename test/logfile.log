@@ -1,0 +1,96 @@
+2020-04-12 01:59:31.566 | INFO     | __main__:<module>:185 - New run instance at: 1586636971.5666347
+2020-04-12 01:59:31.569 | INFO     | __main__:<module>:186 - d:512,k:3,nb:98639,nq:1
+2020-04-12 01:59:31.569 | INFO     | __main__:<module>:187 - IndexFlatL2 create timing: 0.07877516746520996,
+Trained: True
+Total: 98639
+2020-04-12 01:59:31.570 | INFO     | __main__:<module>:188 - IndexIVFFlat create timing: 2.7474327087402344,
+nlist: 500
+Trained: True
+Total: 98639
+2020-04-12 01:59:31.570 | INFO     | __main__:<module>:189 - t7:0.01730760730000232
+2020-04-12 01:59:31.570 | INFO     | __main__:<module>:190 - t8:0.00023168316662728708
+2020-04-12 01:59:31.570 | INFO     | __main__:<module>:191 - t9:0.016789976133319822
+2020-04-12 02:04:05.176 | INFO     | __main__:<module>:187 - New run instance at: 1586637245.1763563
+2020-04-12 02:04:05.177 | INFO     | __main__:<module>:188 - d:512,k:3,nb:98639,nq:1
+2020-04-12 02:04:05.179 | INFO     | __main__:<module>:189 - IndexFlatL2 create timing: 0.07845902442932129,
+Trained: True
+Total: 98639
+2020-04-12 02:04:05.180 | INFO     | __main__:<module>:190 - IndexIVFFlat create timing: 2.104872226715088,
+nlist: 500
+Trained: True
+Total: 98639
+2020-04-12 02:04:05.181 | INFO     | __main__:<module>:191 - t7:0.017441839266696964
+2020-04-12 02:04:05.183 | INFO     | __main__:<module>:192 - t8:0.0008858752332647176
+2020-04-12 02:04:05.183 | INFO     | __main__:<module>:193 - t9:0.016922112599968387
+2020-04-12 02:04:30.853 | INFO     | __main__:<module>:187 - New run instance at: 1586637270.8536606
+2020-04-12 02:04:30.855 | INFO     | __main__:<module>:188 - d:512,k:3,nb:98639,nq:1
+2020-04-12 02:04:30.856 | INFO     | __main__:<module>:189 - IndexFlatL2 create timing: 0.09027385711669922,
+Trained: True
+Total: 98639
+2020-04-12 02:04:30.858 | INFO     | __main__:<module>:190 - IndexIVFFlat create timing: 3.5028905868530273,
+nlist: 500
+Trained: True
+Total: 98639
+2020-04-12 02:04:30.860 | INFO     | __main__:<module>:191 - t7:0.022522448533345597
+2020-04-12 02:04:30.861 | INFO     | __main__:<module>:192 - t8:0.0006846334666988696
+2020-04-12 02:04:30.863 | INFO     | __main__:<module>:193 - t9:0.017397537700041234
+2020-04-12 02:04:42.482 | INFO     | __main__:<module>:187 - New run instance at: 1586637282.482499
+2020-04-12 02:04:42.484 | INFO     | __main__:<module>:188 - d:512,k:3,nb:98639,nq:1
+2020-04-12 02:04:42.485 | INFO     | __main__:<module>:189 - IndexFlatL2 create timing: 0.07576370239257812,
+Trained: True
+Total: 98639
+2020-04-12 02:04:42.486 | INFO     | __main__:<module>:190 - IndexIVFFlat create timing: 2.7416744232177734,
+nlist: 500
+Trained: True
+Total: 98639
+2020-04-12 02:04:42.487 | INFO     | __main__:<module>:191 - t7:0.01794578596673091
+2020-04-12 02:04:42.489 | INFO     | __main__:<module>:192 - t8:0.0007099345667180994
+2020-04-12 02:04:42.490 | INFO     | __main__:<module>:193 - t9:0.017333311600001858
+2020-04-12 02:05:37.392 | INFO     | __main__:<module>:187 - New run instance at: 1586637337.392387
+2020-04-12 02:05:37.394 | INFO     | __main__:<module>:188 - d:512,k:3,nb:98639,nq:1
+2020-04-12 02:05:37.395 | INFO     | __main__:<module>:189 - IndexFlatL2 create timing: 0.07626724243164062,
+Trained: True
+Total: 98639
+2020-04-12 02:05:37.395 | INFO     | __main__:<module>:190 - IndexIVFFlat create timing: 2.708911180496216,
+nlist: 500
+Trained: True
+Total: 98639
+2020-04-12 02:05:37.395 | INFO     | __main__:<module>:191 - t7:0.018061553866694644
+2020-04-12 02:05:37.396 | INFO     | __main__:<module>:192 - t8:0.0013766707999820938
+2020-04-12 02:05:37.396 | INFO     | __main__:<module>:193 - t9:0.01742195096667274
+2020-04-12 02:06:02.399 | INFO     | __main__:<module>:187 - New run instance at: 1586637362.399957
+2020-04-12 02:06:02.416 | INFO     | __main__:<module>:188 - d:512,k:3,nb:98639,nq:1
+2020-04-12 02:06:02.416 | INFO     | __main__:<module>:189 - IndexFlatL2 create timing: 0.08898448944091797,
+Trained: True
+Total: 98639
+2020-04-12 02:06:02.417 | INFO     | __main__:<module>:190 - IndexIVFFlat create timing: 3.3665127754211426,
+nlist: 500
+Trained: True
+Total: 98639
+2020-04-12 02:06:02.417 | INFO     | __main__:<module>:191 - t7:0.018760264233363463
+2020-04-12 02:06:02.417 | INFO     | __main__:<module>:192 - t8:0.006833005800035608
+2020-04-12 02:06:02.417 | INFO     | __main__:<module>:193 - t9:0.017373797033299828
+2020-04-12 02:06:29.287 | INFO     | __main__:<module>:187 - New run instance at: 1586637389.2872007
+2020-04-12 02:06:29.288 | INFO     | __main__:<module>:188 - d:512,k:3,nb:98639,nq:1
+2020-04-12 02:06:29.288 | INFO     | __main__:<module>:189 - IndexFlatL2 create timing: 0.08598136901855469,
+Trained: True
+Total: 98639
+2020-04-12 02:06:29.289 | INFO     | __main__:<module>:190 - IndexIVFFlat create timing: 0.6144020557403564,
+nlist: 100
+Trained: True
+Total: 98639
+2020-04-12 02:06:29.289 | INFO     | __main__:<module>:191 - t7:0.01833673609999096
+2020-04-12 02:06:29.289 | INFO     | __main__:<module>:192 - t8:0.003669085666600343
+2020-04-12 02:06:29.290 | INFO     | __main__:<module>:193 - t9:0.01771032643337094
+2020-04-12 02:14:51.338 | INFO     | __main__:<module>:187 - New run instance at: 1586637891.337853
+2020-04-12 02:14:51.340 | INFO     | __main__:<module>:188 - d:512,k:1,nb:98639,nq:1
+2020-04-12 02:14:51.341 | INFO     | __main__:<module>:189 - IndexFlatL2 create timing: 0.09428238868713379,
+Trained: True
+Total: 98639
+2020-04-12 02:14:51.342 | INFO     | __main__:<module>:190 - IndexIVFFlat create timing: 0.38631153106689453,
+nlist: 10
+Trained: True
+Total: 98639
+2020-04-12 02:14:51.343 | INFO     | __main__:<module>:191 - t7:0.017995269499988354
+2020-04-12 02:14:51.343 | INFO     | __main__:<module>:192 - t8:0.0038352195666448096
+2020-04-12 02:14:51.344 | INFO     | __main__:<module>:193 - t9:0.01761221719995471

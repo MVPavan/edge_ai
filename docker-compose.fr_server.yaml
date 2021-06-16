@@ -1,0 +1,25 @@
+version: '3.5'
+
+services:
+
+    fr_server:
+        build: 
+            context: ./FRDockers
+            dockerfile: ./FRBackend/fr_backend.dockerfile
+        image: fr_server:v1
+        container_name: fr_server
+        networks:
+            - fr_server_network
+        # network_mode: host
+        ports:
+            - 8080:8000
+        env_file:
+            - fr_server.env
+        restart: unless-stopped
+        
+networks:
+    fr_server_network:
+        external: True
+        name: fr_network
+
+        

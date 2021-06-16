@@ -1,0 +1,25 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.params
+*.pyc
+
+FRDB/*
+FRModels/*
+*FRWeights/*
+*.pyc*
+*cpython*
+*__pycache__*
+*.pkl
+*.npy
+*.vscode
+*/Data/*
+FRDB/*
+FRModels/*
+*FRWeights/*
+*.pyc*
+*cpython*
+*__pycache__*
+*.pkl
+*.npy
+*.vscode
+*/Data/*

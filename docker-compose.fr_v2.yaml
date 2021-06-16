@@ -1,0 +1,80 @@
+version: '3.5'
+
+services:
+
+    # fr_image:
+    #     build: 
+    #         context: ./FRDockers/
+    #         dockerfile: fr_base_v2.dockerfile
+    #     image: fr_base:v2
+
+    fr_fd:
+        build: 
+            context: ./FRDockers
+            dockerfile: ./FDContainer/fd_v2.dockerfile
+        image: fr_fd:v2
+        container_name: fdv2
+        networks:
+            - fr_network
+        volumes:
+            - type: volume
+              source: fr_data
+              target: /app/Data/
+              volume:
+                nocopy: true               
+        env_file:
+            - fr.env
+        
+    fr_fe:
+        build: 
+            context: ./FRDockers
+            dockerfile: ./FEContainer/fe_v2.dockerfile
+        image: fr_fe:v2
+        container_name: fev2
+        depends_on: 
+            - fr_fd
+        networks:
+            - fr_network
+        volumes:
+            - type: volume
+              source: fr_data
+              target: /app/Data/
+              volume:
+                nocopy: true                
+        env_file:
+            - fr.env
+
+    fr_es:
+        build: 
+            context: ./FRDockers
+            dockerfile: ./ESContainer/es_v2.dockerfile
+        image: fr_es:v2
+        container_name: esv2
+        depends_on: 
+            - fr_fe
+        networks:
+            - fr_network
+        volumes:
+            - type: volume
+              source: fr_data
+              target: /app/Data/
+              volume:
+                nocopy: true
+            - type: volume
+              source: fr_data_db
+              target: /app/ESModule/ESFeatures/DB
+              volume:
+                nocopy: true                
+        env_file:
+            - fr.env
+
+networks:
+    fr_network:
+        external: True
+        name: fr_network
+
+volumes:
+    fr_data:
+        name: fr_data
+    fr_data_db:
+        name: fr_data_db

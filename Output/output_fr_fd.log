@@ -1,0 +1,52 @@
+docker: Error response from daemon: create Output/FRData: "Output/FRData" includes invalid characters for a local volume name, only "[a-zA-Z0-9][a-zA-Z0-9_.-]" are allowed. If you intended to pass a host directory, use absolute path.
+See 'docker run --help'.
+docker: Error response from daemon: create Output/FRData: "Output/FRData" includes invalid characters for a local volume name, only "[a-zA-Z0-9][a-zA-Z0-9_.-]" are allowed. If you intended to pass a host directory, use absolute path.
+See 'docker run --help'.
+docker: Error response from daemon: create Output/FRData: "Output/FRData" includes invalid characters for a local volume name, only "[a-zA-Z0-9][a-zA-Z0-9_.-]" are allowed. If you intended to pass a host directory, use absolute path.
+See 'docker run --help'.
+[32m2020-07-20 10:23:28.113[0m | [1mINFO    [0m | [36mFRCommon.FRUtils.redis_utils[0m:[36m<module>[0m:[36m14[0m - [1mModel Container Established connection with redis!![0m
+[10:23:34] src/nnvm/legacy_json_util.cc:209: Loading symbol saved by previous version v0.8.0. Attempting to upgrade...
+[10:23:34] src/nnvm/legacy_json_util.cc:217: Symbol successfully upgraded!
+[10:23:34] src/nnvm/legacy_json_util.cc:209: Loading symbol saved by previous version v0.8.0. Attempting to upgrade...
+[10:23:34] src/nnvm/legacy_json_util.cc:217: Symbol successfully upgraded!
+[10:23:34] src/nnvm/legacy_json_util.cc:209: Loading symbol saved by previous version v0.8.0. Attempting to upgrade...
+[10:23:34] src/nnvm/legacy_json_util.cc:217: Symbol successfully upgraded!
+[10:23:34] src/nnvm/legacy_json_util.cc:209: Loading symbol saved by previous version v0.8.0. Attempting to upgrade...
+[10:23:34] src/nnvm/legacy_json_util.cc:217: Symbol successfully upgraded!
+
+
+
+^CTraceback (most recent call last):
+  File "run_fd_worker.py", line 4, in <module>
+    FDWorker()
+  File "/app/FDModule/fd_worker.py", line 19, in __init__
+    self.start()
+  File "/app/FDModule/fd_worker.py", line 23, in start
+    k, d = redis_conn.blpop(FrQueues.FRInQ)
+  File "/miniconda/envs/fr_gpu/lib/python3.6/site-packages/redis/client.py", line 1865, in blpop
+    return self.execute_command('BLPOP', *keys)
+  File "/miniconda/envs/fr_gpu/lib/python3.6/site-packages/redis/client.py", line 878, in execute_command
+    return self.parse_response(conn, command_name, **options)
+  File "/miniconda/envs/fr_gpu/lib/python3.6/site-packages/redis/client.py", line 892, in parse_response
+    response = connection.read_response()
+  File "/miniconda/envs/fr_gpu/lib/python3.6/site-packages/redis/connection.py", line 734, in read_response
+    response = self._parser.read_response()
+  File "/miniconda/envs/fr_gpu/lib/python3.6/site-packages/redis/connection.py", line 316, in read_response
+    response = self._buffer.readline()
+  File "/miniconda/envs/fr_gpu/lib/python3.6/site-packages/redis/connection.py", line 248, in readline
+    self._read_from_socket()
+  File "/miniconda/envs/fr_gpu/lib/python3.6/site-packages/redis/connection.py", line 190, in _read_from_socket
+    data = recv(self._sock, socket_read_size)
+  File "/miniconda/envs/fr_gpu/lib/python3.6/site-packages/redis/_compat.py", line 71, in recv
+    return sock.recv(*args, **kwargs)
+KeyboardInterrupt
+[32m2020-07-20 10:46:18.839[0m | [1mINFO    [0m | [36mFRCommon.FRUtils.redis_utils[0m:[36m<module>[0m:[36m14[0m - [1mModel Container Established connection with redis!![0m
+[10:46:25] src/nnvm/legacy_json_util.cc:209: Loading symbol saved by previous version v0.8.0. Attempting to upgrade...
+[10:46:25] src/nnvm/legacy_json_util.cc:217: Symbol successfully upgraded!
+[10:46:25] src/nnvm/legacy_json_util.cc:209: Loading symbol saved by previous version v0.8.0. Attempting to upgrade...
+[10:46:25] src/nnvm/legacy_json_util.cc:217: Symbol successfully upgraded!
+[10:46:25] src/nnvm/legacy_json_util.cc:209: Loading symbol saved by previous version v0.8.0. Attempting to upgrade...
+[10:46:25] src/nnvm/legacy_json_util.cc:217: Symbol successfully upgraded!
+[10:46:25] src/nnvm/legacy_json_util.cc:209: Loading symbol saved by previous version v0.8.0. Attempting to upgrade...
+[10:46:25] src/nnvm/legacy_json_util.cc:217: Symbol successfully upgraded!
+

@@ -1,0 +1,74 @@
+docker: Error response from daemon: create Output/FRData: "Output/FRData" includes invalid characters for a local volume name, only "[a-zA-Z0-9][a-zA-Z0-9_.-]" are allowed. If you intended to pass a host directory, use absolute path.
+See 'docker run --help'.
+docker: Error response from daemon: create Output/FRData: "Output/FRData" includes invalid characters for a local volume name, only "[a-zA-Z0-9][a-zA-Z0-9_.-]" are allowed. If you intended to pass a host directory, use absolute path.
+See 'docker run --help'.
+docker: Error response from daemon: create Output/FRData: "Output/FRData" includes invalid characters for a local volume name, only "[a-zA-Z0-9][a-zA-Z0-9_.-]" are allowed. If you intended to pass a host directory, use absolute path.
+See 'docker run --help'.
+[32m2020-07-20 10:23:28.222[0m | [1mINFO    [0m | [36mFRCommon.FRUtils.redis_utils[0m:[36m<module>[0m:[36m14[0m - [1mModel Container Established connection with redis!![0m
+AFIF model loading .... FEModule/FEWeights/IFModel/model-r100-ii/model 0
+[10:23:35] src/nnvm/legacy_json_util.cc:209: Loading symbol saved by previous version v1.2.0. Attempting to upgrade...
+[10:23:35] src/nnvm/legacy_json_util.cc:217: Symbol successfully upgraded!
+Traceback (most recent call last):
+  File "/miniconda/envs/fr_gpu/lib/python3.6/site-packages/mxnet/symbol/symbol.py", line 1623, in simple_bind
+    ctypes.byref(exe_handle)))
+  File "/miniconda/envs/fr_gpu/lib/python3.6/site-packages/mxnet/base.py", line 253, in check_call
+    raise MXNetError(py_str(_LIB.MXGetLastError()))
+mxnet.base.MXNetError: [10:23:35] src/engine/./../common/cuda_utils.h:310: Check failed: e == cudaSuccess || e == cudaErrorCudartUnloading: CUDA: invalid device ordinal
+Stack trace:
+  [bt] (0) /miniconda/envs/fr_gpu/lib/python3.6/site-packages/mxnet/libmxnet.so(+0x4b03ab) [0x7f0b5245d3ab]
+  [bt] (1) /miniconda/envs/fr_gpu/lib/python3.6/site-packages/mxnet/libmxnet.so(+0x25cc459) [0x7f0b54579459]
+  [bt] (2) /miniconda/envs/fr_gpu/lib/python3.6/site-packages/mxnet/libmxnet.so(+0x2e64d96) [0x7f0b54e11d96]
+  [bt] (3) /miniconda/envs/fr_gpu/lib/python3.6/site-packages/mxnet/libmxnet.so(+0x2e6a96f) [0x7f0b54e1796f]
+  [bt] (4) /miniconda/envs/fr_gpu/lib/python3.6/site-packages/mxnet/libmxnet.so(mxnet::NDArray::NDArray(mxnet::TShape const&, mxnet::Context, bool, int)+0x5d0) [0x7f0b544de5b0]
+  [bt] (5) /miniconda/envs/fr_gpu/lib/python3.6/site-packages/mxnet/libmxnet.so(mxnet::common::InitZeros(mxnet::NDArrayStorageType, mxnet::TShape const&, mxnet::Context const&, int)+0x5c) [0x7f0b545922ac]
+  [bt] (6) /miniconda/envs/fr_gpu/lib/python3.6/site-packages/mxnet/libmxnet.so(mxnet::common::ReshapeOrCreate(std::string const&, mxnet::TShape const&, int, mxnet::NDArrayStorageType, mxnet::Context const&, std::unordered_map<std::string, mxnet::NDArray, std::hash<std::string>, std::equal_to<std::string>, std::allocator<std::pair<std::string const, mxnet::NDArray> > >*, bool)+0x3a1) [0x7f0b545a59f1]
+  [bt] (7) /miniconda/envs/fr_gpu/lib/python3.6/site-packages/mxnet/libmxnet.so(mxnet::exec::GraphExecutor::InitArguments(nnvm::IndexedGraph const&, std::vector<mxnet::TShape, std::allocator<mxnet::TShape> > const&, std::vector<int, std::allocator<int> > const&, std::vector<int, std::allocator<int> > const&, std::vector<mxnet::Context, std::allocator<mxnet::Context> > const&, std::vector<mxnet::Context, std::allocator<mxnet::Context> > const&, std::vector<mxnet::Context, std::allocator<mxnet::Context> > const&, std::vector<mxnet::OpReqType, std::allocator<mxnet::OpReqType> > const&, std::unordered_set<std::string, std::hash<std::string>, std::equal_to<std::string>, std::allocator<std::string> > const&, mxnet::Executor const*, std::unordered_map<std::string, mxnet::NDArray, std::hash<std::string>, std::equal_to<std::string>, std::allocator<std::pair<std::string const, mxnet::NDArray> > >*, std::vector<mxnet::NDArray, std::allocator<mxnet::NDArray> >*, std::vector<mxnet::NDArray, std::allocator<mxnet::NDArray> >*, std::vector<mxnet::NDArray, std::allocator<mxnet::NDArray> >*)+0xb10) [0x7f0b545ad9c0]
+  [bt] (8) /miniconda/envs/fr_gpu/lib/python3.6/site-packages/mxnet/libmxnet.so(mxnet::exec::GraphExecutor::Init(nnvm::Symbol, mxnet::Context const&, std::map<std::string, mxnet::Context, std::less<std::string>, std::allocator<std::pair<std::string const, mxnet::Context> > > const&, std::vector<mxnet::Context, std::allocator<mxnet::Context> > const&, std::vector<mxnet::Context, std::allocator<mxnet::Context> > const&, std::vector<mxnet::Context, std::allocator<mxnet::Context> > const&, std::unordered_map<std::string, mxnet::TShape, std::hash<std::string>, std::equal_to<std::string>, std::allocator<std::pair<std::string const, mxnet::TShape> > > const&, std::unordered_map<std::string, int, std::hash<std::string>, std::equal_to<std::string>, std::allocator<std::pair<std::string const, int> > > const&, std::unordered_map<std::string, int, std::hash<std::string>, std::equal_to<std::string>, std::allocator<std::pair<std::string const, int> > > const&, std::vector<mxnet::OpReqType, std::allocator<mxnet::OpReqType> > const&, std::unordered_set<std::string, std::hash<std::string>, std::equal_to<std::string>, std::allocator<std::string> > const&, std::vector<mxnet::NDArray, std::allocator<mxnet::NDArray> >*, std::vector<mxnet::NDArray, std::allocator<mxnet::NDArray> >*, std::vector<mxnet::NDArray, std::allocator<mxnet::NDArray> >*, std::unordered_map<std::string, mxnet::NDArray, std::hash<std::string>, std::equal_to<std::string>, std::allocator<std::pair<std::string const, mxnet::NDArray> > >*, mxnet::Executor*, std::unordered_map<nnvm::NodeEntry, mxnet::NDArray, nnvm::NodeEntryHash, nnvm::NodeEntryEqual, std::allocator<std::pair<nnvm::NodeEntry const, mxnet::NDArray> > > const&)+0x6bc) [0x7f0b545bbd9c]
+
+
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "run_fe_worker.py", line 4, in <module>
+    FEWorker()
+  File "/app/FEModule/fe_worker.py", line 18, in __init__
+    self.fe_process = FEProcess()
+  File "/app/FEModule/FaceEmbedding/fe_process.py", line 20, in __init__
+    self.fe_handle = FEHandle()
+  File "/app/FEModule/fe_handle.py", line 7, in __init__
+    self.fr = FaceEmbedding()
+  File "/app/FEModule/FaceEmbedding/arcfaceIF/face_embedding.py", line 43, in __init__
+    layer="fc1",
+  File "/app/FEModule/FaceEmbedding/arcfaceIF/face_embedding.py", line 23, in getIFModel
+    model.bind(data_shapes=[("data", (1, 3, image_size[0], image_size[1]))])
+  File "/miniconda/envs/fr_gpu/lib/python3.6/site-packages/mxnet/module/module.py", line 429, in bind
+    state_names=self._state_names)
+  File "/miniconda/envs/fr_gpu/lib/python3.6/site-packages/mxnet/module/executor_group.py", line 279, in __init__
+    self.bind_exec(data_shapes, label_shapes, shared_group)
+  File "/miniconda/envs/fr_gpu/lib/python3.6/site-packages/mxnet/module/executor_group.py", line 375, in bind_exec
+    shared_group))
+  File "/miniconda/envs/fr_gpu/lib/python3.6/site-packages/mxnet/module/executor_group.py", line 662, in _bind_ith_exec
+    shared_buffer=shared_data_arrays, **input_shapes)
+  File "/miniconda/envs/fr_gpu/lib/python3.6/site-packages/mxnet/symbol/symbol.py", line 1629, in simple_bind
+    raise RuntimeError(error_msg)
+RuntimeError: simple_bind error. Arguments:
+data: (1, 3, 112, 112)
+[10:23:35] src/engine/./../common/cuda_utils.h:310: Check failed: e == cudaSuccess || e == cudaErrorCudartUnloading: CUDA: invalid device ordinal
+Stack trace:
+  [bt] (0) /miniconda/envs/fr_gpu/lib/python3.6/site-packages/mxnet/libmxnet.so(+0x4b03ab) [0x7f0b5245d3ab]
+  [bt] (1) /miniconda/envs/fr_gpu/lib/python3.6/site-packages/mxnet/libmxnet.so(+0x25cc459) [0x7f0b54579459]
+  [bt] (2) /miniconda/envs/fr_gpu/lib/python3.6/site-packages/mxnet/libmxnet.so(+0x2e64d96) [0x7f0b54e11d96]
+  [bt] (3) /miniconda/envs/fr_gpu/lib/python3.6/site-packages/mxnet/libmxnet.so(+0x2e6a96f) [0x7f0b54e1796f]
+  [bt] (4) /miniconda/envs/fr_gpu/lib/python3.6/site-packages/mxnet/libmxnet.so(mxnet::NDArray::NDArray(mxnet::TShape const&, mxnet::Context, bool, int)+0x5d0) [0x7f0b544de5b0]
+  [bt] (5) /miniconda/envs/fr_gpu/lib/python3.6/site-packages/mxnet/libmxnet.so(mxnet::common::InitZeros(mxnet::NDArrayStorageType, mxnet::TShape const&, mxnet::Context const&, int)+0x5c) [0x7f0b545922ac]
+  [bt] (6) /miniconda/envs/fr_gpu/lib/python3.6/site-packages/mxnet/libmxnet.so(mxnet::common::ReshapeOrCreate(std::string const&, mxnet::TShape const&, int, mxnet::NDArrayStorageType, mxnet::Context const&, std::unordered_map<std::string, mxnet::NDArray, std::hash<std::string>, std::equal_to<std::string>, std::allocator<std::pair<std::string const, mxnet::NDArray> > >*, bool)+0x3a1) [0x7f0b545a59f1]
+  [bt] (7) /miniconda/envs/fr_gpu/lib/python3.6/site-packages/mxnet/libmxnet.so(mxnet::exec::GraphExecutor::InitArguments(nnvm::IndexedGraph const&, std::vector<mxnet::TShape, std::allocator<mxnet::TShape> > const&, std::vector<int, std::allocator<int> > const&, std::vector<int, std::allocator<int> > const&, std::vector<mxnet::Context, std::allocator<mxnet::Context> > const&, std::vector<mxnet::Context, std::allocator<mxnet::Context> > const&, std::vector<mxnet::Context, std::allocator<mxnet::Context> > const&, std::vector<mxnet::OpReqType, std::allocator<mxnet::OpReqType> > const&, std::unordered_set<std::string, std::hash<std::string>, std::equal_to<std::string>, std::allocator<std::string> > const&, mxnet::Executor const*, std::unordered_map<std::string, mxnet::NDArray, std::hash<std::string>, std::equal_to<std::string>, std::allocator<std::pair<std::string const, mxnet::NDArray> > >*, std::vector<mxnet::NDArray, std::allocator<mxnet::NDArray> >*, std::vector<mxnet::NDArray, std::allocator<mxnet::NDArray> >*, std::vector<mxnet::NDArray, std::allocator<mxnet::NDArray> >*)+0xb10) [0x7f0b545ad9c0]
+  [bt] (8) /miniconda/envs/fr_gpu/lib/python3.6/site-packages/mxnet/libmxnet.so(mxnet::exec::GraphExecutor::Init(nnvm::Symbol, mxnet::Context const&, std::map<std::string, mxnet::Context, std::less<std::string>, std::allocator<std::pair<std::string const, mxnet::Context> > > const&, std::vector<mxnet::Context, std::allocator<mxnet::Context> > const&, std::vector<mxnet::Context, std::allocator<mxnet::Context> > const&, std::vector<mxnet::Context, std::allocator<mxnet::Context> > const&, std::unordered_map<std::string, mxnet::TShape, std::hash<std::string>, std::equal_to<std::string>, std::allocator<std::pair<std::string const, mxnet::TShape> > > const&, std::unordered_map<std::string, int, std::hash<std::string>, std::equal_to<std::string>, std::allocator<std::pair<std::string const, int> > > const&, std::unordered_map<std::string, int, std::hash<std::string>, std::equal_to<std::string>, std::allocator<std::pair<std::string const, int> > > const&, std::vector<mxnet::OpReqType, std::allocator<mxnet::OpReqType> > const&, std::unordered_set<std::string, std::hash<std::string>, std::equal_to<std::string>, std::allocator<std::string> > const&, std::vector<mxnet::NDArray, std::allocator<mxnet::NDArray> >*, std::vector<mxnet::NDArray, std::allocator<mxnet::NDArray> >*, std::vector<mxnet::NDArray, std::allocator<mxnet::NDArray> >*, std::unordered_map<std::string, mxnet::NDArray, std::hash<std::string>, std::equal_to<std::string>, std::allocator<std::pair<std::string const, mxnet::NDArray> > >*, mxnet::Executor*, std::unordered_map<nnvm::NodeEntry, mxnet::NDArray, nnvm::NodeEntryHash, nnvm::NodeEntryEqual, std::allocator<std::pair<nnvm::NodeEntry const, mxnet::NDArray> > > const&)+0x6bc) [0x7f0b545bbd9c]
+
+
+[32m2020-07-20 10:46:19.009[0m | [1mINFO    [0m | [36mFRCommon.FRUtils.redis_utils[0m:[36m<module>[0m:[36m14[0m - [1mModel Container Established connection with redis!![0m
+AFIF model loading .... FEModule/FEWeights/IFModel/model-r100-ii/model 0
+[10:46:25] src/nnvm/legacy_json_util.cc:209: Loading symbol saved by previous version v1.2.0. Attempting to upgrade...
+[10:46:25] src/nnvm/legacy_json_util.cc:217: Symbol successfully upgraded!
+
