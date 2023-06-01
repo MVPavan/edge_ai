@@ -21,10 +21,9 @@ jobs:
     - uses: actions/checkout@v3
     
     - name: Set up Docker Compose
-      uses: docker/compose-action@v1
+      uses: isbang/compose-action@v1.4.1
       with:
-        compose-yml: core_api/compose.edgeai_db.yml
-        compose-version: 1.29.2
+        compose-file: "./core_api/compose.edgeai_db.yml"
 
     - name: Set up Python 3.9
       uses: actions/setup-python@v3
