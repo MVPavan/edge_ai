@@ -1,0 +1,17 @@
+version: '3'
+
+services:
+  py39:
+    image: python39:v2
+    container_name: py39
+    network_mode: host       
+    restart: unless-stopped
+    runtime: nvidia
+    environment:
+      NVIDIA_VISIBLE_DEVICES: all
+    volumes:
+      - type: bind
+        source: /data
+        target: /data
+    stdin_open: true 
+    tty: true
