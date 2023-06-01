@@ -10,7 +10,7 @@ from utils.logging import Logging, start_logging
 logger = start_logging()
 
 from enum import Enum
-from datetime import datetime as DT
+from datetime import datetime
 from typing import Optional, Union, Literal, TYPE_CHECKING, Any
 from pydantic import BaseModel as BM
 
@@ -32,7 +32,7 @@ class SQLModel(SQLM):
         validate_assignment = True
 
 
-from sqlmodel import Field, create_engine, Session, select, Relationship
+from sqlmodel import Field, create_engine, Session, select, Relationship, MetaData
 
 import requests
 from requests.adapters import HTTPAdapter
