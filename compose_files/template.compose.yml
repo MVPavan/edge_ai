@@ -1,0 +1,31 @@
+version: '3'
+services:
+  triton_server:
+    build:
+      context: .
+      dockerfile: triton.Dockerfile
+    image: tycoai_triton_server
+    container_name: tts_v1
+    network_mode: host
+    command: >
+      /bin/bash -cex "nvidia-smi &&
+                      triton_server --model-repo /model_repo"
+        
+    restart: unless-stopped
+    runtime: nvidia
+    security_opt:
+      - apparmor:unconfined
+    shm_size: 2g
+    ipc: host
+    environment:
+      NVIDIA_VISIBLE_DEVICES: all
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - ./triton_model_repo:/model_repo
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+      stack:
+        soft: 67108864
+        hard: 67108864

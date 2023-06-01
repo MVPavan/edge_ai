@@ -13,3 +13,4 @@ FRModels/*
 *.npy
 *.vscode
 */Data/*
+gitignore_folder

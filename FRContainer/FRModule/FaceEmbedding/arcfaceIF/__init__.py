@@ -1,4 +1,0 @@
-"""
-ARCFACE INSIGHT FACE
-
-"""
