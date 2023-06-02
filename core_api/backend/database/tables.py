@@ -1,6 +1,6 @@
 from imports import (
     SQLModel, Field, Relationship,
-    datetime, Optional
+    datetime, Optional, uuid
 )
 
 class Organizations(SQLModel, table=True):
@@ -16,13 +16,39 @@ class Buildings(SQLModel, table=True):
     organization: Optional[Organizations] = Relationship(back_populates="buildings")
     cameras: list["Cameras"] = Relationship(back_populates="building")
 
-
-class Cameras(SQLModel, table=True):
-    id: Optional[int] = Field(default=None, primary_key=True)
-    name: str = Field(index=True)
-    cam_url: str
+class AICategories(SQLModel, table=True):
+    name: str = Field(primary_key=True)
     description: Optional[str] = None
-    building_name: Optional[str] = Field(default=None, foreign_key="buildings.name")
-    building: Optional[Buildings] = Relationship(back_populates="cameras")
+    ai_analytics: list["AIAnalytics"] = Relationship(back_populates="ai_category")
+
+class AIAnalyticsCamerasLink(SQLModel, table=True):
+    ai_id: str = Field(default=None, foreign_key="aianalytics.ai_id", primary_key=True)
+    cam_id: str = Field(default=None, foreign_key="cameras.cam_id", primary_key=True)
+
+
+class AIAnalytics(SQLModel, table=True):
+    ai_id:str = Field(primary_key=True, default_factory=lambda: str(uuid.uuid4()))
+    name: str = Field(index=True)
+    description: Optional[str] = None
     created_at: Optional[datetime] = Field(default=datetime.utcnow())
     updated_at: Optional[datetime] = Field(default=datetime.utcnow())
+    ai_category_name: Optional[str] = Field(default=None, foreign_key="aicategories.name")
+    ai_category: Optional[AICategories] = Relationship(back_populates="ai_analytics")
+    cameras: list["Cameras"] = Relationship(
+        link_model=AIAnalyticsCamerasLink,
+        back_populates="ai_analytics"
+    )
+
+class Cameras(SQLModel, table=True):
+    cam_id: str = Field(primary_key=True, default_factory=lambda: str(uuid.uuid4()))
+    name: str = Field(index=True)
+    cam_url: str = Field(unique=True)
+    description: Optional[str] = None
+    created_at: Optional[datetime] = Field(default=datetime.utcnow())
+    updated_at: Optional[datetime] = Field(default=datetime.utcnow())
+    building_name: Optional[str] = Field(default=None, foreign_key="buildings.name")
+    building: Optional[Buildings] = Relationship(back_populates="cameras")
+    ai_analytics: list["AIAnalytics"] = Relationship(
+        link_model=AIAnalyticsCamerasLink,
+        back_populates="cameras"
+    )

@@ -15,7 +15,7 @@ from typing import Optional, Union, Literal, TYPE_CHECKING, Any
 from pydantic import BaseModel as BM
 
 
-class DBbaseModel(BM):
+class BaseModel(BM):
     class Config:
         orm_mode = True
         validate_assignment = True
@@ -26,17 +26,19 @@ from pydantic.dataclasses import dataclass
 
 from sqlmodel import SQLModel as SQLM
 
-
 class SQLModel(SQLM):
     class Config:
         validate_assignment = True
 
-
-from sqlmodel import Field, create_engine, Session, select, Relationship, MetaData
+from sqlmodel import (
+    create_engine, Session,  MetaData,
+    select, Relationship, Field, 
+)
+import uuid
 
 import requests
 from requests.adapters import HTTPAdapter
-from requests.packages.urllib3.util.retry import Retry
+# from requests.packages.urllib3.util.retry import Retry
 from fastapi import FastAPI, Depends, WebSocket, Query
 from fastapi import APIRouter
 from fastapi.exceptions import RequestValidationError
