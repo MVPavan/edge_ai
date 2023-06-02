@@ -14,3 +14,6 @@ FRModels/*
 *.vscode
 */Data/*
 gitignore_folder
+*.log*
+*.log
+**/logs
