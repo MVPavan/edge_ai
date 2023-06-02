@@ -7,7 +7,7 @@ from backend.database.tables import (
     AICategories, AIAnalytics, AIAnalyticsCamerasLink
 )
 from backend.database.manage import (
-    create_db, engine, get_session
+    create_db, engine, get_pgdb_session
 )
 
 create_db()
@@ -29,7 +29,7 @@ def test_table_names():
 
 #################################### Insert Table rows #########################################################
 def create_organizations_table():
-    with get_session().__next__() as session:
+    with get_pgdb_session().__next__() as session:
         org_a = Organizations(name='org_a', description='org_a description',)
         org_b = Organizations(name='org_b', description='org_b description',)
         org_c = Organizations(name='org_c', description='org_c description',)
@@ -37,7 +37,7 @@ def create_organizations_table():
         session.commit()
 
 def create_buildings_table():
-    with get_session().__next__() as session:
+    with get_pgdb_session().__next__() as session:
         building_a = Buildings(name='building_a', description='building_a description', organization_name='org_a')
         building_b = Buildings(name='building_b', description='building_b description', organization_name='org_b')
         building_c = Buildings(name='building_c', description='building_c description', organization_name='org_c')
@@ -49,7 +49,7 @@ def create_buildings_table():
         session.commit()
 
 def create_cameras_table():
-    with get_session().__next__() as session:
+    with get_pgdb_session().__next__() as session:
         camera_a = Cameras(name='camera_a', cam_url='http://camera_a.com', description='camera_a description', building_name='building_a')
         camera_b = Cameras(name='camera_b', cam_url='http://camera_b.com', description='camera_b description', building_name='building_b')
         camera_c = Cameras(name='camera_c', cam_url='http://camera_c.com', description='camera_c description', building_name='building_c')
@@ -61,7 +61,7 @@ def create_cameras_table():
         session.commit()
 
 def create_aicategories_table():
-    with get_session().__next__() as session:
+    with get_pgdb_session().__next__() as session:
         aicategory_a = AICategories(name='aicategory_a', description='aicategory_a description')
         aicategory_b = AICategories(name='aicategory_b', description='aicategory_b description')
         session.add_all([aicategory_a, aicategory_b])
@@ -69,7 +69,7 @@ def create_aicategories_table():
 
 
 def create_aianalytics_table():
-    with get_session().__next__() as session:
+    with get_pgdb_session().__next__() as session:
         camera_f = Cameras(name='camera_f', cam_url='http://camera_f.com', description='camera_f description', building_name='building_c')
         camera_g = Cameras(name='camera_g', cam_url='http://camera_g.com', description='camera_g description', building_name='building_c')
         aianalytics_a = AIAnalytics(name='aianalytics_a', description='aianalytics_a description', ai_category_name="aicategory_a")
@@ -90,7 +90,7 @@ def create_aianalytics_table():
 ###################################### Delete Table rows #########################################################
 
 def delete_table_rows(table_model, row_names:list):
-    with get_session().__next__() as session:
+    with get_pgdb_session().__next__() as session:
         statement = select(table_model).where(table_model.name.in_(row_names))
         results = session.execute(statement).all()
         for result in results:
@@ -117,7 +117,7 @@ def delete_aianalytics_table():
 ################################# Test Insert Table rows ##########################################
 
 def check_table_rows(table_model, row_names:list):
-    with get_session().__next__() as session:
+    with get_pgdb_session().__next__() as session:
         statement = select(table_model).where(table_model.name.in_(row_names))
         results = session.execute(statement).all()
         assert len(results) == len(row_names)
@@ -154,7 +154,7 @@ def test_create_aianalytics_table():
 ########################### Test Delete Table rows ##########################################
 
 def check_table_rows_delete(table_model):
-    with get_session().__next__() as session:
+    with get_pgdb_session().__next__() as session:
         results = session.query(table_model).all()
         assert len(results) == 0
 
