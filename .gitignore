@@ -17,3 +17,4 @@ gitignore_folder
 *.log*
 *.log
 **/logs
+*.pytest_cache

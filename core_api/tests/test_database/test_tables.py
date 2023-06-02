@@ -1,9 +1,10 @@
 from imports import (
-    select, MetaData,
+    select, MetaData, SQLModel
 )
 
 from backend.database.tables import (
-    Organizations, Buildings, Cameras
+    Organizations, Buildings, Cameras,
+    AICategories, AIAnalytics, AIAnalyticsCamerasLink
 )
 from backend.database.manage import (
     create_db, engine, get_session
@@ -11,20 +12,22 @@ from backend.database.manage import (
 
 create_db()
 
+
+################################ Check Table Names ################################
 metadata = MetaData()
 metadata.reflect(bind=engine)
-
 # Get the table names
 table_names_db = metadata.tables.keys()
-
 def test_table_names():
     for model_name, table_name in zip(
-        [Organizations, Buildings, Cameras],
-        ['organizations', 'buildings', 'cameras']
+        [Organizations, Buildings, Cameras, AICategories, AIAnalytics, AIAnalyticsCamerasLink],
+        ['organizations', 'buildings', 'cameras', 'aicategories', 'aianalytics', 'aianalyticscameraslink']
     ):
         assert model_name.__tablename__ == table_name and \
         table_name in table_names_db
 
+
+#################################### Insert Table rows #########################################################
 def create_organizations_table():
     with get_session().__next__() as session:
         org_a = Organizations(name='org_a', description='org_a description',)
@@ -57,94 +60,120 @@ def create_cameras_table():
         session.add_all([camera_a, camera_b, camera_c, camera_d, camera_e])
         session.commit()
 
+def create_aicategories_table():
+    with get_session().__next__() as session:
+        aicategory_a = AICategories(name='aicategory_a', description='aicategory_a description')
+        aicategory_b = AICategories(name='aicategory_b', description='aicategory_b description')
+        session.add_all([aicategory_a, aicategory_b])
+        session.commit()
+
+
+def create_aianalytics_table():
+    with get_session().__next__() as session:
+        camera_f = Cameras(name='camera_f', cam_url='http://camera_f.com', description='camera_f description', building_name='building_c')
+        camera_g = Cameras(name='camera_g', cam_url='http://camera_g.com', description='camera_g description', building_name='building_c')
+        aianalytics_a = AIAnalytics(name='aianalytics_a', description='aianalytics_a description', ai_category_name="aicategory_a")
+        aianalytics_b = AIAnalytics(name='aianalytics_b', description='aianalytics_b description', ai_category_name="aicategory_a")
+        aianalytics_c = AIAnalytics(
+            name='aianalytics_c', description='aianalytics_c description', 
+            ai_category=AICategories(name='aicategory_c', description='aicategory_c description'),
+            cameras=[camera_g]
+        )
+        aianalytics_d = AIAnalytics(
+            name='aianalytics_d', description='aianalytics_d description',ai_category_name="aicategory_b",
+            cameras=[camera_f, camera_g]
+        )
+        session.add_all([aianalytics_a, aianalytics_b, aianalytics_c, aianalytics_d])
+        session.commit()
+
+
+###################################### Delete Table rows #########################################################
+
+def delete_table_rows(table_model, row_names:list):
+    with get_session().__next__() as session:
+        statement = select(table_model).where(table_model.name.in_(row_names))
+        results = session.execute(statement).all()
+        for result in results:
+            session.delete(result[0])
+        session.commit()
+
 
 def delete_organizations_table():
-    with get_session().__next__() as session:
-        statement = select(Organizations).where(
-            Organizations.name.in_(['org_a', 'org_b', 'org_c', 'org_d', 'org_e', 'org_f'])
-        )
-        results = session.execute(statement).all()
-        for result in results:
-            session.delete(result[0])
-        session.commit()
+    delete_table_rows(Organizations, ['org_a', 'org_b', 'org_c', 'org_d', 'org_e', 'org_f'])
 
 def delete_buildings_table():
-    with get_session().__next__() as session:
-        statement = select(Buildings).where(
-            Buildings.name.in_(['building_a', 'building_b', 'building_c', 'building_d', 'building_e', 'building_f'])
-        )
-        results = session.execute(statement).all()
-        for result in results:
-            session.delete(result[0])
-        session.commit()
+    delete_table_rows(Buildings, ['building_a', 'building_b', 'building_c', 'building_d', 'building_e', 'building_f'])
 
 def delete_cameras_table():
+    delete_table_rows(Cameras, ['camera_a', 'camera_b', 'camera_c', 'camera_d', 'camera_e', 'camera_f', 'camera_g'])
+
+def delete_aicategories_table():
+    delete_table_rows(AICategories, ['aicategory_a', 'aicategory_b', 'aicategory_c'])
+
+def delete_aianalytics_table():
+    delete_table_rows(AIAnalytics, ['aianalytics_a', 'aianalytics_b', 'aianalytics_c', 'aianalytics_d'])
+    
+
+################################# Test Insert Table rows ##########################################
+
+def check_table_rows(table_model, row_names:list):
     with get_session().__next__() as session:
-        statement = select(Cameras).where(
-            Cameras.name.in_(['camera_a', 'camera_b', 'camera_c', 'camera_d', 'camera_e', 'camera_f'])
-        )
+        statement = select(table_model).where(table_model.name.in_(row_names))
         results = session.execute(statement).all()
+        assert len(results) == len(row_names)
         for result in results:
-            session.delete(result[0])
-        session.commit()
+            assert result[0].name in row_names
+
 
 def test_create_organizations_table():
     delete_organizations_table()
     create_organizations_table()
-    with get_session().__next__() as session:
-        statement = select(Organizations).where(
-            Organizations.name.in_(['org_a', 'org_b', 'org_c'])
-        )
-        orgs = session.execute(statement).all()
-        assert len(orgs) == 3
-        assert orgs[0][0].name == 'org_a'
-        assert orgs[1][0].name == 'org_b'
-        assert orgs[2][0].name == 'org_c'
+    check_table_rows(Organizations, ['org_a', 'org_b', 'org_c'])
 
 def test_create_buildings_table():
     delete_buildings_table()
     create_buildings_table()
-    with get_session().__next__() as session:
-        statement = select(Buildings).where(
-            Buildings.name.in_(['building_a', 'building_b', 'building_c', 'building_d', 'building_e'])
-        )
-        buildings = session.execute(statement).all()
-        assert len(buildings) == 5
-        assert buildings[0][0].name == 'building_a'
-        assert buildings[1][0].name == 'building_b'
-        assert buildings[2][0].name == 'building_c'
-        assert buildings[3][0].name == 'building_d'
-        assert buildings[4][0].name == 'building_e'
+    check_table_rows(Buildings, ['building_a', 'building_b', 'building_c', 'building_d', 'building_e'])
 
 def test_create_cameras_table():
     delete_cameras_table()
     create_cameras_table()
+    check_table_rows(Cameras, ['camera_a', 'camera_b', 'camera_c', 'camera_d', 'camera_e'])
+
+def test_create_aicategories_table():
+    delete_aicategories_table()
+    create_aicategories_table()
+    check_table_rows(AICategories, ['aicategory_a', 'aicategory_b'])
+
+def test_create_aianalytics_table():
+    delete_aianalytics_table()
+    create_aianalytics_table()
+    check_table_rows(AIAnalytics, ['aianalytics_a', 'aianalytics_b', 'aianalytics_c', 'aianalytics_d'])
+
+
+########################### Test Delete Table rows ##########################################
+
+def check_table_rows_delete(table_model):
     with get_session().__next__() as session:
-        statement = select(Cameras).where(
-            Cameras.name.in_(['camera_a', 'camera_b', 'camera_c', 'camera_d', 'camera_e'])
-        )
-        cameras = session.execute(statement).all()
-        assert len(cameras) == 5
-        assert cameras[0][0].name == 'camera_a'
-        assert cameras[1][0].name == 'camera_b'
-        assert cameras[2][0].name == 'camera_c'
-        assert cameras[3][0].name == 'camera_d'
-        assert cameras[4][0].name == 'camera_e'
+        results = session.query(table_model).all()
+        assert len(results) == 0
+
+def test_delete_aianalytics_table():
+    delete_aianalytics_table()
+    check_table_rows_delete(AIAnalytics)
+
+def test_delete_aicategories_table():
+    delete_aicategories_table()
+    check_table_rows_delete(AICategories)
 
 def test_delete_cameras_table():
     delete_cameras_table()
-    with get_session().__next__() as session:
-        cameras = session.query(Cameras).all()
-        assert len(cameras) == 0
+    check_table_rows_delete(Cameras)
 
 def test_delete_buildings_table():
     delete_buildings_table()
-    with get_session().__next__() as session:
-        buildings = session.query(Buildings).all()
-        assert len(buildings) == 0
+    check_table_rows_delete(Buildings)
 
 def test_delete_organizations_table():
     delete_organizations_table()
-    with get_session().__next__() as session:
-        orgs = session.query(Organizations).all()
-        assert len(orgs) == 0
+    check_table_rows_delete(Organizations)
