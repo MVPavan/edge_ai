@@ -40,7 +40,7 @@ import requests
 from requests.adapters import HTTPAdapter
 # from requests.packages.urllib3.util.retry import Retry
 from fastapi import FastAPI, Depends, WebSocket, Query
-from fastapi import APIRouter
+from fastapi import APIRouter, HTTPException
 from fastapi.exceptions import RequestValidationError
 from fastapi.responses import PlainTextResponse, JSONResponse
 from fastapi.testclient import TestClient
