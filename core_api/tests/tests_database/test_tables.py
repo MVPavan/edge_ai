@@ -4,7 +4,7 @@ from imports import (
 
 from backend.database.tables import (
     Organizations, Buildings, Cameras,
-    AICategories, AIAnalytics, AIAnalyticsCamerasLink
+    AICategories, AIAnalytics, AIJobs
 )
 from backend.database.manage import (
     create_db, engine, get_pgdb_session
@@ -20,7 +20,7 @@ metadata.reflect(bind=engine)
 table_names_db = metadata.tables.keys()
 def test_table_names():
     for model_name, table_name in zip(
-        [Organizations, Buildings, Cameras, AICategories, AIAnalytics, AIAnalyticsCamerasLink],
+        [Organizations, Buildings, Cameras, AICategories, AIAnalytics, AIJobs],
         ['organizations', 'buildings', 'cameras', 'aicategories', 'aianalytics', 'aianalyticscameraslink']
     ):
         assert model_name.__tablename__ == table_name and \
@@ -70,20 +70,16 @@ def create_aicategories_table():
 
 def create_aianalytics_table():
     with get_pgdb_session().__next__() as session:
-        camera_f = Cameras(name='camera_f', cam_url='http://camera_f.com', description='camera_f description', building_name='building_c')
-        camera_g = Cameras(name='camera_g', cam_url='http://camera_g.com', description='camera_g description', building_name='building_c')
         aianalytics_a = AIAnalytics(name='aianalytics_a', description='aianalytics_a description', ai_category_name="aicategory_a")
         aianalytics_b = AIAnalytics(name='aianalytics_b', description='aianalytics_b description', ai_category_name="aicategory_a")
-        aianalytics_c = AIAnalytics(
-            name='aianalytics_c', description='aianalytics_c description', 
-            ai_category=AICategories(name='aicategory_c', description='aicategory_c description'),
-            cameras=[camera_g]
-        )
-        aianalytics_d = AIAnalytics(
-            name='aianalytics_d', description='aianalytics_d description',ai_category_name="aicategory_b",
-            cameras=[camera_f, camera_g]
-        )
-        session.add_all([aianalytics_a, aianalytics_b, aianalytics_c, aianalytics_d])
+        session.add_all([aianalytics_a, aianalytics_b])
+        session.commit()
+
+def create_aijobs_table():
+    with get_pgdb_session().__next__() as session:
+        aijob_a = AIJobs(name='aijob_a', description='aijob_a description', ai_analytics_name="aianalytics_a")
+        aijob_b = AIJobs(name='aijob_b', description='aijob_b description', ai_analytics_name="aianalytics_a")
+        session.add_all([aijob_a, aijob_b])
         session.commit()
 
 
