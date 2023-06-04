@@ -4,7 +4,8 @@ from .tables import (
     Buildings, BuildingsCreate,
     AICategories,
     AIAnalytics, AIAnalyticsCreate,
-    Cameras, CamerasCreate
+    Cameras, CamerasCreate,
+    AIJobs, AIJobsCreate
 )
 
 # Common CRUD functions
@@ -171,8 +172,8 @@ def delete_ai_category(db: Session, name: str) -> AICategories:
 def create_ai_analytics(db: Session, ai_analytics: AIAnalyticsCreate) -> AIAnalytics:
     return create(db, AIAnalytics, ai_analytics)
 
-def get_ai_analytics(db: Session, ai_id: str) -> AIAnalytics:
-    return get_by_col(db, AIAnalytics, col_name="ai_id", col_value=ai_id)
+def get_ai_analytics(db: Session, analytics_id: str) -> AIAnalytics:
+    return get_by_col(db, AIAnalytics, col_name="analytics_id", col_value=analytics_id)
 
 def get_ai_analytics_by_name(db: Session, name: str) -> list[AIAnalytics]:
     return get_by_col(db, AIAnalytics, col_name="name", col_value=name, many=True)
@@ -180,19 +181,16 @@ def get_ai_analytics_by_name(db: Session, name: str) -> list[AIAnalytics]:
 def get_ai_analytics_by_category(db: Session, category_name: str) -> list[AIAnalytics]:
     return db.query(AIAnalytics).join(AIAnalytics.ai_category).filter(AICategories.name == category_name).all()
 
-def get_ai_analytics_by_camera(db: Session, cam_id: str) -> list[AIAnalytics]:
-    return db.query(AIAnalytics).join(AIAnalytics.cameras).filter(Cameras.cam_id == cam_id).all()
-
 def get_all_ai_analytics(db: Session, skip: int = 0, limit: int = 100) -> list[AIAnalytics]:
     return get_all(db, AIAnalytics, skip, limit)
 
-def update_ai_analytics(db: Session, ai_id: str, ai_analytics: AIAnalyticsCreate) -> AIAnalytics:
-    return update(db, AIAnalytics, col_name="ai_id", col_value=ai_id, 
+def update_ai_analytics(db: Session, analytics_id: str, ai_analytics: AIAnalyticsCreate) -> AIAnalytics:
+    return update(db, AIAnalytics, col_name="analytics_id", col_value=analytics_id, 
         update_data=ai_analytics.dict(exclude_unset=True)
     )
 
-def delete_ai_analytics(db: Session, ai_id: str) -> AIAnalytics:
-    return delete(db, AIAnalytics, col_name="ai_id", col_value=ai_id)
+def delete_ai_analytics(db: Session, analytics_id: str) -> AIAnalytics:
+    return delete(db, AIAnalytics, col_name="analytics_id", col_value=analytics_id)
 
 # Cameras CRUD
 
@@ -208,9 +206,6 @@ def get_camera_by_name(db: Session, name: str) -> list[Cameras]:
 def get_camera_by_building(db: Session, building_name: str) -> list[Cameras]:
     return db.query(Cameras).join(Cameras.building).filter(Buildings.name == building_name).all()
 
-def get_camera_by_analytics(db: Session, ai_id: str) -> list[Cameras]:
-    return db.query(Cameras).join(Cameras.ai_analytics).filter(AIAnalytics.ai_id == ai_id).all()
-
 def get_all_cameras(db: Session, skip: int = 0, limit: int = 100) -> list[Cameras]:
     return get_all(db, Cameras, skip, limit)
 
@@ -221,3 +216,32 @@ def update_camera(db: Session, cam_id: str, camera: CamerasCreate) -> Cameras:
 
 def delete_camera(db: Session, cam_id: str) -> Cameras:
     return delete(db, Cameras, col_name="cam_id", col_value=cam_id)
+
+
+# AIJobs CRUD
+
+def create_ai_job(db: Session, ai_job: AIJobsCreate) -> AIJobs:
+    return create(db, AIJobs, ai_job)
+
+def get_ai_job(db: Session, job_id: str) -> AIJobs:
+    return get_by_col(db, AIJobs, col_name="job_id", col_value=job_id)
+
+def get_ai_job_by_name(db: Session, name: str) -> list[AIJobs]:
+    return get_by_col(db, AIJobs, col_name="name", col_value=name, many=True)
+
+def get_ai_job_by_ai_analytics(db: Session, analytics_id: str) -> list[AIJobs]:
+    return db.query(AIJobs).join(AIJobs.ai_analytics).filter(AIAnalytics.analytics_id == analytics_id).all()
+
+def get_ai_job_by_camera(db: Session, cam_id: str) -> list[AIJobs]:
+    return db.query(AIJobs).join(AIJobs.camera).filter(Cameras.cam_id == cam_id).all()
+
+def get_all_ai_jobs(db: Session, skip: int = 0, limit: int = 100) -> list[AIJobs]:
+    return get_all(db, AIJobs, skip, limit)
+
+def update_ai_job(db: Session, job_id: str, ai_job: AIJobsCreate) -> AIJobs:
+    return update(db, AIJobs, col_name="job_id", col_value=job_id, 
+        update_data=ai_job.dict(exclude_unset=True)
+    )
+
+def delete_ai_job(db: Session, job_id: str) -> AIJobs:
+    return delete(db, AIJobs, col_name="job_id", col_value=job_id)

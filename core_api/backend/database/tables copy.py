@@ -29,7 +29,7 @@ class AICategories(SQLModel, table=True):
 
 
 class AIAnalyticsCamerasLink(SQLModel, table=True):
-    ai_id: str = Field(default=None, foreign_key="aianalytics.ai_id", primary_key=True)
+    analytics_id: str = Field(default=None, foreign_key="aianalytics.analytics_id", primary_key=True)
     cam_id: str = Field(default=None, foreign_key="cameras.cam_id", primary_key=True)
 
 
@@ -43,7 +43,7 @@ class AIAnalyticsCreate(SQLModel):
     )
 
 class AIAnalytics(AIAnalyticsCreate, table=True):
-    ai_id:str = Field(primary_key=True, default_factory=lambda: str(uuid.uuid4()))
+    analytics_id:str = Field(primary_key=True, default_factory=lambda: str(uuid.uuid4()))
     created_at: Optional[datetime] = Field(default=datetime.utcnow())
     updated_at: Optional[datetime] = Field(default=datetime.utcnow())
     ai_category: Optional[AICategories] = Relationship(back_populates="ai_analytics")
@@ -67,7 +67,7 @@ class Cameras(CamerasCreate, table=True):
 
 class AIJobs(SQLModel):
     job_id: str = Field(primary_key=True, default_factory=lambda: str(uuid.uuid4()))
-    ai_id: str = Field(default=None, foreign_key="aianalytics.ai_id", primary_key=True)
+    analytics_id: str = Field(default=None, foreign_key="aianalytics.analytics_id", primary_key=True)
     cam_id: str = Field(default=None, foreign_key="cameras.cam_id", primary_key=True)
     created_at: Optional[datetime] = Field(default=datetime.utcnow())
     updated_at: Optional[datetime] = Field(default=datetime.utcnow())

@@ -21,7 +21,7 @@ table_names_db = metadata.tables.keys()
 def test_table_names():
     for model_name, table_name in zip(
         [Organizations, Buildings, Cameras, AICategories, AIAnalytics, AIJobs],
-        ['organizations', 'buildings', 'cameras', 'aicategories', 'aianalytics', 'aianalyticscameraslink']
+        ['organizations', 'buildings', 'cameras', 'aicategories', 'aianalytics', 'aijobs']
     ):
         assert model_name.__tablename__ == table_name and \
         table_name in table_names_db
@@ -77,8 +77,13 @@ def create_aianalytics_table():
 
 def create_aijobs_table():
     with get_pgdb_session().__next__() as session:
-        aijob_a = AIJobs(name='aijob_a', description='aijob_a description', ai_analytics_name="aianalytics_a")
-        aijob_b = AIJobs(name='aijob_b', description='aijob_b description', ai_analytics_name="aianalytics_a")
+        analytics_id = session.execute(select(AIAnalytics).where(AIAnalytics.name == 'aianalytics_a')).first()[0].analytics_id
+        cam_id = session.execute(select(Cameras).where(Cameras.name == 'camera_a')).first()[0].cam_id
+        aijob_a = AIJobs(analytics_id=analytics_id, cam_id=cam_id, name='aijob_a', description='aijob_a description')
+        
+        analytics_id = session.execute(select(AIAnalytics).where(AIAnalytics.name == 'aianalytics_b')).first()[0].analytics_id
+        cam_id = session.execute(select(Cameras).where(Cameras.name == 'camera_b')).first()[0].cam_id
+        aijob_b = AIJobs(analytics_id=analytics_id, cam_id=cam_id, name='aijob_b', description='aijob_b description')
         session.add_all([aijob_a, aijob_b])
         session.commit()
 
@@ -108,7 +113,10 @@ def delete_aicategories_table():
 
 def delete_aianalytics_table():
     delete_table_rows(AIAnalytics, ['aianalytics_a', 'aianalytics_b', 'aianalytics_c', 'aianalytics_d'])
-    
+
+def delete_aijobs_table():
+    delete_table_rows(AIJobs, ['aijob_a', 'aijob_b', 'aijob_c', 'aijob_d'])
+
 
 ################################# Test Insert Table rows ##########################################
 
@@ -144,7 +152,12 @@ def test_create_aicategories_table():
 def test_create_aianalytics_table():
     delete_aianalytics_table()
     create_aianalytics_table()
-    check_table_rows(AIAnalytics, ['aianalytics_a', 'aianalytics_b', 'aianalytics_c', 'aianalytics_d'])
+    check_table_rows(AIAnalytics, ['aianalytics_a', 'aianalytics_b'])
+
+def test_create_aijobs_table():
+    delete_aijobs_table()
+    create_aijobs_table()
+    check_table_rows(AIJobs, ['aijob_a', 'aijob_b'])
 
 
 ########################### Test Delete Table rows ##########################################
@@ -153,6 +166,10 @@ def check_table_rows_delete(table_model):
     with get_pgdb_session().__next__() as session:
         results = session.query(table_model).all()
         assert len(results) == 0
+
+def test_delete_aijobs_table():
+    delete_aijobs_table()
+    check_table_rows_delete(AIJobs)
 
 def test_delete_aianalytics_table():
     delete_aianalytics_table()
@@ -173,3 +190,5 @@ def test_delete_buildings_table():
 def test_delete_organizations_table():
     delete_organizations_table()
     check_table_rows_delete(Organizations)
+
+
