@@ -118,8 +118,8 @@ def create_ai_analytics(db: Session, ai_analytics: AIAnalyticsCreate) -> AIAnaly
     db.refresh(db_ai_analytics)
     return db_ai_analytics
 
-def get_ai_analytics(db: Session, ai_id: str) -> AIAnalytics:
-    return db.query(AIAnalytics).filter(AIAnalytics.ai_id == ai_id).first()
+def get_ai_analytics(db: Session, analytics_id: str) -> AIAnalytics:
+    return db.query(AIAnalytics).filter(AIAnalytics.analytics_id == analytics_id).first()
 
 def get_ai_analytics_by_name(db: Session, name: str) -> list[AIAnalytics]:
     return db.query(AIAnalytics).filter(AIAnalytics.name == name).all()
@@ -130,8 +130,8 @@ def get_ai_analytics_by_category(db: Session, category_name: str) -> list[AIAnal
 def get_all_ai_analytics(db: Session, skip: int = 0, limit: int = 100) -> list[AIAnalytics]:
     return db.query(AIAnalytics).offset(skip).limit(limit).all()
 
-def update_ai_analytics(db: Session, ai_id: str, ai_analytics: AIAnalyticsCreate) -> AIAnalytics:
-    db_ai_analytics = get_ai_analytics(db, ai_id)
+def update_ai_analytics(db: Session, analytics_id: str, ai_analytics: AIAnalyticsCreate) -> AIAnalytics:
+    db_ai_analytics = get_ai_analytics(db, analytics_id)
     if db_ai_analytics:
         update_data = ai_analytics.dict(exclude_unset=True)
         for key, value in update_data.items():
@@ -141,8 +141,8 @@ def update_ai_analytics(db: Session, ai_id: str, ai_analytics: AIAnalyticsCreate
         db.refresh(db_ai_analytics)
         return db_ai_analytics
 
-def delete_ai_analytics(db: Session, ai_id: str) -> AIAnalytics:
-    db_ai_analytics = get_ai_analytics(db, ai_id)
+def delete_ai_analytics(db: Session, analytics_id: str) -> AIAnalytics:
+    db_ai_analytics = get_ai_analytics(db, analytics_id)
     if db_ai_analytics:
         db.delete(db_ai_analytics)
         db.commit()

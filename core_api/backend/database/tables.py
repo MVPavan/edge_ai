@@ -31,7 +31,7 @@ class AIAnalyticsCreate(SQLModel):
     ai_category_name: Optional[str] = Field(default=None, foreign_key="aicategories.name")
 
 class AIAnalytics(AIAnalyticsCreate, table=True):
-    ai_id:str = Field(primary_key=True, default_factory=lambda: str(uuid.uuid4()))
+    analytics_id:str = Field(primary_key=True, default_factory=lambda: str(uuid.uuid4()))
     created_at: Optional[datetime] = Field(default=datetime.utcnow())
     updated_at: Optional[datetime] = Field(default=datetime.utcnow())
     ai_category: Optional[AICategories] = Relationship(back_populates="ai_analytics")
@@ -51,7 +51,7 @@ class Cameras(CamerasCreate, table=True):
     ai_jobs: list["AIJobs"] = Relationship(back_populates="camera")
 
 class AIJobsCreate(SQLModel):
-    ai_id: str = Field(default=None, foreign_key="aianalytics.ai_id", primary_key=True)
+    analytics_id: str = Field(default=None, foreign_key="aianalytics.analytics_id", primary_key=True)
     cam_id: str = Field(default=None, foreign_key="cameras.cam_id", primary_key=True)
     name: str = Field(index=True)
     description: Optional[str] = None
