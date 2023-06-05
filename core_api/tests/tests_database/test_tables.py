@@ -12,6 +12,17 @@ from backend.database.manage import (
 
 create_db()
 
+def delete_table(table_model):
+    with get_pgdb_session().__next__() as session:
+        session.query(table_model).delete()
+        session.commit()
+
+def delete_all_tables():
+    for table_model in [AIJobs, AIAnalytics, AICategories, Cameras, Buildings, Organizations]:
+        delete_table(table_model)
+
+def test_delete_all_tables():
+    delete_all_tables()
 
 ################################ Check Table Names ################################
 metadata = MetaData()
@@ -90,13 +101,17 @@ def create_aijobs_table():
 
 ###################################### Delete Table rows #########################################################
 
-def delete_table_rows(table_model, row_names:list):
+def delete_table_rows(table_model, row_names:list=['*']):
     with get_pgdb_session().__next__() as session:
-        statement = select(table_model).where(table_model.name.in_(row_names))
-        results = session.execute(statement).all()
-        for result in results:
-            session.delete(result[0])
-        session.commit()
+        if row_names[0] == '*':
+            session.query(table_model).delete()
+            session.commit()
+        else:
+            statement = select(table_model).where(table_model.name.in_(row_names))
+            results = session.execute(statement).all()
+            for result in results:
+                session.delete(result[0])
+            session.commit()
 
 
 def delete_organizations_table():
@@ -116,6 +131,7 @@ def delete_aianalytics_table():
 
 def delete_aijobs_table():
     delete_table_rows(AIJobs, ['aijob_a', 'aijob_b', 'aijob_c', 'aijob_d'])
+
 
 
 ################################# Test Insert Table rows ##########################################
