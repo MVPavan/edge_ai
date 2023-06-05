@@ -1,5 +1,5 @@
 from imports import (
-    FastAPI,
+    FastAPI, Request, RedirectResponse,
     RequestValidationError
 )
 from config import API_V1_STR
@@ -14,12 +14,17 @@ def create_app() -> FastAPI:
 
     # _app.add_event_handler("shutdown", KiteHandler.close_kite_session)
 
-    _app.add_exception_handler(RequestValidationError, ExceptionHandlers.validation_exception_handler)
-    _app.add_exception_handler(ValueError, ExceptionHandlers.value_error_exception_handler)
-    _app.add_exception_handler(AssertionError, ExceptionHandlers.assertion_error_exception_handler)
-    _app.add_exception_handler(TypeError, ExceptionHandlers.type_error_exception_handler)
+    # _app.add_exception_handler(RequestValidationError, ExceptionHandlers.validation_exception_handler)
+    # _app.add_exception_handler(ValueError, ExceptionHandlers.value_error_exception_handler)
+    # _app.add_exception_handler(AssertionError, ExceptionHandlers.assertion_error_exception_handler)
+    # _app.add_exception_handler(TypeError, ExceptionHandlers.type_error_exception_handler)
 
     _app.include_router(api_router, prefix=API_V1_STR)
+
+    @_app.get("/")
+    async def root(request: Request):
+        return RedirectResponse(url="/docs")
+
     return _app
 
 

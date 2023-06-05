@@ -200,6 +200,9 @@ def create_camera(db: Session, camera: CamerasCreate) -> Cameras:
 def get_camera(db: Session, cam_id: str) -> Cameras:
     return get_by_col(db, Cameras, col_name="cam_id", col_value=cam_id)
 
+def get_camera_by_url(db: Session, cam_url: str) -> Cameras:
+    return get_by_col(db, Cameras, col_name="cam_url", col_value=cam_url)
+
 def get_camera_by_name(db: Session, name: str) -> list[Cameras]:
     return get_by_col(db, Cameras, col_name="name", col_value=name, many=True)
 
