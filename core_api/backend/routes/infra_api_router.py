@@ -35,22 +35,21 @@ def update_organization(name: str, organization: schemas.OrganizationsCreate, db
     db_organization = crud.get_organization(db, name=name)
     if db_organization is None:
         raise HTTPException(status_code=404, detail="Organization not found")
-    return crud.update_organization(db=db, organization=organization, db_organization=db_organization)
+    return crud.update_organization(db=db, organization=organization, name=name)
 
-@infra_router.delete("/organizations/{name}", tags=["Organizations"])
+@infra_router.delete("/organizations/{name}", response_model=schemas.Organizations, tags=["Organizations"])
 def delete_organization(name: str, db: Session = Depends(get_pgdb_session)):
     db_organization = crud.get_organization(db, name=name)
     if db_organization is None:
         raise HTTPException(status_code=404, detail="Organization not found")
-    crud.delete_organization(db=db, db_organization=db_organization)
-    return {"message": "Organization deleted"}
+    return crud.delete_organization(db=db, name=name)
 
 
 # Buildings CRUD
 
 @infra_router.post("/buildings/", response_model=schemas.Buildings, tags=["Buildings"])
 def create_building(building: schemas.BuildingsCreate, db: Session = Depends(get_pgdb_session)):
-    db_building = crud.get_building_by_name(db, name=building.name)
+    db_building = crud.get_building(db, name=building.name)
     if db_building:
         raise HTTPException(status_code=400, detail="Building already exists")
     return crud.create_building(db=db, building=building)
@@ -72,15 +71,14 @@ def update_building(name: str, building: schemas.BuildingsCreate, db: Session = 
     db_building = crud.get_building(db, name=name)
     if db_building is None:
         raise HTTPException(status_code=404, detail="Building not found")
-    return crud.update_building(db=db, building=building, db_building=db_building)
+    return crud.update_building(db=db, building=building, name=name)
 
-@infra_router.delete("/buildings/{name}", tags=["Buildings"])
+@infra_router.delete("/buildings/{name}", response_model=schemas.Buildings, tags=["Buildings"])
 def delete_building(name: str, db: Session = Depends(get_pgdb_session)):
     db_building = crud.get_building(db, name=name)
     if db_building is None:
         raise HTTPException(status_code=404, detail="Building not found")
-    crud.delete_building(db=db, db_building=db_building)
-    return {"message": "Building deleted"}
+    return crud.delete_building(db=db, name=name)
 
 
 
@@ -105,7 +103,7 @@ def read_camera(cam_id: str, db: Session = Depends(get_pgdb_session)):
         raise HTTPException(status_code=404, detail="Camera not found")
     return db_camera
 
-@infra_router.get("/cameras/name/{name}", response_model=schemas.Cameras, tags=["Cameras"])
+@infra_router.get("/cameras/name/{name}", response_model=list[schemas.Cameras], tags=["Cameras"])
 def read_camera_by_name(name: str, db: Session = Depends(get_pgdb_session)):
     db_camera = crud.get_camera_by_name(db, name=name)
     if db_camera is None:
@@ -117,12 +115,11 @@ def update_camera(cam_id: str, camera: schemas.CamerasCreate, db: Session = Depe
     db_camera = crud.get_camera(db, cam_id=cam_id)
     if db_camera is None:
         raise HTTPException(status_code=404, detail="Camera not found")
-    return crud.update_camera(db=db, camera=camera, db_camera=db_camera)
+    return crud.update_camera(db=db, camera=camera, cam_id=cam_id)
 
-@infra_router.delete("/cameras/{cam_id}", tags=["Cameras"])
+@infra_router.delete("/cameras/{cam_id}", response_model=schemas.Cameras, tags=["Cameras"])
 def delete_camera(cam_id: str, db: Session = Depends(get_pgdb_session)):
     db_camera = crud.get_camera(db, cam_id=cam_id)
     if db_camera is None:
         raise HTTPException(status_code=404, detail="Camera not found")
-    crud.delete_camera(db=db, db_camera=db_camera)
-    return {"message": "Camera deleted"}
+    return crud.delete_camera(db=db, cam_id=cam_id)
