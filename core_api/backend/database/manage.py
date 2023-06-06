@@ -14,6 +14,6 @@ def create_db():
     SQLModel.metadata.create_all(engine)
 
 
-def get_session():
+def get_pgdb_session():
     with Session(engine) as session:
         yield session
