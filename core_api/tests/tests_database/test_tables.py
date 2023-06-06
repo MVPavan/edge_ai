@@ -10,7 +10,7 @@ from backend.database.manage import (
     create_db, engine, get_pgdb_session
 )
 
-# create_db()
+create_db()
 
 def delete_table(table_model):
     with get_pgdb_session().__next__() as session:
