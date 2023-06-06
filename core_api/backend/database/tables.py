@@ -67,5 +67,3 @@ class AIJobs(AIJobsCreate, table=True):
 
 
 
-
-
