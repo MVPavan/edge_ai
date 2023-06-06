@@ -2,7 +2,7 @@ from imports import (
     SQLModel, Field, Relationship,
     datetime, Optional, uuid
 )
-from sqlalchemy import Column
+from sqlalchemy import Column, String
 
 class OrganizationsCreate(SQLModel):
     name: str = Field(primary_key=True)
@@ -32,7 +32,7 @@ class AIAnalyticsCreate(SQLModel):
     ai_category_name: Optional[str] = Field(default=None, foreign_key="aicategories.name")
 
 class AIAnalytics(AIAnalyticsCreate, table=True):
-    analytics_id:Optional[str] = Field(sa_column=Column(primary_key=True, default=lambda: str(uuid.uuid4())))
+    analytics_id:Optional[str] = Field(sa_column=Column(String, primary_key=True, default=lambda: str(uuid.uuid4())))
     created_at: Optional[datetime] = Field(default=datetime.utcnow())
     updated_at: Optional[datetime] = Field(default=datetime.utcnow())
     ai_category: Optional[AICategories] = Relationship(back_populates="ai_analytics")
@@ -45,7 +45,7 @@ class CamerasCreate(SQLModel):
     building_name: Optional[str] = Field(default=None, foreign_key="buildings.name")
 
 class Cameras(CamerasCreate, table=True):
-    cam_id: Optional[str] = Field(sa_column=Column(primary_key=True, default=lambda: str(uuid.uuid4())))
+    cam_id: Optional[str] = Field(sa_column=Column(String, primary_key=True, default=lambda: str(uuid.uuid4())))
     created_at: Optional[datetime] = Field(default=datetime.utcnow())
     updated_at: Optional[datetime] = Field(default=datetime.utcnow())
     building: Optional[Buildings] = Relationship(back_populates="cameras")
@@ -58,7 +58,7 @@ class AIJobsCreate(SQLModel):
     description: Optional[str] = None
     
 class AIJobs(AIJobsCreate, table=True):
-    job_id: Optional[str] = Field(sa_column=Column(primary_key=True, default=lambda: str(uuid.uuid4())))
+    job_id: Optional[str] = Field(sa_column=Column(String, primary_key=True, default=lambda: str(uuid.uuid4())))
     created_at: Optional[datetime] = Field(default=datetime.utcnow())
     updated_at: Optional[datetime] = Field(default=datetime.utcnow())
     ai_analytics: Optional[AIAnalytics] = Relationship(back_populates="ai_jobs")

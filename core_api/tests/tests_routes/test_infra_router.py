@@ -200,6 +200,6 @@ def test_delete_camera():
     response = fastapi_client.delete(f"cameras/{db_camera.cam_id}")
     assert response.status_code == 200
     assert response.json()["cam_url"] == db_camera.cam_url
-    db_camera_1 = crud.get_camera(db, cam_id=db_camera.cam_id)
+    db_camera_1 = crud.get_camera(db, cam_id=db_camera.cam_id) 
     assert db_camera_1 is None
     db.close()
