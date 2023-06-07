@@ -1,0 +1,13 @@
+__pycache__/
+*.params
+*.pyc
+*.pyc*
+*cpython*
+*__pycache__*
+*.pkl
+*.npy
+*.vscode
+gitignore_folder
+*.log*
+**/logs
+*.pytest_cache
