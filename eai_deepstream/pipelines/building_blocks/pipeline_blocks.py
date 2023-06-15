@@ -4,12 +4,13 @@ from .deepstream_plugins import DsPlugins
 
 class FakeSinkTail(BaseModel):
     pipeline_elements: list = [
+        DsPlugins.queue("queue_fakesink"),
         DsPlugins.fakesink("fake_sink")
     ]
 
 class FileSinkTail(BaseModel):
     pipeline_elements: list = [
-        DsPlugins.queue("queue_filesink") ,
+        DsPlugins.queue("queue_filesink"),
         DsPlugins.mpeg4_encoder("mpeg4_encoder_filesink"),
         DsPlugins.mpeg4_parser("mpeg4_parser_filesink"),
         DsPlugins.qtmux("qtmux_filesink"),
@@ -33,6 +34,7 @@ class OsdPipeline(BaseModel):
         DsPlugins.nvosd("nvosd"),
         DsPlugins.nvvideo_convert("nvvideo_convert_osd_post"),
         DsPlugins.queue("queue_osd_post"),
+        DsPlugins.tee("tee_osd")
     ]
 
 # class ODSingleHead(BaseModel):

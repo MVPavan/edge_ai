@@ -6,9 +6,9 @@ from eai_deepstream.ds_utils.bus_call import bus_call
 import logging
 ds_log = logging.getLogger()
 
-from pipelines.pipeline_builds.ds_pipeline_template import DsPipeline
+from pipelines.pipeline_builds.ds_pipeline_base import DsPipelineBase
 
-def graph_pipeline(ds_pipeline:DsPipeline):
+def graph_pipeline(ds_pipeline:DsPipelineBase):
     # GST_DEBUG_DUMP_DOT_DIR=/data/datasets/temp python3 run_ds.py
     # os.environ["GST_DEBUG_DUMP_DOT_DIR"] = "/tmp"
     # os.putenv('GST_DEBUG_DUMP_DIR_DIR', '/tmp')
@@ -19,7 +19,7 @@ def graph_pipeline(ds_pipeline:DsPipeline):
     )
 
 
-def run_pipeline(ds_pipeline:DsPipeline):
+def run_pipeline(ds_pipeline:DsPipelineBase):
     graph_pipeline(ds_pipeline=ds_pipeline)
     # start play back and listen to events
     ds_log.info("Starting pipeline \n")
