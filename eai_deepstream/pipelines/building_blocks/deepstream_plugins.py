@@ -11,6 +11,9 @@ class DsPlugins:
     # Inference plugins
     triton_server = lambda _name: ("nvinferserver", f"{_name}")
 
+    # Tee plugins
+    tee = lambda _name: ("tee", f"{_name}") 
+
     # Queue plugins
     queue = lambda _name: ("queue", f"{_name}")
     

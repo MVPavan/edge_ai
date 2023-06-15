@@ -9,18 +9,22 @@ from ds_utils.is_aarch_64 import is_aarch64
 
 CUDA_MEM_ELEMENTS = ["nvstreammux","nvvideoconvert","nvmultistreamtiler"]
 
-
-class DsPipeline:
+class DsPipelineBase:
     def __init__(self,):
         self.pipeline_name:str
         self.pipeline_description:str
-        self.pipeline_props_file:str
-        self.pipeline_props = self.__load_pipeline_props()
+        self.pipeline_props_file:str = None
+        self.pipeline_props:DictConfig = None 
         self.pipeline:Gst.Pipeline = self.__create_pipeline()
         self.link_sequence:list = []
+        self.__load_pipeline_props()
 
     def __load_pipeline_props(self):
+        if self.pipeline_props is not None: return
+        
+        assert self.pipeline_props_file is not None
         self.pipeline_props_file = Path(self.pipeline_props_file)
+
         if not self.pipeline_props_file.exists():
             self.pipeline_props_file = \
             Path(__file__).parent.parent/f"pipeline_props/{self.pipeline_props_file.name}"
@@ -36,6 +40,18 @@ class DsPipeline:
             sys.stderr.write(f"Unable to create Pipeline {self.pipeline_name}\n")
         return pipeline
     
+
+    def build_pipeline_from_list(self, plugin_list:list, properties:DictConfig) -> list:
+        link_sequence = []
+        for plugin in plugin_list:
+            element = self.make_gst_element(
+                plugin, properties=properties[plugin[1]],
+            )
+            self.pipeline.add(element)
+            link_sequence.append(element)
+        self.link_elements_within_seq(link_sequence=link_sequence)
+        return link_sequence
+
     @staticmethod
     def make_gst_element(plugin_names,properties:dict={}):
         """ Creates an element with Gst Element Factory make.
@@ -49,12 +65,13 @@ class DsPipeline:
             sys.stderr.write("Unable to create " + user_name + " \n")
 
         logger.info(f"Created Element :{element.get_name()}")
-        if isinstance(properties, DictConfig):
-            properties = OmegaConf.to_container(properties, resolve=True)
-        for key, value in properties.items():
-            element.set_property(key, value)
+        if properties:
+            if isinstance(properties, DictConfig):
+                properties = OmegaConf.to_container(properties, resolve=True)
+            for key, value in properties.items():
+                element.set_property(key, value)
         if factory_name in CUDA_MEM_ELEMENTS:
-            element = DsPipeline.set_memory_types(element=element)
+            element = DsPipelineBase.set_memory_types(element=element)
         return element
 
     @staticmethod
@@ -67,24 +84,38 @@ class DsPipeline:
         return element
     
     @staticmethod
-    def link_elements(self,link_sequence):
+    def link_elements_within_seq(self,link_sequence):
         for i in range(len(link_sequence)-1):
             link_sequence[i].link(link_sequence[i+1])
 
-    def build_plugin_list(self, plugin_list:list, properties:OmegaConf):
-        link_sequence = []
-        for plugin in plugin_list:
-            element = self.make_gst_element(
-                plugin,
-                properties=properties[plugin[1]],
-            )
-            self.pipeline.add(element)
-            link_sequence.append(element)
-        self.link_elements(link_sequence=link_sequence)
-        return link_sequence
-        
+    @staticmethod
+    def join_link_sequences(self,link_seq_head, link_seq_tail):
+        if self.check_tail_tee_head_queue(link_seq_head, link_seq_tail):
+            self.link_tee_queue(link_seq_head[-1],link_seq_tail[0])
+        else:
+            link_seq_head[-1].link(link_seq_tail[0])
+    
+    @staticmethod
+    def check_tail_tee_head_queue(self,link_seq_head, link_seq_tail):
+        """
+        Checks if the tail element of the head sequence is a tee element
+        and the head element of the tail sequence is a queue element.
+        """
+        if ("tee" in link_seq_head[-1].get_name()) and \
+            ("queue" in link_seq_tail[0].get_name()):
+            return True
+        return False
 
-    def create_rtsp_server(self, properties:OmegaConf):
+    @staticmethod
+    def link_tee_queue(self,tee_plugin,queue_plugin):
+        assert "tee" in tee_plugin.get_name(), "tee_plugin must be a tee element"
+        assert "queue" in queue_plugin.get_name(), "queue_plugin must be a queue element"
+        tee_src_pad = tee_plugin.get_request_pad('src_%u')
+        queue_sink_pad = queue_plugin.get_static_pad('sink')
+        tee_src_pad.link(queue_sink_pad)
+
+    @staticmethod
+    def create_rtsp_server(properties:DictConfig):
             # Start streaming
         server = GstRtspServer.RTSPServer.new()
         server.props.service = "%d" % properties.RTSP_PORT
