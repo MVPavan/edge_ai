@@ -1,0 +1,41 @@
+infer_config {
+  unique_id: 5
+  gpu_ids: 0
+  max_batch_size: 32
+  backend {
+    inputs [
+      {
+        name: "INPUT"
+        dims: [3,480,640]
+      }
+    ]
+    triton {
+      model_name: "ensemble_yolox"
+      version: -1
+      grpc { 
+        url: "localhost:8001",
+      }
+    }
+  }
+
+  preprocess {
+    network_format: IMAGE_FORMAT_RGB
+    tensor_order: TENSOR_ORDER_LINEAR
+    maintain_aspect_ratio: 1
+    normalize {
+        scale_factor: 1
+      # scale_factor: 0.00392156863
+      # channel_offsets: [0, 0, 0]
+    }
+  }
+
+
+}
+input_control {
+  process_mode: PROCESS_MODE_FULL_FRAME
+  interval: 0
+}
+
+output_control {
+  output_tensor_meta : true
+}
