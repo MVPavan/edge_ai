@@ -18,10 +18,7 @@
 import time
 from threading import Lock
 
-import logging
-ds_log = logging.getLogger()
-
-
+from imports import logger
 fps_mutex = Lock()
 
 class GETFPS:
@@ -65,11 +62,14 @@ class PERF_DATA:
     def get_stream_key(self,idx):
         return f"stream_{idx}"
     
+    def init_fps_stream_id(self, stream_id,):
+        self.all_stream_fps[stream_id]=GETFPS(stream_id=stream_id,delta_time=self.delta_time)
+        self.all_stream_fps_list[stream_id]=[]
+        
     def start_fps(self, num_streams=1):
         for i in range(num_streams):
             stream_id = self.get_stream_key(i)
-            self.all_stream_fps[stream_id]=GETFPS(stream_id=stream_id,delta_time=self.delta_time)
-            self.all_stream_fps_list[self.get_stream_key(i)]=[]
+            self.init_fps_stream_id(stream_id=stream_id)
 
     def perf_print_callback(self):
         # self.perf_dict = {stream_index:stream.get_fps() for (stream_index, stream) in self.all_stream_fps.items()}
@@ -81,6 +81,8 @@ class PERF_DATA:
         return True
     
     def update_fps(self, stream_index):
+        if stream_index not in self.all_stream_fps:
+            self.init_fps_stream_id(stream_id=stream_index)
         self.all_stream_fps[stream_index].update_fps()
 
     def get_stream_fps(self, stream_idx):
@@ -92,7 +94,7 @@ class PERF_DATA:
     def avg_fps_per_stream(self):
         if not self.exact_aggregate_fps:
             aggregated_fps = sum(self.perf_dict.values())
-            ds_log.info(f"Approx Avg FPS aggregated : {aggregated_fps}\n")
+            logger.info(f"Approx Avg FPS aggregated : {aggregated_fps}\n")
             return aggregated_fps
         
         all_fps={"all_streams":[]}
@@ -106,12 +108,12 @@ class PERF_DATA:
             else:
                 avg_fps[stream_index] = 0
 
-        ds_log.info(f"Avg FPS per stream: \n{avg_fps}\n")
+        logger.info(f"Avg FPS per stream: \n{avg_fps}\n")
 
         non_zero_agg_fps = [sum(x) for x in zip(*all_fps["all_streams"]) if sum(x)!=0]
         if len(non_zero_agg_fps)!=0:
             aggregated_fps = round(sum(non_zero_agg_fps)/len(non_zero_agg_fps),2)
         else:
             aggregated_fps = 0
-        ds_log.info(f"Avg FPS aggregated : {aggregated_fps}\n")
+        logger.info(f"Avg FPS aggregated : {aggregated_fps}\n")
         return aggregated_fps

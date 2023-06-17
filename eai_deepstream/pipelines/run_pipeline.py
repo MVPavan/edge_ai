@@ -23,8 +23,15 @@ def graph_pipeline(ds_pipeline:DsPipelineBase):
         ds_pipeline.pipeline_name
     )
 
+def initialize_fps_calculation(ds_pipeline:DsPipelineBase):
+    perf_data = ds_pipeline.result_vars.perf_data
+    if ds_pipeline.pipeline_props.plugins.custom_parser or \
+        ds_pipeline.pipeline_props.plugins.fps:
+        GLib.timeout_add(perf_data.delta_time, perf_data.perf_print_callback)
+
 def run_pipeline(ds_pipeline:DsPipelineBase):
     graph_pipeline(ds_pipeline=ds_pipeline)
+    initialize_fps_calculation(ds_pipeline=ds_pipeline)
     # start play back and listen to events
     logger.info("Starting pipeline \n")
     # create an event loop and feed gstreamer bus mesages to it
