@@ -5,6 +5,8 @@ plugins:
   fakesink: false
   filesink: false
   rtsp: true
+  fps: true
+  custom_parser: false
 
 
 # Properties to be used while creating deep stream elements
@@ -28,12 +30,14 @@ multi_uri_src:
   drop-pipeline-eos: 1
 
 pgie:
-  config-file-path: triton_server.txt
+  # Give abs file path  or loads file name from infer_configs
+  config-file-path: config_triton_ensemble_yolox.txt
 
 fake_sink:
   sync: 1
 
 caps_filter_osd:
+  # Available choices: CAPS_NVMM_RGBA, CAPS_NVMM_I420, CAPS_I420
   caps: CAPS_NVMM_RGBA
 
 nvtiler_osd:
@@ -64,4 +68,8 @@ rtsp:
   RTSP_STREAM_NAME: /edgeai_od_single_head
   UDPSINK_PORT: 5400
 
-
+# If plugins: fps/custom_parser is enabled
+# loads the txt file given at label_file path
+# if null, by default loads coco labels
+custom_parser_labels:
+  labels_file: null
