@@ -167,7 +167,7 @@ class DsPipelineBase:
 
     @staticmethod
     def get_named_plugin_from_list(plugin_list:list, plugin_name:str):
-        assert plugin_name is not "", "Plugin name substring cannot be empty"
+        assert plugin_name != "", "Plugin name substring cannot be empty"
         for plugin in plugin_list:
             if plugin_name == DsPipelineBase.get_plugin_name(plugin):
                 return plugin
