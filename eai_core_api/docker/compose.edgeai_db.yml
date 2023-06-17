@@ -21,7 +21,8 @@ services:
             interval: 30s
             timeout: 20s
             retries: 3
-
+        networks:
+            - edgeai_network
 
     edgeai_redis:
         image: redis:latest
@@ -32,9 +33,10 @@ services:
             - 6379:6379
         depends_on:
             - edgeai_minio
-        
+        networks:
+            - edgeai_network       
 
-    edgeai_pgdb:
+    edgeai_postgresdb:
         image: postgres:latest
         container_name: edgeai_postgresdb
         restart: unless-stopped
@@ -44,19 +46,21 @@ services:
             - .env
         depends_on:
             - edgeai_redis
-
+        networks:
+            - edgeai_network
     
     edgeai_mongodb:
         image: mongo:latest
         container_name: edgeai_mongodb
         restart: unless-stopped
         depends_on:
-            - edgeai_pgdb
+            - edgeai_postgresdb
         ports:
             - 27017:27017
         env_file:
             - .env
-
+        networks:
+            - edgeai_network
     
     edgeai_pgadmin:
         image: dpage/pgadmin4:latest
@@ -65,9 +69,11 @@ services:
         env_file:
             - .env
         depends_on:
-            - edgeai_pgdb
+            - edgeai_postgresdb
         ports:
             - 5050:80
+        networks:
+            - edgeai_network
      
 # volumes:
 #     redis_data:
@@ -82,3 +88,8 @@ services:
 volumes:
     data1-1:
     data1-2:
+
+networks:
+  edgeai_network:
+    driver: bridge
+    name: edgeai_network
