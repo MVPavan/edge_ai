@@ -23,7 +23,8 @@ jobs:
     - name: Set up Docker Compose
       uses: isbang/compose-action@v1.4.1
       with:
-        compose-file: "./core_api/compose.edgeai_db.yml"
+        compose-file: |
+          ./eai_core_api/docker/compose.edgeai_db.yml
 
     - name: Set up Python 3.9
       uses: actions/setup-python@v3
@@ -33,7 +34,7 @@ jobs:
       run: |
         python -m pip install --upgrade pip
         pip install flake8 pytest
-        if [ -f core_api/requirements.txt ]; then pip install -r core_api/requirements.txt; fi
+        if [ -f ./eai_core_api/requirements.txt ]; then pip install -r ./eai_core_api/requirements.txt; fi
     - name: Lint with flake8
       run: |
         # stop the build if there are Python syntax errors or undefined names

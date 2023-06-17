@@ -1,10 +1,10 @@
-from imports import (Gst, GLib,)
+from imports import (os, Gst, GLib, Path)
 
 
-from eai_deepstream.ds_utils.bus_call import bus_call
+from ds_utils.bus_call import bus_call
 
 import logging
-ds_log = logging.getLogger()
+logger = logging.getLogger()
 
 from pipelines.pipeline_builds.ds_pipeline_base import DsPipelineBase
 
@@ -12,17 +12,21 @@ def graph_pipeline(ds_pipeline:DsPipelineBase):
     # GST_DEBUG_DUMP_DOT_DIR=/data/datasets/temp python3 run_ds.py
     # os.environ["GST_DEBUG_DUMP_DOT_DIR"] = "/tmp"
     # os.putenv('GST_DEBUG_DUMP_DIR_DIR', '/tmp')
+    log_path = Path(logger.handlers[1].baseFilename)
+    gst_log_folder = log_path.parent/"gst_logs"
+    gst_graph_folder = gst_log_folder/"graph"
+    gst_graph_folder.mkdir(exist_ok=True, parents=True)
+    os.environ["GST_DEBUG_DUMP_DOT_DIR"] = gst_graph_folder.as_posix()
     Gst.debug_bin_to_dot_file_with_ts(
         ds_pipeline.pipeline,
         Gst.DebugGraphDetails.ALL,
-        "pipeline_rtsp"
+        ds_pipeline.pipeline_name
     )
-
 
 def run_pipeline(ds_pipeline:DsPipelineBase):
     graph_pipeline(ds_pipeline=ds_pipeline)
     # start play back and listen to events
-    ds_log.info("Starting pipeline \n")
+    logger.info("Starting pipeline \n")
     # create an event loop and feed gstreamer bus mesages to it
     loop = GLib.MainLoop()
     bus = ds_pipeline.pipeline.get_bus()

@@ -1,10 +1,10 @@
 # Plugin blocks To be enabled
 
 plugins:
-  kafka: true
+  kafka: false
   fakesink: false
   filesink: false
-  rtsp: false
+  rtsp: true
 
 
 # Properties to be used while creating deep stream elements
@@ -21,20 +21,20 @@ multi_uri_src:
   file-loop: True
   rtsp-reconnect-interval: 0 # timeout in sec 0-disabled
   #  Old Streammux Properties
-  width: null
-  height: null
+  width: 640
+  height: 480
   batched-push-timeout: 83333 # in usecs. For 12 fps -> 10e6*1/12 = 83333
   live-source: 1
   drop-pipeline-eos: 1
 
 pgie:
-  config-file-path: null
+  config-file-path: triton_server.txt
 
 fake_sink:
   sync: 1
 
 caps_filter_osd:
-  caps: null
+  caps: CAPS_NVMM_RGBA
 
 nvtiler_osd:
   rows: 1

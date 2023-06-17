@@ -11,6 +11,7 @@ class BaseModel(BM):
     class Config:
         orm_mode = True
         validate_assignment = True
+        arbitrary_types_allowed = True
 
 from pydantic.dataclasses import dataclass
 from omegaconf import OmegaConf
@@ -31,5 +32,6 @@ from fastapi.testclient import TestClient
 
 import gi
 gi.require_version("Gst", "1.0")
+gi.require_version("GstRtspServer", "1.0")
 from gi.repository import GLib, Gst, GstRtspServer
 import pyds

@@ -1,11 +1,18 @@
 from imports import (
-    OmegaConf
+    OmegaConf, DictConfig, BaseModel
 )
 
-from .ds_pipeline_base import DsPipelineBase
+from .ds_pipeline_base import DsPipelineBase, DsPipelineCreate
 
 from pipelines.building_blocks.deepstream_plugins import DsPlugins
 from pipelines.building_blocks.pipeline_blocks import PipelineBlocks
+
+
+class ODSingleHeadCreate(DsPipelineCreate):
+    pipeline_name = "od_single_head"
+    pipeline_description = "Object Detection Single Head Pipeline"
+    pipeline_props_file = "od_single_head.yaml"
+
 
 class ODSingleHead(DsPipelineBase):
     """
@@ -21,13 +28,8 @@ class ODSingleHead(DsPipelineBase):
         - Kafka Output (Optional)
     """
 
-    def __init__(self, pipeline_props:OmegaConf = None):
-        self.pipeline_name:str = "od_single_head"
-        self.pipeline_description:str = "Object Detection Single Head Pipeline"
-        self.pipeline_props_file:str = "od_single_head.yaml"
-        super().__init__()
-        if pipeline_props is not None:
-            self.pipeline_props = pipeline_props
+    def __init__(self, ods_pipeline_create:DsPipelineCreate = ODSingleHeadCreate()):
+        super().__init__(ods_pipeline_create)
 
 
     def build_pipeline(self,):
@@ -55,20 +57,21 @@ class ODSingleHead(DsPipelineBase):
             )
             self.join_link_sequences(infer_head_link_seq, link_sequence_osd)
         
-        if self.pipeline_props.plugins.filesink:
-            link_sequence_file = self.build_pipeline_from_list(
-                plugin_list=PipelineBlocks.file_sink_tail.pipeline_elements,
-                properties=self.pipeline_props
-            )
-            self.join_link_sequences(link_sequence_osd, link_sequence_file)
+            if self.pipeline_props.plugins.filesink:
+                link_sequence_file = self.build_pipeline_from_list(
+                    plugin_list=PipelineBlocks.file_sink_tail.pipeline_elements,
+                    properties=self.pipeline_props
+                )
+                self.join_link_sequences(link_sequence_osd, link_sequence_file)
+            
+            if self.pipeline_props.plugins.rtsp:
+                link_sequence_rtsp = self.build_pipeline_from_list(
+                    plugin_list=PipelineBlocks.rtsp_sink_tail.pipeline_elements,
+                    properties=self.pipeline_props
+                )
+                self.join_link_sequences(link_sequence_osd, link_sequence_rtsp)
+                self.create_rtsp_server(properties=self.pipeline_props)
         
-        if self.pipeline_props.plugins.rtsp:
-            link_sequence_rtsp = self.build_pipeline_from_list(
-                plugin_list=PipelineBlocks.rtsp_sink_tail.pipeline_elements,
-                properties=self.pipeline_props
-            )
-            self.join_link_sequences(link_sequence_osd, link_sequence_rtsp)
-            self.create_rtsp_server(properties=self.pipeline_props)
         return self.pipeline
 
 
