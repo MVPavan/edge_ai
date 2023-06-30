@@ -95,7 +95,7 @@ services:
         depends_on:
             - edgeai_zookeeper
         ports:
-            - 9092:9092
+            - 8097:8097
         networks:
             - edgeai_network
 
@@ -106,14 +106,26 @@ services:
         depends_on:
             - edgeai_kafka
         ports:
-            - 8880:8080
+            - 8881:8080
         networks:
             - edgeai_network
         environment:
         - KAFKA_CLUSTERS_0_NAME=Local
-        - KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS=localhost:9092
+        - KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS=edgeai_kafka:9092
 
-
+    akhq:
+        image: tchiotludo/akhq
+        environment:
+            AKHQ_CONFIGURATION: |
+                akhq:
+                    connections:
+                        docker-kafka-server:
+                            properties:
+                                bootstrap.servers:"edgeai_kafka:9092"
+        ports:
+            - 8880:8080
+        networks:
+            - edgeai_network
 
         
 # volumes:

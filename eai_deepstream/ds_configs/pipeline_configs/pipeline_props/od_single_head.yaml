@@ -82,10 +82,11 @@ msgconv_kafka:
   payload-type: 1
   msg2p-newapi: 1
   debug-payload-dir: "/data/CODES/nvidia_manthana/opensource/edge_ai/eai_deepstream/logs/payloads"
-
+  frame-interval: 1
+  
 msgbroker_kafka:
   proto-lib: /opt/nvidia/deepstream/deepstream/lib/libnvds_kafka_proto.so
   config: "/data/CODES/nvidia_manthana/opensource/edge_ai/eai_deepstream/ds_configs/pipeline_configs/msgbroker_configs/kafka_config.txt"
   sync: 0
-  conn-str: "localhost;9092"
+  conn-str: "localhost;8097;plaintext"
   topic: "test_kafka_topic"
