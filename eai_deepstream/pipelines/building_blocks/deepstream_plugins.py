@@ -42,3 +42,8 @@ class DsPlugins:
     udpsink = lambda _name: ("udpsink", f"{_name}")
     fakesink = lambda _name: ("fakesink", f"{_name}")
 
+    # Message broker plugins
+    nvmsgconv = lambda _name: ("nvmsgconv", f"{_name}")
+    nvmsgbroker = lambda _name: ("nvmsgbroker", f"{_name}")
+    
+
