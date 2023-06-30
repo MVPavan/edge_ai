@@ -95,7 +95,6 @@ class DsPipelineBase:
         return link_sequence
     
     def add_fps_probe(self, element, plugin_name:str=""):
-
         if isinstance(element, list):
             element = self.get_named_plugin_from_list(element, plugin_name)
             assert element is not None, f"No plugin with name: {plugin_name}"
@@ -105,7 +104,6 @@ class DsPipelineBase:
         )
 
     def add_parser_probe(self, element, plugin_name:str=""):
-
         if isinstance(element, list):
             element = self.get_named_plugin_from_list(element, plugin_name)
             assert element is not None, f"No plugin with name: {plugin_name}"
@@ -134,6 +132,7 @@ class DsPipelineBase:
                 properties = OmegaConf.to_container(properties, resolve=True) # type: ignore
             
             for key, value in properties.items():
+                # print("key", key)
                 if "caps" in key: 
                     value = DsPipelineBase.CAPS_GENERATOR[value]()
                 element.set_property(key, value)
@@ -206,7 +205,7 @@ class DsPipelineBase:
 
     @staticmethod
     def create_rtsp_server(properties:DictConfig):
-            # Start streaming
+        # Initialize RTSP Server
         server = GstRtspServer.RTSPServer.new()
         server.props.service = "%d" % properties.RTSP_PORT
         server.attach(None)
@@ -221,4 +220,6 @@ class DsPipelineBase:
 
         logger.info(f"\n ***DeepStream: Launched RTSP Streaming at:\
             rtsp://localhost:{properties.RTSP_PORT}{properties.RTSP_STREAM_NAME} ***\n\n")
-            
+    
+
+    

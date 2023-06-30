@@ -12,7 +12,7 @@ def graph_pipeline(ds_pipeline:DsPipelineBase):
     # GST_DEBUG_DUMP_DOT_DIR=/data/datasets/temp python3 run_ds.py
     # os.environ["GST_DEBUG_DUMP_DOT_DIR"] = "/tmp"
     # os.putenv('GST_DEBUG_DUMP_DIR_DIR', '/tmp')
-    log_path = Path(logger.handlers[1].baseFilename)
+    log_path = Path(logger.handlers[1].baseFilename) # type: ignore
     gst_log_folder = log_path.parent/"gst_logs"
     gst_graph_folder = gst_log_folder/"graph"
     gst_graph_folder.mkdir(exist_ok=True, parents=True)
