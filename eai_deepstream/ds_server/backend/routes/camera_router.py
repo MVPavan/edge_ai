@@ -2,7 +2,7 @@ from imports import (
     APIRouter, Depends,  HTTPException
 )
 
-import ..consts.ds_consts as DsConsts
+import ds_server.backend.consts.ds_consts as DsConsts
 
 camera_router = APIRouter()
 
