@@ -1,5 +1,5 @@
 from imports import (
-    Path, sys, logger, Callable, Optional,
+    Path, sys, logger, Callable, Optional, Union, Dict,
     BaseModel, OmegaConf, DictConfig, Field,
     Gst, pyds, GstRtspServer
 )
@@ -15,16 +15,12 @@ from pipelines.probes.probe_funcs import (
 from utils.ds_vars import DsResultVars, PERF_DATA
 from utils.other_utils import get_label_names_from_file
 
-class DsPipelineCreate(BaseModel):
-    pipeline_name:str
-    pipeline_description:str
-    pipeline_props_file:Optional[str] = None
-    pipeline_props:Optional[DictConfig] = None
-    parser_function:Optional[Callable] = None
+class DsPipelineProps(BaseModel):
+    props_file:Optional[str] = None
+    props:Optional[Union[DictConfig, Dict]] = None
 
 
 class DsPipelineBase:
-
     CUDA_MEM_ELEMENTS = ["nvstreammux","nvvideoconvert","nvmultistreamtiler"]
     CAPS_GENERATOR = {
         "CAPS_NVMM_RGBA": lambda : Gst.Caps.from_string("video/x-raw(memory:NVMM), format=RGBA"),
@@ -32,19 +28,23 @@ class DsPipelineBase:
         "CAPS_I420" : lambda : Gst.Caps.from_string("video/x-raw, format=I420"),
     }
 
-    def __init__(self, ds_pipeline_create:DsPipelineCreate):
-        self.pipeline_name = ds_pipeline_create.pipeline_name
-        self.pipeline_description = ds_pipeline_create.pipeline_description
-        self.pipeline:Gst.Pipeline = self.__create_pipeline()
-        
-        
-        if ds_pipeline_create.pipeline_props is None:
+    def __init__(self, ds_pipeline_props:DsPipelineProps):
+        if ds_pipeline_props.props is None:
             self.pipeline_props:DictConfig = self.__load_pipeline_props(
-                ds_pipeline_create.pipeline_props_file
+                ds_pipeline_props.props_file
             )
+        elif isinstance(ds_pipeline_props.props, Dict):
+            self.pipeline_props:DictConfig = OmegaConf.create(ds_pipeline_props.props)
+        elif isinstance(ds_pipeline_props.props, DictConfig):
+            self.pipeline_props:DictConfig = ds_pipeline_props.props
         else:
-            self.pipeline_props:DictConfig = ds_pipeline_create.pipeline_props
+            raise TypeError("Pipeline props must be a dict or DictConfig")
         
+        self.pipeline_name = self.pipeline_props.pipeline_details.name
+        self.pipeline_description = self.pipeline_props.pipeline_details.description
+
+        self.pipeline:Gst.Pipeline = self.__create_pipeline()
+
         self.result_vars:DsResultVars = DsResultVars()
         self.result_vars.perf_data = PERF_DATA(delta_time=3000, exact_aggregate_fps=False)
         self.__load_labels_file()

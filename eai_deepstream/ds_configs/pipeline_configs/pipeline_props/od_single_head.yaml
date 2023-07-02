@@ -1,3 +1,10 @@
+# Pipeline Details
+pipeline_details:
+  name: od_single_head
+  type: object_detection
+  choice: od_single_head
+  description: "Object Detection using single head inference"
+
 # Plugin blocks To be enabled
 
 plugins:

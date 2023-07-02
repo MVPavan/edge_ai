@@ -3,19 +3,13 @@ from imports import (
 )
 
 from .ds_pipeline_base import (
-    DsPipelineBase, DsPipelineCreate,
+    DsPipelineBase, DsPipelineProps,
     infer_configs_folder
 )
 
 from pipelines.building_blocks.deepstream_plugins import DsPlugins
 from pipelines.building_blocks.pipeline_blocks import PipelineBlocks
 
-
-class ODSingleHeadCreate(DsPipelineCreate):
-    # Define a class for creating the Object Detection Single Head pipeline
-    pipeline_name = "od_single_head"
-    pipeline_description = "Object Detection Single Head Pipeline"
-    pipeline_props_file = "od_single_head.yaml"
 
 
 class ODSingleHead(DsPipelineBase):
@@ -30,12 +24,12 @@ class ODSingleHead(DsPipelineBase):
         - On Screen Display (Optional)
         - Fake Sink / File Sink / RTSP Sink (Optional)
         - Kafka Output (Optional)
+    If props not provided loads default props based on pipeline choice
     """
 
-    def __init__(self, ods_pipeline_create:DsPipelineCreate = ODSingleHeadCreate()):
+    def __init__(self, ds_pipeline_props:DsPipelineProps):
         # Initialize the Object Detection Single Head pipeline
-        super().__init__(ods_pipeline_create)
-
+        super().__init__(ds_pipeline_props)
 
     # Define the pipeline building function
     def build_pipeline(self,):
