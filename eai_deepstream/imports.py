@@ -9,8 +9,8 @@ logger = start_logging()
 from urllib.request import pathname2url
 from urllib.parse import urljoin
 from functools import partial, wraps
-from typing import Callable, Optional
-from pydantic import BaseModel as BM, Field
+from typing import Callable, Optional, Dict, Union, Type
+from pydantic import validator, BaseModel as BM, Field
 
 class BaseModel(BM):
     class Config:
