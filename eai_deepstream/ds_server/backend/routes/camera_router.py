@@ -6,7 +6,6 @@ import ds_server.backend.consts.ds_consts as DsConsts
 
 camera_router = APIRouter()
 
-
 # Cameras CRUD
 @camera_router.post("/camera_add/", response_model=DsConsts.CameraRequest, tags=["Cameras"])
 def add_camera(camera: DsConsts.CameraRequest):

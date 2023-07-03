@@ -3,7 +3,7 @@ from imports import (
 )
 
 from .ds_pipeline_base import (
-    DsPipelineBase, DsPipelineProps,
+    DsPipelineBase, PipelineBaseVars,
     infer_configs_folder
 )
 
@@ -27,9 +27,9 @@ class ODSingleHead(DsPipelineBase):
     If props not provided loads default props based on pipeline choice
     """
 
-    def __init__(self, ds_pipeline_props:DsPipelineProps):
+    def __init__(self, pipeline_base_vars:PipelineBaseVars):
         # Initialize the Object Detection Single Head pipeline
-        super().__init__(ds_pipeline_props)
+        super().__init__(pipeline_base_vars=pipeline_base_vars)
 
     # Define the pipeline building function
     def build_pipeline(self,):

@@ -1,5 +1,5 @@
 from imports import (
-    Path, sys, logger, Callable, Optional, Union, Dict,
+    Path, sys, logger, Dict,
     BaseModel, OmegaConf, DictConfig, Field,
     Gst, pyds, GstRtspServer
 )
@@ -15,9 +15,7 @@ from pipelines.probes.probe_funcs import (
 from utils.ds_vars import DsResultVars, PERF_DATA
 from utils.other_utils import get_label_names_from_file
 
-class DsPipelineProps(BaseModel):
-    props_file:Optional[str] = None
-    props:Optional[Union[DictConfig, Dict]] = None
+from ds_consts.pipeline_consts import PipelineBaseVars
 
 
 class DsPipelineBase:
@@ -28,15 +26,12 @@ class DsPipelineBase:
         "CAPS_I420" : lambda : Gst.Caps.from_string("video/x-raw, format=I420"),
     }
 
-    def __init__(self, ds_pipeline_props:DsPipelineProps):
-        if ds_pipeline_props.props is None:
-            self.pipeline_props:DictConfig = self.__load_pipeline_props(
-                ds_pipeline_props.props_file
-            )
-        elif isinstance(ds_pipeline_props.props, Dict):
-            self.pipeline_props:DictConfig = OmegaConf.create(ds_pipeline_props.props)
-        elif isinstance(ds_pipeline_props.props, DictConfig):
-            self.pipeline_props:DictConfig = ds_pipeline_props.props
+    def __init__(self, pipeline_base_vars:PipelineBaseVars):
+
+        if isinstance(pipeline_base_vars.pipeline_props, Dict):
+            self.pipeline_props:DictConfig = OmegaConf.create(pipeline_base_vars.pipeline_props)
+        elif isinstance(pipeline_base_vars.pipeline_props, DictConfig):
+            self.pipeline_props:DictConfig = pipeline_base_vars.pipeline_props
         else:
             raise TypeError("Pipeline props must be a dict or DictConfig")
         
@@ -49,16 +44,6 @@ class DsPipelineBase:
         self.result_vars.perf_data = PERF_DATA(delta_time=3000, exact_aggregate_fps=False)
         self.__load_labels_file()
 
-    def __load_pipeline_props(self, pipeline_props_file) -> DictConfig:        
-        assert pipeline_props_file is not None, "Pipeline props file not provided!"
-        pipeline_props_file = Path(pipeline_props_file)
-
-        if not pipeline_props_file.is_file():
-            pipeline_props_file = pipline_props_folder/pipeline_props_file.name
-        assert Path(pipeline_props_file).is_file(), \
-              f"Pipeline props file {pipeline_props_file} is not valid file!"
-
-        return OmegaConf.load(pipeline_props_file) # type: ignore
 
     def __create_pipeline(self):
         Gst.init(None)
