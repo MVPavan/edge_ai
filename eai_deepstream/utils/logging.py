@@ -6,6 +6,8 @@ class Logging:
         if log_file is None:
             log_file = Path().cwd()/"logs/edgeai_deepstream.log"
         log_file.parent.mkdir(parents=True, exist_ok=True)
+        payloads_folder = log_file.parent/"payloads"
+        payloads_folder.mkdir(parents=True, exist_ok=True)
         assert not log_file.is_dir()
         self.log_file = log_file.as_posix()
 

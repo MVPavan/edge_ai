@@ -1,6 +1,9 @@
 from imports import (
     io, time, urljoin, pathname2url, 
-    Path, wraps, logger
+    Path, wraps, logger, DictConfig, OmegaConf
+)
+from ds_configs import (
+    pipline_props_folder, plugin_props_folder, infer_configs_folder, COCO_LABELS_FILE
 )
 
 VIDEO_EXT = [".mp4",".h264",".avi"]
@@ -32,3 +35,14 @@ def path_to_uri(uri_str:str):
     if file_path.suffix in VIDEO_EXT:
         uri_str = urljoin('file:',pathname2url(file_path.as_posix()))
     return uri_str
+
+def load_pipeline_props(self, pipeline_props_file) -> DictConfig:        
+    assert pipeline_props_file is not None, "Pipeline props file not provided!"
+    pipeline_props_file = Path(pipeline_props_file)
+
+    if not pipeline_props_file.is_file():
+        pipeline_props_file = pipline_props_folder/pipeline_props_file.name
+    assert Path(pipeline_props_file).is_file(), \
+            f"Pipeline props file {pipeline_props_file} is not valid file!"
+
+    return OmegaConf.load(pipeline_props_file) # type: ignore

@@ -10,14 +10,14 @@ services:
             - data1-1:/data
             # - data1-2:/data2
         ports:
-            - 9000:9000
+            - 9009:9000
             - 9090:9090
         env_file:
-            - .env
+            - .env.eai_core_api
         command: server /data --console-address ":9090"
 
         healthcheck:
-            test: ["CMD", "curl", "-f", "http://localhost:9000/minio/health/live"]
+            test: ["CMD", "curl", "-f", "http://localhost:9009/minio/health/live"]
             interval: 30s
             timeout: 20s
             retries: 3
@@ -43,7 +43,7 @@ services:
         ports:
             - 5432:5432
         env_file:
-            - .env
+            - .env.eai_core_api
         depends_on:
             - edgeai_redis
         networks:
@@ -58,7 +58,7 @@ services:
         ports:
             - 27017:27017
         env_file:
-            - .env
+            - .env.eai_core_api
         networks:
             - edgeai_network
     
@@ -67,14 +67,67 @@ services:
         container_name: edgeai_pgadmin
         restart: unless-stopped
         env_file:
-            - .env
+            - .env.eai_core_api
         depends_on:
             - edgeai_postgresdb
         ports:
             - 5050:80
         networks:
             - edgeai_network
-     
+
+    edgeai_zookeeper:
+        image: confluentinc/cp-zookeeper:latest
+        container_name: edgeai_zookeeper
+        restart: unless-stopped
+        env_file:
+            - .env.eai_core_api
+        ports:
+            - 2181:2181
+        networks:
+            - edgeai_network
+
+    edgeai_kafka:
+        image: confluentinc/cp-kafka:latest
+        container_name: edgeai_kafka
+        restart: unless-stopped
+        env_file:
+            - .env.eai_core_api
+        depends_on:
+            - edgeai_zookeeper
+        ports:
+            - 8097:8097
+        networks:
+            - edgeai_network
+
+    kafka-ui:
+        image: provectuslabs/kafka-ui:latest
+        container_name: kafka-ui
+        restart: unless-stopped
+        depends_on:
+            - edgeai_kafka
+        ports:
+            - 8881:8080
+        networks:
+            - edgeai_network
+        environment:
+        - KAFKA_CLUSTERS_0_NAME=Local
+        - KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS=edgeai_kafka:9092
+
+    akhq:
+        image: tchiotludo/akhq
+        environment:
+            AKHQ_CONFIGURATION: |
+                akhq:
+                    connections:
+                        docker-kafka-server:
+                            properties:
+                                bootstrap.servers:"edgeai_kafka:9092"
+        ports:
+            - 8880:8080
+        networks:
+            - edgeai_network
+
+        
 # volumes:
 #     redis_data:
 #         name: edgeai_redis_data

@@ -1,5 +1,5 @@
 ################################################################################
-# SPDX-FileCopyrightText: Copyright (c) 2019-2021 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
+# SPDX-FileCopyrightText: Copyright (c) 2019-2022 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
 # SPDX-License-Identifier: Apache-2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -14,12 +14,5 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 ################################################################################
-
-import platform
-import sys
-
-
-def is_aarch64():
-    return platform.uname()[4] == 'aarch64'
-
-sys.path.append('/opt/nvidia/deepstream/deepstream/lib')
+[message-broker]
+partition-key = sensorId
