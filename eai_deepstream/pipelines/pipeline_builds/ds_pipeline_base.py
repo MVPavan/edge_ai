@@ -1,5 +1,5 @@
 from imports import (
-    Path, sys, logger, Callable, Optional,
+    Path, sys, logger, Dict,
     BaseModel, OmegaConf, DictConfig, Field,
     Gst, pyds, GstRtspServer
 )
@@ -15,16 +15,10 @@ from pipelines.probes.probe_funcs import (
 from utils.ds_vars import DsResultVars, PERF_DATA
 from utils.other_utils import get_label_names_from_file
 
-class DsPipelineCreate(BaseModel):
-    pipeline_name:str
-    pipeline_description:str
-    pipeline_props_file:Optional[str] = None
-    pipeline_props:Optional[DictConfig] = None
-    parser_function:Optional[Callable] = None
+from ds_consts.pipeline_consts import PipelineBaseVars
 
 
 class DsPipelineBase:
-
     CUDA_MEM_ELEMENTS = ["nvstreammux","nvvideoconvert","nvmultistreamtiler"]
     CAPS_GENERATOR = {
         "CAPS_NVMM_RGBA": lambda : Gst.Caps.from_string("video/x-raw(memory:NVMM), format=RGBA"),
@@ -32,33 +26,24 @@ class DsPipelineBase:
         "CAPS_I420" : lambda : Gst.Caps.from_string("video/x-raw, format=I420"),
     }
 
-    def __init__(self, ds_pipeline_create:DsPipelineCreate):
-        self.pipeline_name = ds_pipeline_create.pipeline_name
-        self.pipeline_description = ds_pipeline_create.pipeline_description
-        self.pipeline:Gst.Pipeline = self.__create_pipeline()
-        
-        
-        if ds_pipeline_create.pipeline_props is None:
-            self.pipeline_props:DictConfig = self.__load_pipeline_props(
-                ds_pipeline_create.pipeline_props_file
-            )
+    def __init__(self, pipeline_base_vars:PipelineBaseVars):
+
+        if isinstance(pipeline_base_vars.pipeline_props, Dict):
+            self.pipeline_props:DictConfig = OmegaConf.create(pipeline_base_vars.pipeline_props)
+        elif isinstance(pipeline_base_vars.pipeline_props, DictConfig):
+            self.pipeline_props:DictConfig = pipeline_base_vars.pipeline_props
         else:
-            self.pipeline_props:DictConfig = ds_pipeline_create.pipeline_props
+            raise TypeError("Pipeline props must be a dict or DictConfig")
         
+        self.pipeline_name = self.pipeline_props.pipeline_details.name
+        self.pipeline_description = self.pipeline_props.pipeline_details.description
+
+        self.pipeline:Gst.Pipeline = self.__create_pipeline()
+
         self.result_vars:DsResultVars = DsResultVars()
         self.result_vars.perf_data = PERF_DATA(delta_time=3000, exact_aggregate_fps=False)
         self.__load_labels_file()
 
-    def __load_pipeline_props(self, pipeline_props_file) -> DictConfig:        
-        assert pipeline_props_file is not None, "Pipeline props file not provided!"
-        pipeline_props_file = Path(pipeline_props_file)
-
-        if not pipeline_props_file.is_file():
-            pipeline_props_file = pipline_props_folder/pipeline_props_file.name
-        assert Path(pipeline_props_file).is_file(), \
-              f"Pipeline props file {pipeline_props_file} is not valid file!"
-
-        return OmegaConf.load(pipeline_props_file) # type: ignore
 
     def __create_pipeline(self):
         Gst.init(None)
@@ -95,7 +80,6 @@ class DsPipelineBase:
         return link_sequence
     
     def add_fps_probe(self, element, plugin_name:str=""):
-
         if isinstance(element, list):
             element = self.get_named_plugin_from_list(element, plugin_name)
             assert element is not None, f"No plugin with name: {plugin_name}"
@@ -105,7 +89,6 @@ class DsPipelineBase:
         )
 
     def add_parser_probe(self, element, plugin_name:str=""):
-
         if isinstance(element, list):
             element = self.get_named_plugin_from_list(element, plugin_name)
             assert element is not None, f"No plugin with name: {plugin_name}"
@@ -134,6 +117,7 @@ class DsPipelineBase:
                 properties = OmegaConf.to_container(properties, resolve=True) # type: ignore
             
             for key, value in properties.items():
+                # print("key", key)
                 if "caps" in key: 
                     value = DsPipelineBase.CAPS_GENERATOR[value]()
                 element.set_property(key, value)
@@ -206,7 +190,7 @@ class DsPipelineBase:
 
     @staticmethod
     def create_rtsp_server(properties:DictConfig):
-            # Start streaming
+        # Initialize RTSP Server
         server = GstRtspServer.RTSPServer.new()
         server.props.service = "%d" % properties.RTSP_PORT
         server.attach(None)
@@ -221,4 +205,6 @@ class DsPipelineBase:
 
         logger.info(f"\n ***DeepStream: Launched RTSP Streaming at:\
             rtsp://localhost:{properties.RTSP_PORT}{properties.RTSP_STREAM_NAME} ***\n\n")
-            
+    
+
+    

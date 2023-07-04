@@ -1,33 +1,43 @@
+# Pipeline Details
+pipeline_details:
+  name: od_single_head
+  type: object_detection
+  choice: od_single_head
+  description: "Object Detection using single head inference"
+
 # Plugin blocks To be enabled
 
 plugins:
-  kafka: false
+  kafka: true
   fakesink: false
   filesink: false
-  rtsp: true
+  rtsp: false
   fps: true
   custom_parser: false
 
 
 # Properties to be used while creating deep stream elements
-# Make sure match keys with pipline plugin user names
+# Make sure to match keys with user defined pipline plugin names
 
 multi_uri_src:
   # Gst-nvmultiurisrcbin gstreamer properties directly configuring the bin
-  uri_list: null
-  sensor-id-list: null
+  uri-list: "file:///data/datasets/infer/org/videos/ds_test/busy_1080p_12fps.h264"
+  # uri-list: "file:///data/datasets/infer/org/videos/ds_test/sample.h264"
+  sensor-id-list: "cam_1"
   ip-address: "localhost"
-  port: 9000
+  port: 9005
   max-batch-size: 32
   # Gst-nvmultiurisrcbin nvurisrcbin specific properties
-  file-loop: True
-  rtsp-reconnect-interval: 0 # timeout in sec 0-disabled
+  file-loop: true
+  rtsp-reconnect-interval: 4 # timeout in sec 0-disabled
   #  Old Streammux Properties
-  width: 640
-  height: 480
+  width: 1280
+  height: 720
   batched-push-timeout: 83333 # in usecs. For 12 fps -> 10e6*1/12 = 83333
   live-source: 1
   drop-pipeline-eos: 1
+  sync-inputs: 0
+
 
 pgie:
   # Give abs file path  or loads file name from infer_configs
@@ -73,3 +83,17 @@ rtsp:
 # if null, by default loads coco labels
 custom_parser_labels:
   labels_file: null
+
+msgconv_kafka:
+  # config: ""
+  payload-type: 1
+  msg2p-newapi: 1
+  debug-payload-dir: "/data/CODES/nvidia_manthana/opensource/edge_ai/eai_deepstream/logs/payloads"
+  frame-interval: 1
+  
+msgbroker_kafka:
+  proto-lib: /opt/nvidia/deepstream/deepstream/lib/libnvds_kafka_proto.so
+  config: "/data/CODES/nvidia_manthana/opensource/edge_ai/eai_deepstream/ds_configs/pipeline_configs/msgbroker_configs/kafka_config.txt"
+  sync: 0
+  conn-str: "localhost;8097;plaintext"
+  topic: "test_kafka_topic"

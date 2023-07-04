@@ -37,17 +37,17 @@ class OsdPipeline(BaseModel):
         DsPlugins.tee("tee_osd")
     ]
 
-# class ODSingleHead(BaseModel):
-#     pipeline_elements: list = [
-#         DsPlugins.multi_uri_src("multi_uri_src_od_single_head"),
-#         DsPlugins.triton_server("triton_server_od_single_head"),
-#         DsPlugins.queue("queue_od_single_head"),
-#     ]
-
+class KafkaTail(BaseModel):
+    pipeline_elements: list = [
+        DsPlugins.queue("queue_kafka"),
+        DsPlugins.nvmsgconv("msgconv_kafka"),
+        DsPlugins.nvmsgbroker("msgbroker_kafka")
+    ]
 
 class PipelineBlocks(BaseModel):
     osd_pipeline: OsdPipeline = OsdPipeline()
     rtsp_sink_tail: RtspSinkTail = RtspSinkTail()
     file_sink_tail: FileSinkTail = FileSinkTail()
     fake_sink_tail: FakeSinkTail = FakeSinkTail()
+    kafka_tail: KafkaTail = KafkaTail()
     
