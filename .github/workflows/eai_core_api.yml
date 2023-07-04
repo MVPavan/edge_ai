@@ -58,8 +58,9 @@ jobs:
 
 
   docker-publish:
+    needs: build
+    if: github.event_name == 'push' && github.ref == 'refs/heads/dev'
     runs-on: ubuntu-latest
-    if: github.event.pull_request.merged == true
     defaults:
       run:
         working-directory: eai_core_api
