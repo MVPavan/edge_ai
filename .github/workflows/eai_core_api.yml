@@ -79,6 +79,6 @@ jobs:
     - name: Push Docker image
       run: |
         repo_name=$(echo "${{ github.repository }}" | tr '[:upper:]' '[:lower:]')
-        docker push ghcr.io/$repo_name/eai_core_api:latest
+        docker push ghcr.io/$repo_name/eai_core_api:$(date +%s)
 
 
