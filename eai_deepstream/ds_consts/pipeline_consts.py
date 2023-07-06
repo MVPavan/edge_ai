@@ -1,25 +1,45 @@
+
 from imports import (
     BaseModel,
     Callable, Optional, Union, Dict,
-    DictConfig,
+    DictConfig, validator
 )
 
+from .base_consts import (
+    PipelineBaseVars,
+)
 
-class CameraChangeVars(str):
-    camera_add = "camera_add"
-    camera_remove = "camera_remove"
+from pipeline_scripts.pipeline_choices_manager import (
+    PipelineChoicesManager,
+    ODSingleHead,
+    DsPipelineBase
+)
+
+class PipelineRequestVars(PipelineBaseVars):
+    pipeline_choice: str
+
+    @validator("pipeline_choice")
+    def validate_pipeline_choice(cls, pipeline_choice):
+        if pipeline_choice not in PipelineChoicesManager.get_pipeline_choices():
+            raise ValueError(f"Invalid pipeline choice: {pipeline_choice}")
+        return pipeline_choice
+
+class PipelineConstructStatus(str):
+    success = "success"
+    failure = "failure"
+    id_exists = "id_exists"
+    does_not_exist = "does_not_exist"
+
+class PipelineResponseVars(PipelineBaseVars):
+    pipeline_choice: str
+    status:str = PipelineConstructStatus.failure
 
 
-class CameraRequestVars(BaseModel):
-    camera_id: str
-    camera_url: str
-
-class CameraPayloadVars(CameraRequestVars):
-    change:str
-
-
-class PipelineBaseVars(BaseModel):
-    pipeline_id: str
-    pipeline_name: str
-    pipeline_props: Union[DictConfig, Dict]
-
+class PipelineConstructVars(PipelineRequestVars):
+    pipeline_object:Union[
+        ODSingleHead,
+        DsPipelineBase
+    ]
+            
+class PipelineCollectionVars(BaseModel):
+    pipelines: Dict[str, PipelineConstructVars]

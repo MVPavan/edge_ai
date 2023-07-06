@@ -3,33 +3,61 @@ from imports import (
     BaseModel, validator
 )
 
-from ds_consts.server_consts import (
+from eai_deepstream.ds_consts.pipeline_consts import (
     PipelineChoicesManager,
     PipelineBaseVars,
     PipelineRequestVars,
+    PipelineResponseVars,
     PipelineCollectionVars,
     PipelineConstructVars,
     PipelineConstructStatus
 )
 
 
+def get_pipeline_response_vars(
+        pipeline_request_vars:PipelineRequestVars, 
+        status:str=PipelineConstructStatus.failure
+    ) -> PipelineResponseVars:
+    return PipelineResponseVars(
+        **pipeline_request_vars.dict(),
+        status=status
+    )
+
 class PipelineManager:
     def __init__(self) -> None:
         self.existing_pipelines:PipelineCollectionVars = PipelineCollectionVars(pipelines={})
         self.pipeline_choice_manager = PipelineChoicesManager()
+
+    def get_pipeline(self, pipeline_id:str) -> Optional[PipelineConstructVars]:
+        if pipeline_id in self.existing_pipelines.pipelines:
+            return self.existing_pipelines.pipelines[pipeline_id]
+        return None
     
-    def add_pipeline(self, pipeline_request_vars:PipelineRequestVars) -> PipelineConstructVars:
-        
+    def check_pipeline_exists(self, pipeline_id:str) -> PipelineResponseVars:
+        if pipeline_id in self.existing_pipelines.pipelines:
+            pipeline_response = get_pipeline_response_vars(
+                self.existing_pipelines.pipelines[pipeline_id],
+                status=PipelineConstructStatus.success
+            )
+        else:
+            pipeline_response = get_pipeline_response_vars(
+            PipelineRequestVars(pipeline_id=pipeline_id, pipeline_choice="", pipeline_name="", pipeline_props={}),
+                status=PipelineConstructStatus.does_not_exist
+            )
+        return pipeline_response
+
+    def add_pipeline(self, pipeline_request_vars:PipelineRequestVars) -> PipelineResponseVars:    
         if pipeline_request_vars.pipeline_id in self.existing_pipelines.pipelines:
-            pipeline_construct = PipelineConstructVars(
-                **pipeline_request_vars.dict(),
+            pipeline_response = get_pipeline_response_vars(
+                pipeline_request_vars,
                 status=PipelineConstructStatus.id_exists
             )
-            return pipeline_construct
+            return pipeline_response
         
         ds_pipeline_class = self.pipeline_choice_manager.get_pipeline_choice_class(
             pipeline_choice=pipeline_request_vars.pipeline_choice
         )
+
         pipeline_base_vars=PipelineBaseVars(**pipeline_request_vars.dict())
 
         # create pipeline object
@@ -38,22 +66,31 @@ class PipelineManager:
         pipeline_construct = PipelineConstructVars(
             **pipeline_request_vars.dict(),
             pipeline_object=pipeline_object,
-            status=PipelineConstructStatus.success
         )
         # add pipeline object to pipeline collection
         self.existing_pipelines.pipelines[pipeline_request_vars.pipeline_id] = pipeline_construct
-        return pipeline_construct
+        pipeline_response = get_pipeline_response_vars(
+            pipeline_request_vars,
+            status=PipelineConstructStatus.success
+        )
+        return pipeline_response
     
-
-    def delete_pipeline(self, pipeline_id:str) -> bool:
+    def delete_pipeline(self, pipeline_id:str) -> PipelineResponseVars:
+        pipeline_response = self.check_pipeline_exists(pipeline_id)
+        if pipeline_response.status == PipelineConstructStatus.does_not_exist:
+            return pipeline_response
         
         pipeline_construct = self.existing_pipelines.pipelines[pipeline_id]
+
         if pipeline_construct.pipeline_object is not None:
             if pipeline_construct.pipeline_object.stop_pipeline():
                 del pipeline_construct
                 self.existing_pipelines.pipelines.pop(pipeline_id)
-                return True
-        return False
+                pipeline_response.status = PipelineConstructStatus.success
+            else:
+                pipeline_response.status = PipelineConstructStatus.failure
+        return pipeline_response
+
 
 pipeline_manager = None
 def get_pipeline_manager() -> PipelineManager:
