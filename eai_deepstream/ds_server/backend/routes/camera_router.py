@@ -2,26 +2,30 @@ from imports import (
     APIRouter, Depends,  HTTPException
 )
 
-import ds_server.backend.consts.ds_consts as DsPipelineConsts
-import ds_consts.pipeline_consts as DsPipelineConsts
+import ds_consts.camera_consts as DsCameraConsts
+from pipeline_scripts.pipeline_manager import get_pipeline_manager, PipelineManager
 
 camera_router = APIRouter()
 
 # Cameras CRUD
-@camera_router.post("/camera_add/", response_model=DsPipelineConsts.CameraRequest, tags=["Cameras"])
-def add_camera(camera: DsPipelineConsts.CameraRequest):
+@camera_router.post("/camera_add/", response_model=DsCameraConsts.CameraRequestVars, tags=["Cameras"])
+def add_camera(
+    camera: DsCameraConsts.CameraRequestVars, 
+    pipeline_manager: PipelineManager = Depends(get_pipeline_manager)
+  ):
+    
+    
+
+@camera_router.post("/camera_remove/", response_model=list[DsCameraConsts.CameraRequest], tags=["Cameras"])
+def remove_camera(camera: DsCameraConsts.CameraRequest):
     return camera
 
-@camera_router.post("/camera_remove/", response_model=list[DsPipelineConsts.CameraRequest], tags=["Cameras"])
-def remove_camera(camera: DsPipelineConsts.CameraRequest):
+@camera_router.post("/roi_update/", response_model=list[DsCameraConsts.CameraRequest], tags=["Cameras"])
+def update_roi(camera: DsCameraConsts.CameraRequest):
     return camera
 
-@camera_router.post("/roi_update/", response_model=list[DsPipelineConsts.CameraRequest], tags=["Cameras"])
-def update_roi(camera: DsPipelineConsts.CameraRequest):
-    return camera
-
-@camera_router.post("/drop_frame_interval/", response_model=list[DsPipelineConsts.CameraRequest], tags=["Cameras"])
-def update_drop_frame_interval(camera: DsPipelineConsts.CameraRequest):
+@camera_router.post("/drop_frame_interval/", response_model=list[DsCameraConsts.CameraRequest], tags=["Cameras"])
+def update_drop_frame_interval(camera: DsCameraConsts.CameraRequest):
     return camera
 
 
