@@ -79,5 +79,5 @@ def layers_to_objects(tensor_meta, parser_func):
     frame_object_list = parser_func(tensor_meta)
     if frame_object_list is None:
         logger.info("Unable to parse tensor_meta")
-        return
+        frame_object_list = []
     return frame_object_list
