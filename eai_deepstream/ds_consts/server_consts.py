@@ -9,7 +9,7 @@ from .pipeline_consts import (
     PipelineBaseVars,
 )
 
-from pipelines.pipeline_choices import (
+from pipeline_scripts.pipeline_choices_manager import (
     PipelineChoicesManager,
     ODSingleHead,
     DsPipelineBase
@@ -25,11 +25,21 @@ class PipelineRequestVars(PipelineBaseVars):
             raise ValueError(f"Invalid pipeline choice: {pipeline_choice}")
         return pipeline_choice
 
+
+class PipelineResponseVars(PipelineRequestVars):
+    pass
+
+class PipelineConstructStatus(str):
+    success = "success"
+    failure = "failure"
+    id_exists = "id_exists"
+
 class PipelineConstructVars(PipelineRequestVars):
-    pipeline_object:Union[
+    pipeline_object:Optional[Union[
         ODSingleHead,
         DsPipelineBase
-    ]
+    ]] = None
+    status:str = PipelineConstructStatus.failure
             
 class PipelineCollectionVars(BaseModel):
     pipelines: Dict[str, PipelineConstructVars]

@@ -2,7 +2,7 @@ import os
 from dotenv import load_dotenv
 from starlette.datastructures import CommaSeparatedStrings, Secret
 
-API_V1_STR = "/edgeai/api/v1"
+API_V1_STR = "/edgeai/coreapi/v1"
 load_dotenv("./docker/.env")
 
 PROJECT_NAME = os.getenv("PROJECT_NAME", "EdgeAI Server")

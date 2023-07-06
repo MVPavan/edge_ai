@@ -9,7 +9,7 @@ from ds_utils.is_aarch_64 import is_aarch64
 from ds_configs import (
     pipline_props_folder, plugin_props_folder, infer_configs_folder, COCO_LABELS_FILE
 )
-from pipelines.probes.probe_funcs import (
+from pipeline_scripts.probes.probe_funcs import (
     tensor_to_object_probe, read_obj_meta_probe, overlay_probe
 )
 from utils.ds_vars import DsResultVars, PERF_DATA
@@ -207,4 +207,27 @@ class DsPipelineBase:
             rtsp://localhost:{properties.RTSP_PORT}{properties.RTSP_STREAM_NAME} ***\n\n")
     
 
+    def get_pipeline_status(self):
+        ret, current, pending = self.pipeline.get_state(Gst.CLOCK_TIME_NONE)
+        if ret == Gst.StateChangeReturn.SUCCESS:
+            return_string = f"Current state: {Gst.Element.state_get_name(current)}, \
+            Pending state: {Gst.Element.state_get_name(pending)}"
+        else:
+            return_string = f"Unable to get pipeline state: {ret}"
+        return return_string
     
+    def set_pipeline_state(self, state):
+        ret = self.pipeline.set_state(state)
+        if ret == Gst.StateChangeReturn.FAILURE:
+            logger.error(f"Unable to set pipeline to {state}")
+        return ret
+
+    def stop_pipeline(self):
+        ret = self.set_pipeline_state(Gst.State.NULL)
+        if ret == Gst.StateChangeReturn.FAILURE:
+            logger.error(f"Unable to stop pipeline {self.pipeline_name}")
+            return False
+        else:
+            self.pipeline = None
+            logger.info(f"Pipeline {self.pipeline_name} stopped")
+            return True

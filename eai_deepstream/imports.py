@@ -9,7 +9,7 @@ logger = start_logging()
 from urllib.request import pathname2url
 from urllib.parse import urljoin
 from functools import partial, wraps
-from typing import Callable, Optional, Dict, Union, Type
+from typing import Callable, Optional, Dict, Union, Type, List
 from pydantic import validator, BaseModel as BM, Field
 
 class BaseModel(BM):
@@ -35,8 +35,8 @@ from fastapi.testclient import TestClient
 # from celery import Celery
 # from celery.schedules import crontab
 
-import gi
+import gi # noqa:F401,F402
 gi.require_version("Gst", "1.0")
 gi.require_version("GstRtspServer", "1.0")
-from gi.repository import GLib, Gst, GstRtspServer
-import pyds
+from gi.repository import GLib, Gst, GstRtspServer # noqa:F401,F402
+import pyds # noqa:F401,F402
