@@ -7,8 +7,8 @@ from .ds_pipeline_base import (
     infer_configs_folder
 )
 
-from pipelines.building_blocks.deepstream_plugins import DsPlugins
-from pipelines.building_blocks.pipeline_blocks import PipelineBlocks
+from pipeline_scripts.building_blocks.deepstream_plugins import DsPlugins
+from pipeline_scripts.building_blocks.pipeline_blocks import PipelineBlocks
 
 
 
