@@ -1,19 +1,19 @@
 from imports import APIRouter
-from .ai_api_router import ai_router
-from .infra_api_router import infra_router
+from .camera_router import cam_router
+from .pipeline_router import dsp_router
 
 api_router = APIRouter()
 
 api_router.include_router(
-    ai_router,
-    prefix="/ai",
+    dsp_router,
+    prefix="/dspipelines",
     # tags=["AI"],
     responses={404: {"description": "Not found"}},
 )
 
 api_router.include_router(
-    infra_router,
-    prefix="/infrastructure",
+    cam_router,
+    prefix="/dsp_cameras",
     # tags=["Infrastructure"],
     responses={404: {"description": "Not found"}},
 )

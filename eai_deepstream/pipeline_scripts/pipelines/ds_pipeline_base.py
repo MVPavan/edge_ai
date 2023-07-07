@@ -17,86 +17,13 @@ from utils.other_utils import get_label_names_from_file
 
 from ds_consts.pipeline_consts import PipelineBaseVars
 
-class DsPipelineBase:
+class DspStaticMethods:
     CUDA_MEM_ELEMENTS = ["nvstreammux","nvvideoconvert","nvmultistreamtiler"]
     CAPS_GENERATOR = {
         "CAPS_NVMM_RGBA": lambda : Gst.Caps.from_string("video/x-raw(memory:NVMM), format=RGBA"),
         "CAPS_NVMM_I420" : lambda : Gst.Caps.from_string("video/x-raw(memory:NVMM), format=I420"),
         "CAPS_I420" : lambda : Gst.Caps.from_string("video/x-raw, format=I420"),
     }
-
-    def __init__(self, pipeline_base_vars:PipelineBaseVars):
-
-        if isinstance(pipeline_base_vars.pipeline_props, Dict):
-            self.pipeline_props:DictConfig = OmegaConf.create(pipeline_base_vars.pipeline_props)
-        elif isinstance(pipeline_base_vars.pipeline_props, DictConfig):
-            self.pipeline_props:DictConfig = pipeline_base_vars.pipeline_props
-        else:
-            raise TypeError("Pipeline props must be a dict or DictConfig")
-        
-        self.pipeline_name = self.pipeline_props.pipeline_details.name
-        self.pipeline_description = self.pipeline_props.pipeline_details.description
-
-        self.pipeline:Gst.Pipeline = self.__create_pipeline()
-
-        self.result_vars:DsResultVars = DsResultVars()
-        self.result_vars.perf_data = PERF_DATA(delta_time=3000, exact_aggregate_fps=False)
-        self.__load_labels_file()
-
-
-    def __create_pipeline(self):
-        Gst.init(None)
-        logger.info(f"Creating Pipeline {self.pipeline_name} \n ")
-        pipeline = Gst.Pipeline()
-        if not pipeline:
-            sys.stderr.write(f"Unable to create Pipeline {self.pipeline_name}\n")
-        return pipeline
-    
-    def __load_labels_file(self):
-        labels_file = None
-        if self.pipeline_props.plugins.custom_parser or \
-            self.pipeline_props.plugins.fps:
-            labels_file = self.pipeline_props.custom_parser_labels.labels_file
-        if labels_file is None:
-            labels_file = COCO_LABELS_FILE
-
-        self.result_vars.label_names = get_label_names_from_file(labels_file) # type: ignore
-
-
-    def build_pipeline_from_list(self, plugin_list:list, properties:DictConfig) -> list:
-        link_sequence = []
-        for plugin in plugin_list:
-            elem_props = {}
-            if plugin[1] in properties:
-                elem_props = properties[plugin[1]]                
-
-            element = self.make_gst_element(
-                plugin, properties=elem_props,
-            )
-            self.pipeline.add(element)
-            link_sequence.append(element)
-        self.link_elements_within_seq(link_sequence=link_sequence)
-        return link_sequence
-    
-    def add_fps_probe(self, element, plugin_name:str=""):
-        if isinstance(element, list):
-            element = self.get_named_plugin_from_list(element, plugin_name)
-            assert element is not None, f"No plugin with name: {plugin_name}"
-
-        element.get_static_pad("src").add_probe(
-            Gst.PadProbeType.BUFFER, read_obj_meta_probe, self.result_vars
-        )
-
-    def add_parser_probe(self, element, plugin_name:str=""):
-        if isinstance(element, list):
-            element = self.get_named_plugin_from_list(element, plugin_name)
-            assert element is not None, f"No plugin with name: {plugin_name}"
-
-
-        assert self.result_vars.parser_func is not None, "Parser function not set"
-        element.get_static_pad("src").add_probe(
-            Gst.PadProbeType.BUFFER, tensor_to_object_probe, self.result_vars
-        )
 
     @staticmethod
     def make_gst_element(plugin_names,properties:dict={}):
@@ -118,12 +45,13 @@ class DsPipelineBase:
             for key, value in properties.items():
                 # print("key", key)
                 if "caps" in key: 
-                    value = DsPipelineBase.CAPS_GENERATOR[value]()
+                    value = DspStaticMethods.CAPS_GENERATOR[value]()
                 element.set_property(key, value)
 
-        if factory_name in DsPipelineBase.CUDA_MEM_ELEMENTS:
-            element = DsPipelineBase.set_memory_types(element=element)
+        if factory_name in DspStaticMethods.CUDA_MEM_ELEMENTS:
+            element = DspStaticMethods.set_memory_types(element=element)
         return element
+
 
     @staticmethod
     def check_file_path(file_path, load_folder:Path=Path("")):
@@ -135,6 +63,7 @@ class DsPipelineBase:
             raise FileNotFoundError(f"File {file_path} not found")
         return file_path.as_posix()
 
+
     @staticmethod
     def set_memory_types(element):
         if not is_aarch64():
@@ -144,30 +73,35 @@ class DsPipelineBase:
             element.set_property("nvbuf-memory-type", mem_type)
         return element
     
+
     @staticmethod
     def get_plugin_name(plugin:Gst.Plugin):
         return plugin.get_name()
+
 
     @staticmethod
     def get_named_plugin_from_list(plugin_list:list, plugin_name:str):
         assert plugin_name != "", "Plugin name substring cannot be empty"
         for plugin in plugin_list:
-            if plugin_name == DsPipelineBase.get_plugin_name(plugin):
+            if plugin_name == DspStaticMethods.get_plugin_name(plugin):
                 return plugin
         return None
+
 
     @staticmethod
     def link_elements_within_seq(link_sequence):
         for i in range(len(link_sequence)-1):
             link_sequence[i].link(link_sequence[i+1])
 
+
     @staticmethod
     def join_link_sequences(link_seq_head, link_seq_tail):
-        if DsPipelineBase.check_tail_tee_head_queue(link_seq_head, link_seq_tail):
-            DsPipelineBase.link_tee_queue(link_seq_head[-1],link_seq_tail[0])
+        if DspStaticMethods.check_tail_tee_head_queue(link_seq_head, link_seq_tail):
+            DspStaticMethods.link_tee_queue(link_seq_head[-1],link_seq_tail[0])
         else:
             link_seq_head[-1].link(link_seq_tail[0])
-    
+
+
     @staticmethod
     def check_tail_tee_head_queue(link_seq_head, link_seq_tail):
         """
@@ -204,8 +138,81 @@ class DsPipelineBase:
 
         logger.info(f"\n ***DeepStream: Launched RTSP Streaming at:\
             rtsp://localhost:{properties.RTSP_PORT}{properties.RTSP_STREAM_NAME} ***\n\n")
-    
+   
 
+class DsPipelineBase(DspStaticMethods):
+
+    def __init__(self, pipeline_base_vars:PipelineBaseVars):
+
+        if isinstance(pipeline_base_vars.pipeline_props, Dict):
+            self.pipeline_props:DictConfig = OmegaConf.create(pipeline_base_vars.pipeline_props)
+        elif isinstance(pipeline_base_vars.pipeline_props, DictConfig):
+            self.pipeline_props:DictConfig = pipeline_base_vars.pipeline_props
+        else:
+            raise TypeError("Pipeline props must be a dict or DictConfig")
+        
+        self.pipeline_name = self.pipeline_props.pipeline_details.name
+        self.pipeline_description = self.pipeline_props.pipeline_details.description
+
+        self.pipeline:Gst.Pipeline = self.__create_pipeline()
+
+        self.result_vars:DsResultVars = DsResultVars()
+        self.result_vars.perf_data = PERF_DATA(delta_time=3000, exact_aggregate_fps=False)
+        self.__load_labels_file()
+
+    def __create_pipeline(self):
+        Gst.init(None)
+        logger.info(f"Creating Pipeline {self.pipeline_name} \n ")
+        pipeline = Gst.Pipeline()
+        if not pipeline:
+            sys.stderr.write(f"Unable to create Pipeline {self.pipeline_name}\n")
+        return pipeline
+    
+    def __load_labels_file(self):
+        labels_file = None
+        if self.pipeline_props.plugins.custom_parser or \
+            self.pipeline_props.plugins.fps:
+            labels_file = self.pipeline_props.custom_parser_labels.labels_file
+        if labels_file is None:
+            labels_file = COCO_LABELS_FILE
+
+        self.result_vars.label_names = get_label_names_from_file(labels_file) # type: ignore
+
+    def build_pipeline_from_list(self, plugin_list:list, properties:DictConfig) -> list:
+        link_sequence = []
+        for plugin in plugin_list:
+            elem_props = {}
+            if plugin[1] in properties:
+                elem_props = properties[plugin[1]]                
+
+            element = self.make_gst_element(
+                plugin, properties=elem_props,
+            )
+            self.pipeline.add(element)
+            link_sequence.append(element)
+        self.link_elements_within_seq(link_sequence=link_sequence)
+        return link_sequence
+    
+    def add_fps_probe(self, element, plugin_name:str=""):
+        if isinstance(element, list):
+            element = self.get_named_plugin_from_list(element, plugin_name)
+            assert element is not None, f"No plugin with name: {plugin_name}"
+
+        element.get_static_pad("src").add_probe(
+            Gst.PadProbeType.BUFFER, read_obj_meta_probe, self.result_vars
+        )
+
+    def add_parser_probe(self, element, plugin_name:str=""):
+        if isinstance(element, list):
+            element = self.get_named_plugin_from_list(element, plugin_name)
+            assert element is not None, f"No plugin with name: {plugin_name}"
+
+
+        assert self.result_vars.parser_func is not None, "Parser function not set"
+        element.get_static_pad("src").add_probe(
+            Gst.PadProbeType.BUFFER, tensor_to_object_probe, self.result_vars
+        )
+ 
     def get_pipeline_status(self):
         ret, current, pending = self.pipeline.get_state(Gst.CLOCK_TIME_NONE)
         if ret == Gst.StateChangeReturn.SUCCESS:
@@ -214,7 +221,7 @@ class DsPipelineBase:
         else:
             return_string = f"Unable to get pipeline state: {ret}"
         return return_string
-    
+
     def set_pipeline_state(self, state):
         ret = self.pipeline.set_state(state)
         if ret == Gst.StateChangeReturn.FAILURE:
@@ -230,3 +237,4 @@ class DsPipelineBase:
             self.pipeline = None
             logger.info(f"Pipeline {self.pipeline_name} stopped")
             return True
+        

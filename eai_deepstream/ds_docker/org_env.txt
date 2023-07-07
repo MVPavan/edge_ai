@@ -1,0 +1,49 @@
+###################################################################################
+
+PROJECT_NAME=EDGEAI_SERVER
+SECRET_KEY=123456
+ALLOWED_HOSTS='"127.0.0.1", "localhost"'
+
+######################################################################################
+
+POSTGRES_HOST=edgeai_postgresdb
+POSTGRES_PORT=5432
+POSTGRES_USER=pgdb_user
+POSTGRES_PASSWORD=pgdb_password
+POSTGRES_DB=edgeai_pgdb
+
+#####################################################################################
+
+MONGO_HOST=edgeai_mongodb
+MONGO_PORT=27017
+MONGO_INITDB_ROOT_USERNAME=mongo_user
+MONGO_INITDB_ROOT_PASSWORD=mongo_password
+MONGO_INITDB_DATABASE=edgeai_mongo
+#####################################################################################
+
+# PGADMIN_LISTEN_PORT=5050
+PGADMIN_DEFAULT_EMAIL=mvpavan42@gmail.com
+PGADMIN_DEFAULT_PASSWORD=pgadmin_password
+
+#####################################################################################
+REDIS_SERVER=localhost
+# REDIS_PORT=6397
+#####################################################################################
+
+RABBITMQ_DEFAULT_USER=rabbitmq_user
+RABBITMQ_DEFAULT_PASS=rabbitmq_password
+
+#####################################################################################
+
+MINIO_HOST=edgeai_minio
+MINIO_PORT=9000
+MINIO_ACCESS_KEY=minio
+MINIO_SECRET_KEY=minio123
+#####################################################################################
+
+
+# notify_redis=t1
+# # MINIO_NOTIFY_REDIS_ENABLE=true
+# MINIO_NOTIFY_REDIS_ADDRESS_t1=edgeai_redis
+# MINIO_NOTIFY_REDIS_KEY_t2=keywow
+# MINIO_NOTIFY_REDIS_FORMAT_t3=namespace

@@ -4,7 +4,7 @@ from imports import (
     DictConfig,
 )
 
-
+from .base_consts import CameraAction
 
 class CameraRequestVars(BaseModel):
     camera_id: str
@@ -12,7 +12,7 @@ class CameraRequestVars(BaseModel):
     pipeline_id: str
 
 class CameraPayloadVars(CameraRequestVars):
-    change:str
+    change:str = CameraAction.camera_add
 
 
 
