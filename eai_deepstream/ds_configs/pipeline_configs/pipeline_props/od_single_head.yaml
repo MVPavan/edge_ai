@@ -25,7 +25,7 @@ multi_uri_src:
   # uri-list: "file:///data/datasets/infer/org/videos/ds_test/sample.h264"
   sensor-id-list: "cam_1"
   ip-address: "localhost"
-  port: 9005
+  port: -1 # will be auto set by pipeline manager
   max-batch-size: 32
   # Gst-nvmultiurisrcbin nvurisrcbin specific properties
   file-loop: true

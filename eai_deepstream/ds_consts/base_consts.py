@@ -9,9 +9,11 @@ from imports import (
 )
 
 
-class CameraChangeVars(str):
+class CameraAction(str):
     camera_add = "camera_add"
     camera_remove = "camera_remove"
+    update_roi = "update_roi"
+    drop_frame_interval = "drop_frame_interval"
 
 class PipelineBaseVars(BaseModel):
     pipeline_id: str

@@ -1,32 +1,83 @@
 from imports import (
-    APIRouter, Depends,  HTTPException
+    APIRouter, Depends,  HTTPException,
+    requests
 )
 
-import ds_consts.camera_consts as DsCameraConsts
+import ds_consts.camera_consts as CamVars
 from pipeline_scripts.pipeline_manager import get_pipeline_manager, PipelineManager
 
-camera_router = APIRouter()
+from .route_utils import (
+    check_pipeline_exists_router, 
+    get_mutltiurisrcbin_url,
+    payload_generator
+)
+
+cam_router = APIRouter()
+
 
 # Cameras CRUD
-@camera_router.post("/camera_add/", response_model=DsCameraConsts.CameraRequestVars, tags=["Cameras"])
+@cam_router.post("/camera_add/", response_model=CamVars.CameraRequestVars, tags=["DSPCameras"])
 def add_camera(
-    camera: DsCameraConsts.CameraRequestVars, 
+    cam_request: CamVars.CameraRequestVars, 
     pipeline_manager: PipelineManager = Depends(get_pipeline_manager)
   ):
-    
-    
+    pipeline_response = check_pipeline_exists_router(cam_request.pipeline_id, pipeline_manager)
+    http_url = get_mutltiurisrcbin_url(
+        pipeline_id=cam_request.pipeline_id, 
+        camera_action=CamVars.CameraAction.camera_add,
+        pipeline_manager=pipeline_manager
+    )
+    payload = payload_generator(cam_request, CamVars.CameraAction.camera_add)
+    response = requests.post(http_url, json=payload)
+    return response.status_code, response.json()
 
-@camera_router.post("/camera_remove/", response_model=list[DsCameraConsts.CameraRequest], tags=["Cameras"])
-def remove_camera(camera: DsCameraConsts.CameraRequest):
-    return camera
 
-@camera_router.post("/roi_update/", response_model=list[DsCameraConsts.CameraRequest], tags=["Cameras"])
-def update_roi(camera: DsCameraConsts.CameraRequest):
-    return camera
+@cam_router.post("/camera_remove/", response_model=CamVars.CameraRequestVars, tags=["DSPCameras"])
+def remove_camera(
+    cam_request: CamVars.CameraRequestVars, 
+    pipeline_manager: PipelineManager = Depends(get_pipeline_manager)
+  ):
+    pipeline_response = check_pipeline_exists_router(cam_request.pipeline_id, pipeline_manager)
+    http_url = get_mutltiurisrcbin_url(
+        pipeline_id=cam_request.pipeline_id, 
+        camera_action=CamVars.CameraAction.camera_remove,
+        pipeline_manager=pipeline_manager
+    )
+    payload = payload_generator(cam_request, CamVars.CameraAction.camera_remove)
+    response = requests.post(http_url, json=payload)
+    return response.status_code, response.json()
 
-@camera_router.post("/drop_frame_interval/", response_model=list[DsCameraConsts.CameraRequest], tags=["Cameras"])
-def update_drop_frame_interval(camera: DsCameraConsts.CameraRequest):
-    return camera
+
+@cam_router.post("/update_roi/", response_model=CamVars.CameraRequestVars, tags=["DSPCameras"])
+def update_roi(
+    cam_request: CamVars.CameraRequestVars, 
+    pipeline_manager: PipelineManager = Depends(get_pipeline_manager)
+  ):
+    pipeline_response = check_pipeline_exists_router(cam_request.pipeline_id, pipeline_manager)
+    http_url = get_mutltiurisrcbin_url(
+        pipeline_id=cam_request.pipeline_id, 
+        camera_action=CamVars.CameraAction.update_roi,
+        pipeline_manager=pipeline_manager
+    )
+    payload = payload_generator(cam_request, CamVars.CameraAction.update_roi)
+    response = requests.post(http_url, json=payload)
+    return response.status_code, response.json()
+
+
+@cam_router.post("/drop_frame_interval/", response_model=CamVars.CameraRequestVars, tags=["DSPCameras"])
+def update_drop_frame_interval(
+    cam_request: CamVars.CameraRequestVars, 
+    pipeline_manager: PipelineManager = Depends(get_pipeline_manager)
+  ):
+    pipeline_response = check_pipeline_exists_router(cam_request.pipeline_id, pipeline_manager)
+    http_url = get_mutltiurisrcbin_url(
+        pipeline_id=cam_request.pipeline_id, 
+        camera_action=CamVars.CameraAction.drop_frame_interval,
+        pipeline_manager=pipeline_manager
+    )
+    payload = payload_generator(cam_request, CamVars.CameraAction.drop_frame_interval)
+    response = requests.post(http_url, json=payload)
+    return response.status_code, response.json()
 
 
 
