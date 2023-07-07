@@ -13,5 +13,4 @@ RUN pip install --trusted-host pypi.python.org -r requirements.txt
 COPY . /core_api
 
 # Run app.py when the container launches
-ENTRYPOINT ["python", "main.py"]
-
+CMD ["python", "main.py"]
