@@ -18,4 +18,4 @@ class CameraAction(str):
 class PipelineBaseVars(BaseModel):
     pipeline_id: str
     pipeline_name: str
-    pipeline_props: Union[DictConfig, Dict]
+    pipeline_props: Dict

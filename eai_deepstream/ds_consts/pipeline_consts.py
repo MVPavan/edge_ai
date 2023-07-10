@@ -23,6 +23,7 @@ class PipelineRequestVars(PipelineBaseVars):
         if pipeline_choice not in PipelineChoicesManager.get_pipeline_choices():
             raise ValueError(f"Invalid pipeline choice: {pipeline_choice}")
         return pipeline_choice
+    
 
 class PipelineConstructStatus(str):
     success = "success"
@@ -33,7 +34,6 @@ class PipelineConstructStatus(str):
 class PipelineResponseVars(PipelineBaseVars):
     pipeline_choice: str
     status:str = PipelineConstructStatus.failure
-
 
 class PipelineConstructVars(PipelineRequestVars):
     pipeline_object:Union[
