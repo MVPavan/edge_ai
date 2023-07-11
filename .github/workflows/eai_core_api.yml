@@ -21,6 +21,8 @@ jobs:
     defaults:
       run:
         working-directory: eai_core_api
+    env:
+      poetry_venv_path: ~/.virtualenvs
 
     steps:
     - uses: actions/checkout@v3
@@ -40,7 +42,7 @@ jobs:
       uses: actions/cache@v1
       id: cache
       with:
-        path: ~/.virtualenvs
+        path: $env.poetry_venv_path
         key: poetry-${{ hashFiles('**/poetry.lock') }}
         restore-keys: |
           poetry-${{ hashFiles('**/poetry.lock') }}
@@ -50,7 +52,7 @@ jobs:
         version: 1.5.1
         virtualenvs-create: true
         virtualenvs-in-project: false
-        virtualenvs-path: ~/.virtualenvs
+        virtualenvs-path: $env.poetry_venv_path
 
     - name: Install dependencies
       run: |
