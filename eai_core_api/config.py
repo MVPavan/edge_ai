@@ -10,6 +10,11 @@ PROJECT_NAME = os.getenv("PROJECT_NAME", "EdgeAI Server")
 SECRET_KEY = Secret(os.getenv("SECRET_KEY", "secret key for project"))
 
 LOCAL_HOST = "localhost"
+
+############################################################################################
+FASTAPI_HOST = os.getenv("FASTAPI_HOST", "0.0.0.0")
+FASTAPI_PORT = int(os.getenv("FASTAPI_PORT", 8090))
+
 ############################################################################################
 
 POSTGRES_HOST = os.getenv("POSTGRES_HOST", "localhost")

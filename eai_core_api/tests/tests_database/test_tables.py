@@ -10,7 +10,7 @@ from backend.database.manage import (
     create_db, engine, get_pgdb_session
 )
 
-# Create_db is necessary - github actions pytets fail otherwise
+# Create_db is necessary - github actions pytests fail otherwise
 create_db() 
 
 def delete_table(table_model):

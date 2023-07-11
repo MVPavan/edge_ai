@@ -32,7 +32,7 @@ class SQLModel(SQLM):
 
 from sqlmodel import (
     create_engine, Session,  MetaData,
-    select, Relationship, Field, 
+    select, Relationship, Field, text
 )
 import uuid
 

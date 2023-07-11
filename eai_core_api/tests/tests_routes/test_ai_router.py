@@ -3,6 +3,8 @@ from imports import (
     select, MetaData, SQLModel, TestClient
 )
 
+from config import FASTAPI_PORT, API_V1_STR
+
 from backend.database.tables import (
     Organizations, Buildings, Cameras,
     AICategories, AIAnalytics, AIJobs
@@ -18,7 +20,7 @@ from backend.fastapi_app import fastapi_app
 from tests.tests_database import test_tables 
 
 
-base_url="http://localhost:8090/edgeai/api/v1/ai"
+base_url=f"http://localhost:{FASTAPI_PORT}{API_V1_STR}/ai"
 fastapi_client = TestClient(fastapi_app,base_url=base_url)
 
 
