@@ -9,20 +9,18 @@ PROJECT_NAME = os.getenv("PROJECT_NAME", "EdgeAI Server")
 # ALLOWED_HOSTS = CommaSeparatedStrings(os.getenv("ALLOWED_HOSTS", ""))
 SECRET_KEY = Secret(os.getenv("SECRET_KEY", "secret key for project"))
 
+LOCAL_HOST = "localhost"
 ############################################################################################
 
-POSTGRES_URL = os.getenv("POSTGRES_URL", "")  # deploying without docker-compose
-if not POSTGRES_URL:
-    POSTGRES_HOST = os.getenv("POSTGRES_HOST", "localhost")
-    POSTGRES_PORT = int(os.getenv("POSTGRES_PORT", 5432))
-    POSTGRES_USER = os.getenv("POSTGRES_USER", "pgdb_user")
-    POSTGRES_PASSWORD = os.getenv("POSTGRES_PASSWORD", "pgdb_password")
-    POSTGRES_DB = os.getenv("POSTGRES_DB", "edgeai_pgdb")
+POSTGRES_HOST = os.getenv("POSTGRES_HOST", "localhost")
+POSTGRES_PORT = int(os.getenv("POSTGRES_PORT", 5432))
+POSTGRES_USER = os.getenv("POSTGRES_USER", "pgdb_user")
+POSTGRES_PASSWORD = os.getenv("POSTGRES_PASSWORD", "pgdb_password")
+POSTGRES_DB = os.getenv("POSTGRES_DB", "edgeai_pgdb")
 
-    POSTGRES_URL = f"postgresql://{POSTGRES_USER}:{POSTGRES_PASSWORD}@{POSTGRES_HOST}:{POSTGRES_PORT}/{POSTGRES_DB}"
+POSTGRES_URL = f"postgresql://{POSTGRES_USER}:{POSTGRES_PASSWORD}@{POSTGRES_HOST}:{POSTGRES_PORT}/{POSTGRES_DB}"
+POSTGRES_URL_LOCAL = f"postgresql://{POSTGRES_USER}:{POSTGRES_PASSWORD}@{LOCAL_HOST}:{POSTGRES_PORT}/{POSTGRES_DB}"
     
-else:
-    POSTGRES_URL = POSTGRES_URL
 
 # print(str(POSTGRES_URL))
 ############################################################################################
