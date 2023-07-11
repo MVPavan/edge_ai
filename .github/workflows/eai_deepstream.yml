@@ -1,4 +1,4 @@
-name: EAI CORE API
+name: EAI-DEEPSTREAM
 
 on:
   push:
@@ -17,7 +17,7 @@ permissions:
 
 jobs:
   
-  docker-publish:
+  docker-publish-deepstream:
     if: github.event_name == 'push' && github.ref == 'refs/heads/dev'
     runs-on: ubuntu-latest
     defaults:

@@ -1,4 +1,4 @@
-name: EAI CORE API
+name: EAI-CORE-API
 
 on:
   push:
@@ -16,7 +16,7 @@ permissions:
   packages: write
 
 jobs:
-  build:
+  build-core-api:
     runs-on: ubuntu-latest
     defaults:
       run:
@@ -58,8 +58,8 @@ jobs:
         pytest -v --trace
 
 
-  docker-publish:
-    needs: build
+  docker-publish-core-api:
+    needs: build-core-api
     if: github.event_name == 'push' && github.ref == 'refs/heads/dev'
     runs-on: ubuntu-latest
     defaults:
