@@ -1,10 +1,10 @@
-from eai_core_api.imports import (sys, Path, logging, TimedRotatingFileHandler)
+from imports import (sys, Path, logging, TimedRotatingFileHandler)
 
 
 class Logging:
     def __init__(self, log_file: Path = None, formatter: logging.Formatter = None):
         if log_file is None:
-            log_file = Path().cwd()/"logs/edgeai_core_api.log"
+            log_file = Path().cwd()/"logs/edglog"
         log_file.parent.mkdir(parents=True, exist_ok=True)
         assert not log_file.is_dir()
         self.log_file = log_file.as_posix()

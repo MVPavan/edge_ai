@@ -3,8 +3,8 @@ from dotenv import load_dotenv
 from pathlib import Path
 from starlette.datastructures import CommaSeparatedStrings, Secret
 
-API_V1_STR = "/edgeai/coreapi/v1"
-env_path = Path(__file__).parent / '.env.eai_core_api'
+API_V1_STR = "/edgeai/core_api/v1"
+env_path = Path(__file__).parent / 'docker/.env.eai_core_api'
 load_dotenv(env_path.as_posix())
 
 PROJECT_NAME = os.getenv("PROJECT_NAME", "EdgeAI Server")

@@ -1,9 +1,9 @@
-from eai_core_api.imports import (
+from imports import (
     SQLModel, create_engine, Session, text,
     logger
 )
 
-from eai_core_api.config import POSTGRES_URL, POSTGRES_URL_LOCAL
+from config import POSTGRES_URL, POSTGRES_URL_LOCAL
 
 
 def create_postgres_engine():

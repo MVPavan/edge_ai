@@ -12,3 +12,4 @@ gitignore_folder
 **/logs
 *.pytest_cache
 *.tests
+*tests*

@@ -1,4 +1,4 @@
-from eai_core_api.imports import (
+from imports import (
     SQLModel, Field, Relationship,
     datetime, Optional, uuid
 )

@@ -1,21 +1,21 @@
 
-from eai_core_api.imports import (
+from imports import (
     select, MetaData, SQLModel, TestClient
 )
 
-from eai_core_api.config import FASTAPI_PORT, API_V1_STR
+from config import FASTAPI_PORT, API_V1_STR
 
-from eai_core_api.backend.database.tables import (
+from backend.database.tables import (
     Organizations, Buildings, Cameras,
     AICategories, AIAnalytics, AIJobs
 )
-from eai_core_api.backend.database.manage import (
+from backend.database.manage import (
     create_db, get_pgdb_session
 )
 
-from eai_core_api.backend.database import tables as schemas
-from eai_core_api.backend.database import crud
-from eai_core_api.backend.fastapi_app import fastapi_app
+from backend.database import tables as schemas
+from backend.database import crud
+from backend.fastapi_app import fastapi_app
 
 from tests.tests_database import test_tables 
 

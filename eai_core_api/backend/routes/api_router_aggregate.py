@@ -1,4 +1,4 @@
-from eai_core_api.imports import APIRouter
+from imports import APIRouter
 from .ai_api_router import ai_router
 from .infra_api_router import infra_router
 
