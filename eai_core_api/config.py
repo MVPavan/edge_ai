@@ -4,6 +4,8 @@ from pathlib import Path
 from starlette.datastructures import CommaSeparatedStrings, Secret
 
 API_V1_STR = "/edgeai/core_api/v1"
+
+# Load env file
 env_path = Path(__file__).parent / 'docker/.env.eai_core_api'
 load_dotenv(env_path.as_posix())
 
