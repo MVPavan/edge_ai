@@ -5,7 +5,7 @@ services:
     build:
       context: ../
       dockerfile: docker/core_api.Dockerfile
-    image: egdeai_core_api:v2
+    image: egdeai_core_api:v1
     container_name: egdeai_core_api
     ports:
       - "8090:8090"

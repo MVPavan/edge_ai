@@ -1,12 +1,12 @@
-from imports import (
+from eai_core_api.imports import (
     select, MetaData, SQLModel
 )
 
-from backend.database.tables import (
+from eai_core_api.backend.database.tables import (
     Organizations, Buildings, Cameras,
     AICategories, AIAnalytics, AIJobs
 )
-from backend.database.manage import (
+from eai_core_api.backend.database.manage import (
     create_db, engine, get_pgdb_session
 )
 

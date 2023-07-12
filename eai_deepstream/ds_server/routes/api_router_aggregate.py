@@ -1,4 +1,4 @@
-from imports import APIRouter
+from eai_core_api.imports import APIRouter
 from .camera_router import cam_router
 from .pipeline_router import dsp_router
 

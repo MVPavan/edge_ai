@@ -1,4 +1,4 @@
-from imports import (dataclass, field)
+from eai_core_api.imports import (dataclass, field)
 from ds_utils.FPS import PERF_DATA
 
 @dataclass

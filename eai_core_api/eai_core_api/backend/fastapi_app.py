@@ -1,8 +1,8 @@
-from imports import (
+from eai_core_api.imports import (
     FastAPI, Request, RedirectResponse,
     RequestValidationError
 )
-from config import API_V1_STR
+from eai_core_api.config import API_V1_STR
 from .routes.api_router_aggregate import api_router
 from .exception_handlers import ExceptionHandlers
 from .database import manage
