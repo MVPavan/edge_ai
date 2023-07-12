@@ -5,12 +5,14 @@ services:
     build:
       context: ../
       dockerfile: docker/core_api.Dockerfile
-    image: egdeai_core_api:v1
-    container_name: egdeai_core_api
+    image: edgeai_core_api:v1
+    container_name: edgeai_core_api
     ports:
       - "8090:8090"
     networks:
       - edgeai_network
+    # stdin_open: true 
+    # tty: true
 
 networks:
   edgeai_network:

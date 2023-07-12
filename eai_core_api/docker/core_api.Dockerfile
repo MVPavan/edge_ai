@@ -11,7 +11,7 @@ ENV POETRY_NO_INTERACTION=1 \
     POETRY_VIRTUALENVS_CREATE=1 \
     POETRY_CACHE_DIR=/tmp/poetry_cache
 
-WORKDIR /core_api
+WORKDIR /eai_core_api
 COPY pyproject.toml poetry.lock ./
 RUN poetry install --with=prod --no-root && rm -rf $POETRY_CACHE_DIR
 
@@ -33,18 +33,18 @@ ENV \
     PIP_DISABLE_PIP_VERSION_CHECK=on \
     PIP_DEFAULT_TIMEOUT=100 
     
-# Set the working directory to /core_api
-WORKDIR /core_api
+# Set the working directory to /eai_core_api
+WORKDIR /eai_core_api
 
-ENV VIRTUAL_ENV=/core_api/.venv \
-    PATH="/core_api/.venv/bin:$PATH"
+ENV VIRTUAL_ENV=/eai_core_api/.venv \
+    PATH="/eai_core_api/.venv/bin:$PATH"
 
 COPY --from=builder ${VIRTUAL_ENV} ${VIRTUAL_ENV}
 
-# Copy the current directory contents into the container at /core_api
-ADD eai_core_api /core_api
+# Copy the current directory contents into the container at /eai_core_api
+COPY . /eai_core_api
 
-WORKDIR /core_api
+WORKDIR /eai_core_api
 
 # Run app.py when the container launches
 ENTRYPOINT ["python", "main.py"]

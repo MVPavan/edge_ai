@@ -59,20 +59,18 @@ jobs:
         poetry install --no-interaction --no-root
       if: steps.cache.outputs.cache-hit != 'true'
 
-    - name: Install Project
-      run: |
-        poetry install --no-interaction
-
     # - name: Code Quality
     #   run: poetry run black . --check
 
     - name: Run server
       run: |
-        poetry run python eai_core_api/main.py &
+        source $env.poetry_venv_path/bin/activate
+        python main.py
 
     - name: Pytest
-      run: |  
-        poetry run pytest
+      run: |
+        source $env.poetry_venv_path/bin/activate
+        pytest
 
 
   docker-publish-core-api:

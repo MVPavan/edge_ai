@@ -5,7 +5,7 @@ import json
 import asyncio
 import logging
 from logging.handlers import TimedRotatingFileHandler
-from eai_core_api.utils.logging import Logging, start_logging
+from utils.logging import Logging, start_logging
 
 logger = start_logging()
 
