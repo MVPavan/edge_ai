@@ -1,0 +1,21 @@
+version: '3'
+
+services:
+  edgeai_deepstream:
+    build:
+      context: ../
+      dockerfile: ds_docker/deepstream.Dockerfile
+    image: egdeai_deepstream:v1
+    container_name: egdeai_deepstream
+    runtime: nvidia
+    volumes:
+      - /tmp/.X11-unix:/tmp/.X11-unix
+    ports:
+      - "${DEEPSTREAM_FASTAPI_PORT}:8090"
+    networks:
+      - edgeai_network
+
+networks:
+  edgeai_network:
+    external: True
+    name: edgeai_network

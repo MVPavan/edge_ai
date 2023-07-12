@@ -1,0 +1,33 @@
+name: EAI_SHARED
+
+on:
+  release:
+    types: [published]
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v2
+
+      - name: Set up Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: 3.9
+
+      - name: Install Poetry
+        run: |
+          curl -sSL https://install.python-poetry.org | python3 -
+
+      - name: Install project dependencies
+        run: poetry install
+
+      - name: Configure Poetry for GitHub Packages
+        run: |
+          poetry config repositories.github https://npm.pkg.github.com/<your-github-username>
+          poetry config http-basic.github ${{ github.actor }} ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build and publish
+        run: poetry publish --build --repository github

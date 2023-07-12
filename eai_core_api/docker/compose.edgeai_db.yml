@@ -113,20 +113,6 @@ services:
         - KAFKA_CLUSTERS_0_NAME=Local
         - KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS=edgeai_kafka:9092
 
-    akhq:
-        image: tchiotludo/akhq
-        environment:
-            AKHQ_CONFIGURATION: |
-                akhq:
-                    connections:
-                        docker-kafka-server:
-                            properties:
-                                bootstrap.servers:"edgeai_kafka:9092"
-        ports:
-            - 8880:8080
-        networks:
-            - edgeai_network
-
         
 # volumes:
 #     redis_data:
