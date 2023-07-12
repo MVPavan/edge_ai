@@ -1,9 +1,11 @@
 import os
 from dotenv import load_dotenv
+from pathlib import Path
 from starlette.datastructures import CommaSeparatedStrings, Secret
 
 API_V1_STR = "/edgeai/coreapi/v1"
-load_dotenv("./.env.eai_core_api")
+env_path = Path(__file__).parent / '.env.eai_core_api'
+load_dotenv(env_path.as_posix())
 
 PROJECT_NAME = os.getenv("PROJECT_NAME", "EdgeAI Server")
 # ALLOWED_HOSTS = CommaSeparatedStrings(os.getenv("ALLOWED_HOSTS", ""))
