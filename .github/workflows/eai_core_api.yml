@@ -84,10 +84,6 @@ jobs:
     
     runs-on: self-hosted
     
-    defaults:
-      run:
-        working-directory: eai_core_api
-
     steps:
 
     - name: Checkout
@@ -104,8 +100,8 @@ jobs:
     - name: Build and push the Docker image
       uses: docker/build-push-action@v4 
       with:
-        context: .
-        file: ./docker/core_api.Dockerfile
+        context: ./eai_core_api
+        file: ./eai_core_api/docker/core_api.Dockerfile
         push: true
         tags: localhost:5000/${{ env.image_name }}:${{ env.image_version}}
         cache-from: type=local,src=/tmp/.buildx-cache
