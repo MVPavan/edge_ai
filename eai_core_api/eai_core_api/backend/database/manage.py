@@ -17,12 +17,13 @@ def create_postgres_engine():
     try:
         engine = get_engine(POSTGRES_URL)
     except Exception as e:
-        logger.error(f"Error Connecting Postgres DB usign {POSTGRES_URL}")
+        logger.error(f"Error Connecting Postgres DB using {POSTGRES_URL}")
 
         try:
             engine = get_engine(POSTGRES_URL_LOCAL)
         except Exception as e:
-            logger.error(f"Error Connecting Postgres DB usign {POSTGRES_URL_LOCAL} ")
+            logger.error(f"Error Connecting Postgres DB using {POSTGRES_URL_LOCAL} ")
+            print("error: ", e)
             exit()
     return engine
 
