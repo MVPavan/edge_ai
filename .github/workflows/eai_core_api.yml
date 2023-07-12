@@ -15,14 +15,16 @@ permissions:
   contents: read
   packages: write
 
+env:
+  image_name: "eai_core_api"
+  image_version: "v1.0.0"
+
 jobs:
   build-core-api:
     runs-on: ubuntu-latest
     defaults:
       run:
         working-directory: eai_core_api
-    env:
-      poetry_venv_path: ~/.virtualenvs
 
     steps:
     - uses: actions/checkout@v3
@@ -38,14 +40,6 @@ jobs:
       with:
         python-version: "3.9"
 
-
-    # - uses: snok/install-poetry@v1
-    #   with:
-    #     version: 1.5.1
-    #     virtualenvs-create: true
-    #     virtualenvs-in-project: false
-    #     virtualenvs-path: $env.poetry_venv_path
-
     - name: Install Poetry
       run: |
         curl -sSL https://install.python-poetry.org | python3 - --version 1.5.1
@@ -55,12 +49,11 @@ jobs:
         poetry config virtualenvs.create true
         poetry config virtualenvs.in-project true
 
-        
     - name: Cache Poetry virtualenv
       uses: actions/cache@v1
       id: cache
       with:
-        path: $env.poetry_venv_path
+        path: ./.venv
         key: poetry-${{ hashFiles('**/poetry.lock') }}
         restore-keys: |
           poetry-${{ hashFiles('**/poetry.lock') }}
@@ -84,10 +77,13 @@ jobs:
         pytest
 
 
-  docker-publish-core-api:
+  docker-publish-core-api-local:
+
     needs: build-core-api
     if: github.event_name == 'push' && github.ref == 'refs/heads/dev'
-    runs-on: ubuntu-latest
+    
+    runs-on: self-hosted
+    
     defaults:
       run:
         working-directory: eai_core_api
@@ -95,18 +91,38 @@ jobs:
     steps:
     - uses: actions/checkout@v3
       
-    - name: Build the Docker image
-      run: |
-        repo_name=$(echo "${{ github.repository }}" | tr '[:upper:]' '[:lower:]')
-        docker build . --file docker/core_api.Dockerfile --tag ghcr.io/$repo_name/eai_core_api:v1.0.0
-
-    - name: Log in to GitHub Container Registry
-      run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
-
-    - name: Push Docker image
-      run: |
-        repo_name=$(echo "${{ github.repository }}" | tr '[:upper:]' '[:lower:]')
-        docker push ghcr.io/$repo_name/eai_core_api:v1.0.0
-      # docker push ghcr.io/$repo_name/eai_core_api:$(date +%s)
+    - name: Build and push the Docker image
+      uses: docker/build-push-action@v2
+      with:
+        context: .
+        push: true
+        tags: host.docker.internal:5000/${{ env.image_name }}:${{ env.image_version}}
 
 
+  # docker-publish-core-api:
+  #   needs: build-core-api
+  #   if: github.event_name == 'push' && github.ref == 'refs/heads/dev'
+  #   runs-on: ubuntu-latest
+  #   defaults:
+  #     run:
+  #       working-directory: eai_core_api
+
+  #   steps:
+  #   - uses: actions/checkout@v3
+      
+  #   - name: Build the Docker image
+  #     run: |
+  #       repo_name=$(echo "${{ github.repository }}" | tr '[:upper:]' '[:lower:]')
+  #       docker build . --file docker/core_api.Dockerfile \
+  #         --tag ghcr.io/$repo_name/${{ env.image_name }}:${{ env.image_version}}
+  #   - name: Log in to GitHub Container Registry
+  #     run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
+
+  #   - name: Push Docker image
+  #     run: |
+  #       repo_name=$(echo "${{ github.repository }}" | tr '[:upper:]' '[:lower:]')
+  #       docker push ghcr.io/$repo_name/eai_core_api:v1.0.0
+  #     # docker push ghcr.io/$repo_name/eai_core_api:$(date +%s)
+
+  
+  
