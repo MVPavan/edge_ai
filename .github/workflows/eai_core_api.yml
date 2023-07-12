@@ -20,61 +20,61 @@ env:
   image_version: "v1.0.0"
 
 jobs:
-  build-core-api:
-    runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: eai_core_api
+  # build-core-api:
+  #   runs-on: ubuntu-latest
+  #   defaults:
+  #     run:
+  #       working-directory: eai_core_api
 
-    steps:
-    - uses: actions/checkout@v3
+  #   steps:
+  #   - uses: actions/checkout@v3
 
-    - name: Set up Docker Compose
-      uses: isbang/compose-action@v1.4.1
-      with:
-        compose-file: |
-          ./eai_core_api/docker/compose.edgeai_db.yml
+  #   - name: Set up Docker Compose
+  #     uses: isbang/compose-action@v1.4.1
+  #     with:
+  #       compose-file: |
+  #         ./eai_core_api/docker/compose.edgeai_db.yml
 
-    - name: Set up Python 3.9
-      uses: actions/setup-python@v3
-      with:
-        python-version: "3.9"
+  #   - name: Set up Python 3.9
+  #     uses: actions/setup-python@v3
+  #     with:
+  #       python-version: "3.9"
 
-    - name: Install Poetry
-      run: |
-        curl -sSL https://install.python-poetry.org | python3 - --version 1.5.1
+  #   - name: Install Poetry
+  #     run: |
+  #       curl -sSL https://install.python-poetry.org | python3 - --version 1.5.1
     
-    - name: Configure Poetry
-      run: |
-        poetry config virtualenvs.create true
-        poetry config virtualenvs.in-project true
+  #   - name: Configure Poetry
+  #     run: |
+  #       poetry config virtualenvs.create true
+  #       poetry config virtualenvs.in-project true
 
-    - name: Cache Poetry virtualenv
-      uses: actions/cache@v1
-      id: cache
-      with:
-        path: ./.venv
-        key: poetry-${{ hashFiles('**/poetry.lock') }}
-        restore-keys: |
-          poetry-${{ hashFiles('**/poetry.lock') }}
+  #   - name: Cache Poetry virtualenv
+  #     uses: actions/cache@v1
+  #     id: cache
+  #     with:
+  #       path: ./.venv
+  #       key: poetry-${{ hashFiles('**/poetry.lock') }}
+  #       restore-keys: |
+  #         poetry-${{ hashFiles('**/poetry.lock') }}
 
-    - name: Install dependencies
-      run: |
-        poetry install --no-interaction --no-root
-      if: steps.cache.outputs.cache-hit != 'true'
+  #   - name: Install dependencies
+  #     run: |
+  #       poetry install --no-interaction --no-root
+  #     if: steps.cache.outputs.cache-hit != 'true'
 
-    # - name: Code Quality
-    #   run: poetry run black . --check
+  #   # - name: Code Quality
+  #   #   run: poetry run black . --check
 
-    - name: Run server
-      run: |
-        source ./.venv/bin/activate
-        python main.py &
+  #   - name: Run server
+  #     run: |
+  #       source ./.venv/bin/activate
+  #       python main.py &
 
-    - name: Pytest
-      run: |
-        source ./.venv/bin/activate
-        pytest
+  #   - name: Pytest
+  #     run: |
+  #       source ./.venv/bin/activate
+  #       pytest
 
 
   docker-publish-core-api-local:
