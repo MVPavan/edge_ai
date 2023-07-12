@@ -50,9 +50,13 @@ jobs:
 
     - name: Install dependencies
       run: |
-        poetry install
+        poetry install --no-interaction --no-root
       if: steps.cache.outputs.cache-hit != 'true'
-  
+
+    - name: Install Project
+      run: |
+        poetry install --no-interaction
+
     # - name: Code Quality
     #   run: poetry run black . --check
 
@@ -64,8 +68,7 @@ jobs:
 
     - name: Run server
       run: |
-        cd eai_core_api
-        python main.py
+        poetry run python eai_core_api/main.py
 
     - name: Pytest
       run: |  
