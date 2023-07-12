@@ -23,7 +23,6 @@ jobs:
         working-directory: eai_core_api
     env:
       poetry_venv_path: ~/.virtualenvs
-      poetry_venv_name: core_api_env
 
     steps:
     - uses: actions/checkout@v3
@@ -54,9 +53,7 @@ jobs:
     - name: Configure Poetry
       run: |
         poetry config virtualenvs.create true
-        poetry config virtualenvs.in-project false
-        poetry config virtualenvs.name ${{env.poetry_venv_name}}
-        poetry config virtualenvs.path ${{env.poetry_venv_path}}
+        poetry config virtualenvs.in-project true
 
         
     - name: Cache Poetry virtualenv
@@ -78,12 +75,12 @@ jobs:
 
     - name: Run server
       run: |
-        source ${{env.poetry_venv_path}}/${{env.poetry_venv_name}}/bin/activate
+        source ./.venv/bin/activate
         python main.py &
 
     - name: Pytest
       run: |
-        source ${{env.poetry_venv_path}}/${{env.poetry_venv_name}}/bin/activate
+        source ./.venv/bin/activate
         pytest
 
 
