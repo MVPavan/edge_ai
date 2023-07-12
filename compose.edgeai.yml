@@ -1,0 +1,17 @@
+version: '3'
+
+services:
+  eai_core_api:
+    image: localhost:5000/eai_core_api:v1.0.0
+    container_name: eai_core_api
+    ports:
+      - "8090:8090"
+    networks:
+      - edgeai_network
+    # stdin_open: true 
+    # tty: true
+
+networks:
+  edgeai_network:
+    external: True
+    name: edgeai_network
