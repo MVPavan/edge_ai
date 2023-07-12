@@ -2,7 +2,7 @@
 # These constants are used by the DeepStream server and the DeepStream pipeline scripts
 # keep them seperate to avoid circular imports
 
-from imports import (
+from eai_core_api.imports import (
     BaseModel,
     Callable, Optional, Union, Dict,
     DictConfig,

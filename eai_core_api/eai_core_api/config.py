@@ -3,7 +3,7 @@ from dotenv import load_dotenv
 from starlette.datastructures import CommaSeparatedStrings, Secret
 
 API_V1_STR = "/edgeai/coreapi/v1"
-load_dotenv("./docker/.env.eai_core_api")
+load_dotenv("./.env.eai_core_api")
 
 PROJECT_NAME = os.getenv("PROJECT_NAME", "EdgeAI Server")
 # ALLOWED_HOSTS = CommaSeparatedStrings(os.getenv("ALLOWED_HOSTS", ""))

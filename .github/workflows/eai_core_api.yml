@@ -27,12 +27,6 @@ jobs:
     steps:
     - uses: actions/checkout@v3
     
-    - name: Set up Docker Compose
-      uses: isbang/compose-action@v1.4.1
-      with:
-        compose-file: |
-          ./eai_core_api/docker/compose.edgeai_db.yml
-
     - name: Set up Python 3.9
       uses: actions/setup-python@v3
       with:
@@ -58,14 +52,23 @@ jobs:
       run: |
         poetry install
         if: steps.cache.outputs.cache-hit != 'true'
-    
+  
     - name: Code Quality
       run: poetry run black . --check
-    
-    - name: Run server and test with pytest
+
+    - name: Set up Docker Compose
+      uses: isbang/compose-action@v1.4.1
+      with:
+        compose-file: |
+          ./eai_core_api/docker/compose.edgeai_db.yml
+
+    - name: Run server
       run: |
-        poetry run python3 main.py &
-        sleep 5
+        cd eai_core_api
+        poetry run python3 main.py
+
+    - name: Pytest
+      run: |  
         poetry run pytest
 
 

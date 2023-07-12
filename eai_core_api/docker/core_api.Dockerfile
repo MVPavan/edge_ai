@@ -42,7 +42,7 @@ ENV VIRTUAL_ENV=/core_api/.venv \
 COPY --from=builder ${VIRTUAL_ENV} ${VIRTUAL_ENV}
 
 # Copy the current directory contents into the container at /core_api
-COPY . /core_api
+ADD eai_core_api /core_api
 
 WORKDIR /core_api
 

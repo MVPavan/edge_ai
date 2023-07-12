@@ -1,4 +1,4 @@
-from imports import Session
+from eai_core_api.imports import Session
 from .tables import (
     Organizations, OrganizationsCreate,
     Buildings, BuildingsCreate,

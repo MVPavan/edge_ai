@@ -1,10 +1,10 @@
 [tool.poetry]
-name = "eai-core-api"
+name = "eai_core_api"
 version = "0.1.0"
 description = ""
 authors = ["mvpavan <mvpavan42@gmail.com>"]
 readme = "README.md"
-packages = [{include = "./src"}]
+packages = [{include = "eai_core_api"}]
 
 [tool.poetry.dependencies]
 python = "^3.9"
