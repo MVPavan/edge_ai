@@ -1,4 +1,4 @@
-from imports import (
+from eai_core_api.imports import (
     io, time, urljoin, pathname2url, 
     Path, wraps, logger, DictConfig, OmegaConf
 )

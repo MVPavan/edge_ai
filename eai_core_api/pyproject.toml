@@ -1,0 +1,31 @@
+[tool.poetry]
+name = "eai_core_api"
+version = "0.1.0"
+description = ""
+authors = ["mvpavan <mvpavan42@gmail.com>"]
+readme = "README.md"
+packages = [{include = "eai_core_api"}]
+
+[tool.poetry.dependencies]
+python = "^3.9"
+black = "^23.7.0"
+
+
+[tool.poetry.group.prod.dependencies]
+httpx = "^0.24.1"
+fastapi = "^0.99.1"
+uvicorn = "^0.22.0"
+omegaconf = "^2.3.0"
+sqlmodel = "^0.0.8"
+python-dotenv = "^1.0.0"
+psycopg2-binary = "^2.9.6"
+requests = "^2.31.0"
+
+
+[tool.poetry.group.test.dependencies]
+pytest = "^7.4.0"
+pytest-sugar = "^0.9.7"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
