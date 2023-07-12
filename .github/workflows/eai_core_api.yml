@@ -26,7 +26,13 @@ jobs:
 
     steps:
     - uses: actions/checkout@v3
-    
+
+    - name: Set up Docker Compose
+      uses: isbang/compose-action@v1.4.1
+      with:
+        compose-file: |
+          ./eai_core_api/docker/compose.edgeai_db.yml
+
     - name: Set up Python 3.9
       uses: actions/setup-python@v3
       with:
@@ -59,12 +65,6 @@ jobs:
 
     # - name: Code Quality
     #   run: poetry run black . --check
-
-    - name: Set up Docker Compose
-      uses: isbang/compose-action@v1.4.1
-      with:
-        compose-file: |
-          ./eai_core_api/docker/compose.edgeai_db.yml
 
     - name: Run server
       run: |
