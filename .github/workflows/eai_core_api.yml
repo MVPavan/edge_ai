@@ -64,12 +64,12 @@ jobs:
 
     - name: Run server
       run: |
-        source $env.poetry_venv_path/bin/activate
+        source ${{env.poetry_venv_path}}/bin/activate
         python main.py
 
     - name: Pytest
       run: |
-        source $env.poetry_venv_path/bin/activate
+        source ${{env.poetry_venv_path}}/bin/activate
         pytest
 
 
