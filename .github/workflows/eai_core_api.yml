@@ -65,7 +65,7 @@ jobs:
     - name: Run server
       run: |
         cd eai_core_api
-        poetry run python main.py
+        python main.py
 
     - name: Pytest
       run: |  
