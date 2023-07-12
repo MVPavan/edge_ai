@@ -1,0 +1,17 @@
+[tool.poetry]
+name = "MVPavan/eai-shared"
+version = "0.1.0"
+description = ""
+authors = ["mvpavan <mvpavan42@gmail.com>"]
+readme = "README.md"
+packages = [{include = "eai_shared"}]
+
+[tool.poetry.dependencies]
+python = "^3.9"
+black = "^23.7.0"
+pydantic = "^2.0.2"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
