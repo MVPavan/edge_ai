@@ -51,8 +51,8 @@ jobs:
       with:
         version: 1.5.1
         virtualenvs-create: true
-        virtualenvs-in-project: false
-        virtualenvs-path: $env.poetry_venv_path
+        virtualenvs-in-project: true
+        # virtualenvs-path: $env.poetry_venv_path
 
     - name: Install dependencies
       run: |
@@ -64,12 +64,12 @@ jobs:
 
     - name: Run server
       run: |
-        source ${{env.poetry_venv_path}}/bin/activate
+        source .venv/bin/activate
         python main.py
 
     - name: Pytest
       run: |
-        source ${{env.poetry_venv_path}}/bin/activate
+        source .venv/bin/activate
         pytest
 
 
