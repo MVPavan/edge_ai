@@ -44,7 +44,7 @@ jobs:
       uses: docker/build-push-action@v4 
       with:
         context: ./eai_deepstream
-        file: ./eai_deepstream/docker/core_api.Dockerfile
+        file: ./eai_deepstream/docker/deepstream.Dockerfile
         push: true
         tags: localhost:5000/${{ env.image_name }}:${{ env.image_version}}
         cache-from: type=local,src=/tmp/.buildx-cache

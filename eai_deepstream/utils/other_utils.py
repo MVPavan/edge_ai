@@ -1,4 +1,4 @@
-from eai_core_api.imports import (
+from imports import (
     io, time, urljoin, pathname2url, 
     Path, wraps, logger, DictConfig, OmegaConf
 )
@@ -28,7 +28,6 @@ def get_label_names_from_file(filepath):
     labels = [elm[:-1] for elm in labels]
     f.close()
     return labels
-
 
 def path_to_uri(uri_str:str):
     file_path = Path(uri_str)
