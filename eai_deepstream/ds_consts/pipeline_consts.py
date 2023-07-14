@@ -1,5 +1,5 @@
 
-from eai_core_api.imports import (
+from imports import (
     BaseModel,
     Callable, Optional, Union, Dict,
     DictConfig, validator

@@ -18,7 +18,7 @@
 import time
 from threading import Lock
 
-from eai_core_api.imports import logger
+from imports import logger
 fps_mutex = Lock()
 
 class GETFPS:

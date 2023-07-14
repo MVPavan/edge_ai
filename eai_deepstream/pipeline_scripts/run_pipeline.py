@@ -1,4 +1,4 @@
-from eai_core_api.imports import (os, Gst, GLib, Path)
+from imports import (os, Gst, GLib, Path)
 
 
 from ds_utils.bus_call import bus_call
