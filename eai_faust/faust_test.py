@@ -1,8 +1,13 @@
 from typing import List, Optional
 import json
 import faust
+from faust import Worker
+import asyncio
 
-app = faust.App('my-app', broker='kafka://localhost:8097')
+app = faust.App(
+    'my-app', 
+    broker='kafka://localhost:8097',
+)
 
 class BoundingBox(faust.Record, serializer='json'):
     x: int
@@ -64,5 +69,26 @@ async def process_messages(messages):
         result_object = construct_result_object(message, yolox_object_list)
         await sink_topic.send(value=result_object)
 
+# if __name__ == '__main__':
+#     app.main()
+
+def start_faust_app():
+    worker = app.Worker(loglevel=20)
+    worker.execute_from_commandline()
+
 if __name__ == '__main__':
-    app.main()
+    start_faust_app()
+
+
+async def start_worker(worker: Worker) -> None:
+    await worker.start()
+
+def manage_loop():
+    loop = asyncio.get_event_loop()
+    worker = Worker(app, loop=loop)
+    try:
+        loop.run_until_complete(start_worker(worker))
+    finally:
+        worker.stop_and_shutdown_loop()
+
+
