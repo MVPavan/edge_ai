@@ -14,7 +14,7 @@ from pydantic import validator, BaseModel as BM, Field
 
 class BaseModel(BM):
     class Config:
-        orm_mode = True
+        from_attributes = True
         validate_assignment = True
         arbitrary_types_allowed = True
 

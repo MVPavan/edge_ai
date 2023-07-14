@@ -1,4 +1,4 @@
-from eai_core_api.imports import Path
+from imports import Path
 
 make_dir = lambda folder_path: folder_path.mkdir(parents=True, exist_ok=True)
 configs_folder = Path(__file__).parent

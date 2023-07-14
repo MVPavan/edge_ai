@@ -1,4 +1,4 @@
-from eai_core_api.imports import (sys, Path, logging, TimedRotatingFileHandler)
+from imports import (sys, Path, logging, TimedRotatingFileHandler)
 
 
 class Logging:

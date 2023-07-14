@@ -1,4 +1,4 @@
-from eai_core_api.imports import Gst
+from imports import Gst
 
 from utils.ds_vars import DsResultVars
 
