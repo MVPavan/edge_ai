@@ -1,4 +1,4 @@
-from eai_core_api.imports import (
+from imports import (
     Optional, Union, Type
 )
 from .pipelines.od_single_head import ODSingleHead
