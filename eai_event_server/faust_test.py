@@ -1,8 +1,7 @@
-from typing import List, Optional
-import json
-import faust
-from faust import Worker
-import asyncio
+from imports import (
+    List, Optional,
+    faust, Worker, asyncio
+)
 
 app = faust.App(
     'my-app', 
@@ -90,5 +89,6 @@ def manage_loop():
         loop.run_until_complete(start_worker(worker))
     finally:
         worker.stop_and_shutdown_loop()
+        print("done")
 
 
