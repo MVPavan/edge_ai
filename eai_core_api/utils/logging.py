@@ -1,8 +1,11 @@
-from imports import (sys, Path, logging, TimedRotatingFileHandler)
-
+from imports import (sys, Path, logging, TimedRotatingFileHandler,Optional)
 
 class Logging:
-    def __init__(self, log_file: Path = None, formatter: logging.Formatter = None):
+    def __init__(
+            self, 
+            log_file: Optional[Path] = None, 
+            formatter: Optional[logging.Formatter] = None
+        ):
         if log_file is None:
             log_file = Path().cwd()/"logs/edglog"
         log_file.parent.mkdir(parents=True, exist_ok=True)

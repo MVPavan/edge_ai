@@ -88,7 +88,7 @@ def manage_loop():
     try:
         loop.run_until_complete(start_worker(worker))
     finally:
-        worker.stop_and_shutdown_loop()
+        # worker.stop_and_shutdown_loop()
         print("done")
 
 
