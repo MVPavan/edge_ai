@@ -1,5 +1,5 @@
 from imports import (
-    sys, json, date, tqdm, socket, logger,
+    sys, time, date, tqdm, socket, logger,
     BaseModel, Faker, 
     AdminClient, NewTopic, Producer,
 )
@@ -33,16 +33,28 @@ conf = {
 
 admin_client = AdminClient(conf)
 
-def delete_topic(topic_name):
+def delete_topic(topic_name, sleep=5):
+    # Call delete_topics to asynchronously delete topics, a future is returned.
+
+    # check if topic exists
+    topic_metadata = admin_client.list_topics(timeout=5)
+    if topic_name not in set(t.topic for t in iter(topic_metadata.topics.values())):
+        print("Topic {} does not exist".format(topic_name))
+        return
+
     fs = admin_client.delete_topics([topic_name])
     # Check deletion result
     for topic, f in fs.items():
         try:
             f.result()  # The result itself is None
-            print("Topic {} deleted".format(topic))
+            print("Topic {} requestion for deletion".format(topic))
         except Exception as e:
             print("Failed to delete topic {}: {}".format(topic, e))
-
+    
+    if sleep:
+        time.sleep(sleep)
+    return
+    
 
 def create_topic(topic_name, num_partitions=10, replication_factor=1):
     new_topics = [NewTopic(topic_name, num_partitions, replication_factor)]
@@ -77,7 +89,10 @@ def faker_datagen():
 
 from concurrent.futures import ThreadPoolExecutor, ProcessPoolExecutor
 import concurrent.futures
-def faker_datagen_concurrent(total_generators=10, max_workers=10):
+def faker_datagen_concurrent(topic_name=None,total_generators=10, max_workers=10):
+    if topic_name:
+        delete_topic(topic_name, sleep=5)
+        create_topic(topic_name)
     # Create a ThreadPoolExecutor
     with ProcessPoolExecutor(max_workers=max_workers) as executor:
         # Submit faker_datagen function to the executor
@@ -91,6 +106,6 @@ def faker_datagen_concurrent(total_generators=10, max_workers=10):
 
 
 if __name__ == "__main__":
-    faker_datagen_concurrent(total_generators=30, max_workers=30)
+    faker_datagen_concurrent(topic_name="test_kafka_topic", total_generators=30, max_workers=30)
     # faker_datagen()
     sys.exit()
