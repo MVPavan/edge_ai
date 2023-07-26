@@ -1,9 +1,10 @@
 from imports import (
-    BaseModel
+    BaseModel, Path, CWD
 )
 
+
 class FaustAppVars(BaseModel):
-    app_name: str
+    faust_app_id: str
     broker: str
     # worker_port: int
     # worker: Worker = None

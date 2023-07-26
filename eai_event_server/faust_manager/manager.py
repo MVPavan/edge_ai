@@ -4,8 +4,7 @@ from imports import (
     subprocess, signal, time, logger,
     Optional, BaseModel
 )
-
-
+from faust_scripts.faust_vars import FaustAppVars
 
 class FaustManager:
     FAUST_WORKER_PORT = 6300
