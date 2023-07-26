@@ -3,9 +3,10 @@
 import os, sys, io
 import time
 from pathlib import Path
+CWD = Path.cwd().resolve()
 import socket
 import json
-from datetime import date
+from datetime import date, datetime, timedelta
 from tqdm import tqdm
 import subprocess
 import signal
@@ -36,7 +37,7 @@ from faust.serializers import codecs
 
 import logging
 from logging.handlers import TimedRotatingFileHandler
-from utils.logging import Logging, start_logging
-logger = start_logging()
+from utils.logging import Logging, get_logger, get_logger_with_file
+logger = get_logger()
 
 # Local Imports
