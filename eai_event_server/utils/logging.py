@@ -8,7 +8,7 @@ class Logging:
             formatter: Optional[logging.Formatter] = None
         ):
         if log_file is None:
-            log_file = Path().cwd()/"logs/edgeai_deepstream.log"
+            log_file = Path().cwd()/"logs/edgeai_event_server.log"
         log_file.parent.mkdir(parents=True, exist_ok=True)
         payloads_folder = log_file.parent/"payloads"
         payloads_folder.mkdir(parents=True, exist_ok=True)
@@ -45,5 +45,5 @@ class Logging:
 def start_logging():
     logger = Logging().get_logger()
     logger.info(5 * "\n")
-    logger.info("Starting Deepstream .............")
+    logger.info("Starting Event Server .............")
     return logger
