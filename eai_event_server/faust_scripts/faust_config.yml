@@ -1,0 +1,2 @@
+faust_app_id: pipeline_id
+broker: kafka://localhost:8097

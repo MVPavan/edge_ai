@@ -13,6 +13,7 @@ import signal
 from functools import partial, wraps
 from typing import Callable, Optional, Dict, Union, Type, List
 from pydantic import validator, BaseModel as BM, Field
+from omegaconf import OmegaConf
 
 class BaseModel(BM):
     class Config:

@@ -15,6 +15,7 @@ faust-streaming = "^0.10.14"
 asyncio = "^3.4.3"
 pydantic = "^2.0.3"
 confluent-kafka = "^2.2.0"
+omegaconf = "^2.3.0"
 
 
 [tool.poetry.group.dev.dependencies]

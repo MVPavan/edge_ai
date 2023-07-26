@@ -1,12 +1,18 @@
 from imports import (
-    date, logger,
-    asyncio, faust, Worker, codecs
+    date, logger, Path,
+    asyncio, faust, Worker, codecs,
+    OmegaConf
 )
 
+from faust_scripts.faust_vars import FaustAppVars
 
-class FaustAppBase(faust.App):
-    def __init__(self, app_name:str, broker:str,):
-        super().__init__(
-            app_name, 
-            broker=broker,
+class FaustAppBase:
+    def __init__(self,):
+        app_config_file = Path(__file__).resolve().parent/"faust_config.yml" 
+        app_config = OmegaConf.load(app_config_file.as_posix())
+        self.app = faust.App(
+            app_config.faust_app_id,
+            broker=app_config.broker,
         )
+    
+    
