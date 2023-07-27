@@ -4,7 +4,7 @@ from imports import (
     subprocess, signal, time, logger,
     Optional, BaseModel
 )
-from faust_scripts.faust_vars import FaustAppVars
+from faust_scripts.faust_vars import FaustAppCreateVars
 
 class FaustManager:
     FAUST_WORKER_PORT = 6300
@@ -15,7 +15,7 @@ class FaustManager:
     def __start_worker(self, app_name:str):
         worker = subprocess.Popen(
             ["faust", "-A", app_name, "worker", "-l", "info", "--web-port", str(self.FAUST_WORKER_PORT)],
-            start_new_session=True
+            # start_new_session=True # Enable it if you want to the worker to run even if event server is stopped
         )
 
         logger.info(f"Started worker at port:{self.FAUST_WORKER_PORT} with PID {worker.pid}")
