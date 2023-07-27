@@ -105,7 +105,7 @@ def faker_datagen_concurrent(topic_name=None,total_generators=10, max_workers=10
                 print(f"Exception occurred: {e}")
 
 
-if __name__ == "__main__":
+def populate_kafka():
     faker_datagen_concurrent(topic_name="test_kafka_topic", total_generators=30, max_workers=30)
     # faker_datagen()
     sys.exit()

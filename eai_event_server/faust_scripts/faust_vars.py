@@ -1,15 +1,15 @@
 from imports import (
-    BaseModel, Path, CWD
+    BaseModel, Path, CWD,
+    Optional, List,
+    faust
 )
 
-
-class FaustAppVars(BaseModel):
+class FaustAppCreateVars(BaseModel):
     faust_app_id: str
     broker: str
-    # worker_port: int
-    # worker: Worker = None
-    # worker_pid: int = None
-    # worker_log: str = None
-    # worker_log_file: str = None
-    # worker_log_file_handle: str = None
-    # worker_log_file_path: str = None
+    pipeline_topic_id: str
+
+class FaustAppVars(FaustAppCreateVars):
+    pipeline_topic: faust.Topic
+    sink_topic: Optional[faust.Topic] = None
+

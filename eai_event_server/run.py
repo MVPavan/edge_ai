@@ -1,5 +1,5 @@
 from imports import time, datetime, logger
-from faust_manager.manager import FaustManager, FaustAppVars
+from faust_manager.manager import FaustManager, FaustAppCreateVars
 from faust_scripts.faust_config import FaustConfig
 
 logger.info('\n'*5+f"Event server started at {datetime.now()}")
@@ -16,26 +16,27 @@ def run_worker_spawner(app_name, pipeline_id):
 
 def repeat_spawner(repeat=1):
     for i in range(repeat):
-        app_vars = FaustAppVars(
+        app_vars = FaustAppCreateVars(
             faust_app_id="pipeline_1",
-            broker="kafka://localhost:8097"
+            broker="kafka://localhost:8097",
+            pipeline_topic_id="test_kafka_topic"
         )
-        FaustConfig().create_faust_config(faust_vars=app_vars)
+        FaustConfig.create_faust_config(faust_vars=app_vars)
         run_worker_spawner(
             app_name="faust_app",
             pipeline_id=app_vars.faust_app_id
         )
 
-        app_vars = FaustAppVars(
-            faust_app_id="pipeline_2",
-            broker="kafka://localhost:8097"
-        )
-        FaustConfig().create_faust_config(faust_vars=app_vars)
-        run_worker_spawner(
-            app_name="faust_app",
-            pipeline_id=app_vars.faust_app_id
-        )
-
+        # app_vars = FaustAppVars(
+        #     faust_app_id="pipeline_2",
+        #     broker="kafka://localhost:8097"
+        # )
+        # FaustConfig().create_faust_config(faust_vars=app_vars)
+        # run_worker_spawner(
+        #     app_name="faust_app",
+        #     pipeline_id=app_vars.faust_app_id
+        # )
+        time.sleep(300)
         manager.stop_all_workers()
 
 if __name__ == "__main__":
