@@ -12,7 +12,8 @@ import subprocess
 import signal
 
 from functools import partial, wraps
-from typing import Callable, Optional, Dict, Union, Type, List
+from typing import Callable, Optional, Dict, Union, Type, List, cast
+from mode.utils.typing import Counter, Deque
 from pydantic import validator, BaseModel as BM, Field
 from omegaconf import OmegaConf
 
@@ -32,6 +33,8 @@ import asyncio
 import faust
 from faust import Worker, Record
 from faust.serializers import codecs
+from faust.types import TP
+from http import HTTPStatus
 
 # Logging imports
 
