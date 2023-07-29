@@ -28,59 +28,33 @@ class FakeProfileParser:
 
     def add_faust_worker_todo(self):
         assert self.app_vars.pipeline_topic is not None, \
-            f"{worker_details(self.app)}pipeline_topic is None"
+            f"{worker_details(self.app)} pipeline_topic is None"
         
-        # self.app.agent(channel=self.app_vars.pipeline_topic)(self.process_messages)
-        self.app.agent(channel=self.app_vars.pipeline_topic, sink=[self.parser_sink])(self.process_messages)
+        self.app.agent(channel=self.app_vars.pipeline_topic, sink=[self.parser_sink], concurrency=5)(self.process_messages)
         self.app.timer(interval=10)(self.periodic_sender)
         
-        self.channel_1 = self.app.channel(value_type=Data)
-        self.app.agent(channel=self.channel_1)(self.faker_agents.fake_agent_1)
-        
-        # self.channel_2 = self.app.channel(value_type=Data)
-        # self.channel_3 = self.app.channel(value_type=Data)
-        # self.app.agent(channel=self.channel_2)(self.faker_agents.fake_agent_2)
-        # self.app.agent(channel=self.channel_3)(self.faker_agents.fake_agent_3)
-
-        # self.channel_t = self.app.channel(value_type=Data)
-        # self.app.agent(channel=self.channel_t)(self.test)
 
     def setup_variables(self):
         self.event_count = 0
 
-    async def parser_sink(self,value:str):
-        while not value in self.faker_agents.output_dict.output:
-            print("waiting for: ", value)
-            await asyncio.sleep(0.1)
-        data:DataOut = self.faker_agents.output_dict.output[value]
-        # while not (data.faker_agent_1): # and data.faker_agent_2 and data.faker_agent_3):
-        #     await asyncio.sleep(0.1)
-        await self.app_vars.sink_topic.send(value=Data.from_data(data.asdict()))
+    async def parser_sink(self,event):
+        await self.app_vars.sink_topic.send(value=event)
         self.event_count += 1
-
-
-    async def test(self, stream):
-        async for event in stream:
-            self.faker_agents.output_dict.output[event.ssn] = event
             
     async def process_messages(self, stream):
         async for event in stream:
             event = DataOut(**event.asdict())
-            # print("event:", event.asdict(), "\nchannel: ",self.channel_t)
+            assert event.faker_agent_1 or event.faker_agent_2 or event.faker_agent_3 == False, \
+                f"{worker_details(self.app)}"
+            event = await self.faker_agents.fake_agent_1(event=event)
+            assert event.faker_agent_1 == True, f"{worker_details(self.app)}"
+            event = await self.faker_agents.fake_agent_2(event=event)
+            assert event.faker_agent_2 == True, f"{worker_details(self.app)}"
+            event = await self.faker_agents.fake_agent_3(event=event)
+            assert event.faker_agent_3 == True, f"{worker_details(self.app)}"
+            yield event
             
-            # await self.channel_t.send(value=event)
-            # print("event:", event)
 
-            # if event.ssn in self.output_dict.output:
-            #     # print("Duplicate: ", event.ssn)
-            #     continue
-
-            await self.channel_1.send(value=event)
-            # await self.channel_2.send(value=event)
-            # await self.channel_3.send(value=event)
-            yield event.ssn
-            
-    
     async def periodic_sender(self):
         self.app.logger.info(
             f"{worker_details(self.app)}" +
