@@ -10,6 +10,7 @@ def run_worker_spawner(app_name, pipeline_id):
     manager.spawn_workers(
         app_name=app_name,
         pipeline_id=pipeline_id,
+        number_of_workers=1
     )
     time.sleep(20)
 
@@ -24,7 +25,7 @@ def repeat_spawner(repeat=1):
         FaustConfig.create_faust_config(faust_vars=app_vars)
         run_worker_spawner(
             app_name="faust_app",
-            pipeline_id=app_vars.faust_app_id
+            pipeline_id=app_vars.faust_app_id,
         )
 
         # app_vars = FaustAppVars(
