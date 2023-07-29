@@ -9,12 +9,13 @@ from config import  FAUST_APP_DATA_PATH
 from .faust_config import FaustConfig
 from .faust_parsers.fake_profile_parser import FakeProfileParser
 from .faust_monitor import populate_monitor_from_app
+from .faust_vars import worker_details, FaustAppVars
 class FaustAppSetup:
-    worker_details = lambda app: f"{app.conf._id}:{app.conf.web_port}:{os.getpid()}"
 
     def __init__(self, ) -> None:
-        self.app_vars = FaustConfig.load_faust_config()
-        self.app = faust.App(self.app_vars.faust_app_id, broker=self.app_vars.broker)
+        app_vars = FaustConfig.load_faust_config()
+        self.app = faust.App(app_vars.faust_app_id, broker=app_vars.broker)
+        self.app_vars = FaustAppVars(**app_vars.model_dump(), app=self.app)
         self.logger_setup()
         self.add_faust_worker_todo()
         self.add_fuast_parsers()
@@ -37,13 +38,13 @@ class FaustAppSetup:
             raise NotImplementedError
 
     async def on_started(self,):
-        self.app.logger.info(f"Faust worker: {FaustAppSetup.worker_details(self.app)} started")
+        self.app.logger.info(f"Faust worker: {worker_details(self.app)} started")
     
     async def heartbeat(self,):
-        self.app.logger.info(f"Heartbeat -> {FaustAppSetup.worker_details(self.app)}")
+        self.app.logger.info(f"Heartbeat -> {worker_details(self.app)}")
     
     async def on_stop(self,):
-        self.app.logger.info(f"Faust worker {FaustAppSetup.worker_details(self.app)} stopped")
+        self.app.logger.info(f"Faust worker {worker_details(self.app)} stopped")
 
     async def monitor_log(self,):
         monitor_logs = populate_monitor_from_app(self.app)
@@ -51,4 +52,5 @@ class FaustAppSetup:
             indent=2,
             exclude_none=True
         )
-        self.app.logger.info(f"{FaustAppSetup.worker_details(self.app)} Monitor:\n{monitor_logs_json}")
+        self.app.logger.info(f"{worker_details(self.app)} Monitor:\n{monitor_logs_json}")
+
