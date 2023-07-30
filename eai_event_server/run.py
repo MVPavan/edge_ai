@@ -1,5 +1,5 @@
 from imports import time, datetime, logger
-from faust_manager.manager import FaustManager, FaustAppCreateVars
+from faust_manager.manager import FaustManager, FaustAppCreateVars, BusinessLogics
 from faust_scripts.faust_config import FaustConfig
 
 logger.info('\n'*5+f"Event server started at {datetime.now()}")
@@ -20,7 +20,12 @@ def repeat_spawner(repeat=1):
         app_vars = FaustAppCreateVars(
             faust_app_id="pipeline_1",
             broker="kafka://localhost:8097",
-            pipeline_topic_id="test_kafka_topic"
+            pipeline_topic_id="test_kafka_topic",
+            business_logics=BusinessLogics(
+                fake_agent_1=True,
+                fake_agent_2=True,
+                fake_agent_3=True,
+            )
         )
         FaustConfig.create_faust_config(faust_vars=app_vars)
         run_worker_spawner(
