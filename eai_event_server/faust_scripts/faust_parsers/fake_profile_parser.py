@@ -13,8 +13,7 @@ class FakeProfileParser:
     def __init__(self, app:faust.App, app_vars:FaustAppVars):
         self.app = app
         self.app_vars = app_vars
-        self.output_dict = FakerDict()
-        self.faker_agents = FakeAgents(faker_dict=self.output_dict)
+        self.faker_agents = FakeAgents()
         self.setup_faust_topics()
         self.setup_variables()
         self.add_faust_worker_todo()
