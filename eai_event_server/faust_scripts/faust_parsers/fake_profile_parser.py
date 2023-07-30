@@ -6,7 +6,7 @@ from faust_scripts.faust_vars import (
     FaustAppVars, worker_details
 )
 
-from .parser_vars.fake_profile_vars import Data,DataOut, FakerDict
+from .parser_vars.fake_profile_vars import Data, DataOut
 from faust_scripts.faust_agents.fake_agents import FakeAgents
 
 
@@ -24,9 +24,9 @@ class FakeProfileParser:
     def setup_faust_topics(self):
         pipeline_topic = self.app.topic(self.app_vars.pipeline_topic_id, value_type=Data)
         self.app_vars.pipeline_topic = pipeline_topic
-        self.app_vars.sink_topic = self.app.topic(
+        self.app_vars.sink_topics = [self.app.topic(
             f"{self.app_vars.pipeline_topic_id}_sink", value_type=Data
-        )
+        )]
 
     def add_faust_worker_todo(self):
         assert self.app_vars.pipeline_topic is not None, \
@@ -40,7 +40,7 @@ class FakeProfileParser:
         self.event_count = 0
 
     async def parser_sink(self,event):
-        await self.app_vars.sink_topic.send(value=event)
+        await self.app_vars.sink_topics[0].send(value=event)
         self.event_count += 1
             
     async def process_messages(self, stream):

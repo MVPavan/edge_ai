@@ -1,3 +1,4 @@
+from typing import Any
 from imports import (
     BaseModel, field_validator, model_validator,
     Optional, Dict, Callable,
@@ -12,30 +13,28 @@ from faust_scripts.faust_parsers.object_detection_parser import ObjectDetectionP
 from faust_scripts.faust_vars import BusinessLogics
 
 class BusinessLogicAgentMapper(BaseModel):
-    fake_agent_1 = FakeAgents.fake_agent_1
-    fake_agent_2 = FakeAgents.fake_agent_2
-    fake_agent_3 = FakeAgents.fake_agent_3
-    count_all_objects = ObjectCountAgents.count_all_objects
-    count_line_crosser = ObjectCountAgents.count_line_crosser
-    count_objects_in_area = ObjectCountAgents.count_objects_in_area
+    fake_agent_1:FakeAgents.fake_agent_1 = FakeAgents.fake_agent_1
+    fake_agent_2:FakeAgents.fake_agent_2 = FakeAgents.fake_agent_2
+    fake_agent_3:FakeAgents.fake_agent_3 = FakeAgents.fake_agent_3
+    count_all_objects:ObjectCountAgents.count_all_objects = ObjectCountAgents.count_all_objects
+    count_line_crosser:ObjectCountAgents.count_line_crosser = ObjectCountAgents.count_line_crosser
+    count_objects_in_area:ObjectCountAgents.count_objects_in_area = ObjectCountAgents.count_objects_in_area
 
 class Agent(BaseModel):
     name: str
     func: Callable = None  # The actual function
 
-    @field_validator('func')
-    @classmethod
-    def map_name_to_func(cls, v, values, **kwargs):
-        name = values.get('name')
+    def model_post_init(self, __context: Any) -> None:
         agent_mapper = BusinessLogicAgentMapper().model_dump()
-        if name in agent_mapper:
-            return agent_mapper[name]        
-        raise ValueError(f"Invalid agent name: {name}")
+        if self.name in agent_mapper:
+            self.func = agent_mapper[self.name]
+        else:
+            raise ValueError(f"Invalid agent name: {self.name}")
 
 
 class ParserLists(BaseModel):
-    fake_profile_parser: Optional[FakeProfileParser] = None
-    object_detection_parser: Optional[ObjectDetectionParser] = None
+    fake_profile_parser: Callable = None
+    object_detection_parser: Callable = None
     
 
 class AgentCollection(BaseModel):
@@ -43,58 +42,66 @@ class AgentCollection(BaseModel):
     parsers: ParserLists = ParserLists()
     business_logic_agents: Dict[str,Agent] = {}
 
-
-    @field_validator('business_logic_agents')
-    @classmethod
-    def add_agents(cls, v, values, **kwargs):
-        cls.business_logic_agents = [
-            Agent(name=agent) for agent in cls.business_logics.model_dump().keys() if agent 
-        ]
+    def model_post_init(self, __context: Any):
+        self.business_logic_agents = {
+            agent: Agent(name=agent) for agent,val in self.business_logics.model_dump().items() if val
+        }
     
-    @field_validator('parsers')
-    @classmethod
-    def map_name_to_func(cls, v, values, **kwargs):
         if (
-            cls.business_logics.fake_agent_1 or \
-            cls.business_logics.fake_agent_2 or \
-            cls.business_logics.fake_agent_3
+            self.business_logics.fake_agent_1 or \
+            self.business_logics.fake_agent_2 or \
+            self.business_logics.fake_agent_3
             ) and \
-            not cls.parsers.fake_profile_parser:
-            cls.parsers.fake_profile_parser = FakeProfileParser
+            not self.parsers.fake_profile_parser:
+            self.parsers.fake_profile_parser = FakeProfileParser
         
         if (
-            cls.business_logics.count_all_objects or \
-            cls.business_logics.count_line_crosser or \
-            cls.business_logics.count_objects_in_area
+            self.business_logics.count_all_objects or \
+            self.business_logics.count_line_crosser or \
+            self.business_logics.count_objects_in_area
             ) and not \
-            cls.parsers.object_detection_parser:
-            cls.parsers.object_detection_parser = ObjectDetectionParser
+            self.parsers.object_detection_parser:
+            self.parsers.object_detection_parser = ObjectDetectionParser
 
-        assert sum(
-            cls.fake_profile_parser is not None,
-            cls.object_detection_parser is not None
-        ) == 1, "Only one parser can be enabled at a time"
+        assert sum([
+            self.parsers.fake_profile_parser is not None,
+            self.parsers.object_detection_parser is not None
+        ]) == 1, "Only one parser can be enabled at a time"
 
 
 
     # @field_validator('fake_profile_parser', 'object_detection_parser')
     # @classmethod
     # def map_name_to_func(cls, v, values, **kwargs):
-    #     if (cls.fake_agent_1 or cls.fake_agent_2 or cls.fake_agent_3) and \
-    #         not cls.fake_profile_parser:
-    #         cls.fake_profile_parser = FakeProfileParser
+    #     if (self.fake_agent_1 or self.fake_agent_2 or self.fake_agent_3) and \
+    #         not self.fake_profile_parser:
+    #         self.fake_profile_parser = FakeProfileParser
         
     #     if (
     #         (
-    #         cls.count_all_objects or \
-    #         cls.count_line_crosser or \
-    #         cls.count_objects_in_area
+    #         self.count_all_objects or \
+    #         self.count_line_crosser or \
+    #         self.count_objects_in_area
     #         ) and not \
-    #         cls.object_detection_parser
+    #         self.object_detection_parser
     #     ):
-    #         cls.object_detection_parser = ObjectDetectionParser
+    #         self.object_detection_parser = ObjectDetectionParser
 
     #     assert sum(
-    #         cls.fake_profile_parser is not None,
-    #         cls.object_detection_parser is not None
+    #         self.fake_profile_parser is not None,
+    #         self.object_detection_parser is not None
     #     ) == 1, "Only one parser can be enabled at a time"
+
+
+    # @field_validator('func', mode='before')
+    # @classmethod
+    # def map_agent_name(cls, v, values, **kwargs):
+    #     name = values.get('name')
+    #     agent_mapper = BusinessLogicAgentMapper().model_dump()
+    #     print("name in agent_mapper: ", name)
+        
+    #     if name in agent_mapper:
+    #         v = agent_mapper[name]
+    #         return v        
+    #     else:
+    #         raise ValueError(f"Invalid agent name: {name}")
