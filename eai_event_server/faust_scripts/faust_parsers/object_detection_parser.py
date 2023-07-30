@@ -6,8 +6,8 @@ from faust_scripts.faust_vars import FaustAppVars
 from .parser_vars import object_detection_vars as odv
 
 class ObjectDetectionParser:
-    def __init__(self, app:faust.App, app_vars:FaustAppCreateVars):
-        self.app = app
+    def __init__(self, app_vars:FaustAppVars):
+        self.app = app_vars.app
         self.app_vars = app_vars
         self.setup_faust_topics()
         self.add_faust_worker_todo()

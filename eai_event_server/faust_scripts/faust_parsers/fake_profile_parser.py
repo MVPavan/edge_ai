@@ -9,10 +9,13 @@ from faust_scripts.faust_vars import (
 from .parser_vars.fake_profile_vars import Data,DataOut, FakerDict
 from faust_scripts.faust_agents.fake_agents import FakeAgents
 
+
 class FakeProfileParser:
-    def __init__(self, app:faust.App, app_vars:FaustAppVars):
-        self.app = app
+    def __init__(self, app_vars:FaustAppVars, agent_collection):
+        self.app = app_vars.app
         self.app_vars = app_vars
+        from faust_scripts.faust_agent_manager import AgentCollection
+        self.agent_collection:AgentCollection = agent_collection
         self.faker_agents = FakeAgents()
         self.setup_faust_topics()
         self.setup_variables()
@@ -45,12 +48,15 @@ class FakeProfileParser:
             event = DataOut(**event.asdict())
             assert event.faker_agent_1 or event.faker_agent_2 or event.faker_agent_3 == False, \
                 f"{worker_details(self.app)}"
-            event = await self.faker_agents.fake_agent_1(event=event)
-            assert event.faker_agent_1 == True, f"{worker_details(self.app)}"
-            event = await self.faker_agents.fake_agent_2(event=event)
-            assert event.faker_agent_2 == True, f"{worker_details(self.app)}"
-            event = await self.faker_agents.fake_agent_3(event=event)
-            assert event.faker_agent_3 == True, f"{worker_details(self.app)}"
+            if self.agent_collection.business_logics.fake_agent_1:
+                event = await self.faker_agents.fake_agent_1(event=event)
+                assert event.faker_agent_1 == True, f"{worker_details(self.app)}"
+            if self.agent_collection.business_logics.fake_agent_2:
+                event = await self.faker_agents.fake_agent_2(event=event)
+                assert event.faker_agent_2 == True, f"{worker_details(self.app)}"
+            if self.agent_collection.business_logics.fake_agent_3:
+                event = await self.faker_agents.fake_agent_3(event=event)
+                assert event.faker_agent_3 == True, f"{worker_details(self.app)}"
             yield event
             
 
