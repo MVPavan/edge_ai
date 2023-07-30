@@ -1,19 +1,24 @@
 from imports import (
-    os, BaseModel, Path, CWD,
+    os, BaseModel,
     Optional, List,
     faust,
-    Counter, Deque, cast, TP, HTTPStatus,
 )
+
+from .faust_agent_manager import Agent
 
 worker_details = lambda app: f"{app.conf._id}:{app.conf.web_port}:{os.getpid()}"
 
 class FaustAppCreateVars(BaseModel):
     faust_app_id: str
     broker: str
-    pipeline_topic_id: str  
+    pipeline_topic_id: str
+    business_logics: List[Agent]
+    sink_topic_ids: Optional[List[str]] = None
 
 class FaustAppVars(FaustAppCreateVars):
     app: faust.App
     pipeline_topic: Optional[faust.Topic] = None
-    sink_topic: Optional[faust.Topic] = None
+    sink_topics: Optional[List[faust.Topic]] = None
+
+
 
