@@ -1,5 +1,6 @@
 from imports import time, datetime, logger
-from faust_manager.manager import FaustManager, FaustAppCreateVars, BusinessLogics
+from faust_scripts.faust_vars import FaustAppCreateVars, BusinessLogics
+from faust_manager.manager import FaustManager
 from faust_scripts.faust_config import FaustConfig
 
 logger.info('\n'*5+f"Event server started at {datetime.now()}")

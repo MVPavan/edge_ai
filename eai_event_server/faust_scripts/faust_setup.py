@@ -8,24 +8,26 @@ from imports import (
 from config import  FAUST_APP_DATA_PATH
 from .faust_config import FaustConfig
 from .faust_monitor import populate_monitor_from_app
+
 from .faust_vars import worker_details, FaustAppVars
-from .faust_agent_manager import Agent, BusinessLogics
+
+from .faust_agent_manager import AgentCollection
 
 from .faust_parsers.fake_profile_parser import FakeProfileParser
 from .faust_parsers.object_detection_parser import ObjectDetectionParser
+
+
 class FaustAppSetup:
 
     def __init__(self, ) -> None:
         app_vars = FaustConfig.load_faust_config()
         self.app = faust.App(app_vars.faust_app_id, broker=app_vars.broker)
-        business_logic_agents = [
-            Agent(name=agent) for agent in app_vars.business_logics.model_dump().keys() if agent
-        ]
-        self.app_vars = FaustAppVars(
-            **app_vars.model_dump(), 
-            app=self.app,
-            business_logic_agents=business_logic_agents
+        
+        self.app_vars = FaustAppVars(**app_vars.model_dump(), app=self.app)
+        self.agent_collection = AgentCollection(
+            business_logics=self.app_vars.business_logics
         )
+        
         self.logger_setup()
         self.add_faust_worker_todo()
         self.add_faust_parsers()
@@ -43,10 +45,11 @@ class FaustAppSetup:
         self.app.timer(interval=60)(self.monitor_log)
 
     def add_faust_parsers(self):
-        if self.app_vars.business_logics.fake_profile_parser:
-            FakeProfileParser(app=self.app, app_vars=self.app_vars)
-        elif self.app_vars.business_logics.object_detection_parser:
-            ObjectDetectionParser(app=self.app, app_vars=self.app_vars)
+        print(self.agent_collection)
+        if self.agent_collection.parsers.fake_profile_parser:
+            FakeProfileParser(app_vars=self.app_vars, agent_collection=self.agent_collection)
+        elif self.agent_collection.parsers.fake_profile_parser:
+            ObjectDetectionParser(app_vars=self.app_vars)
         else:
             raise NotImplementedError
 
