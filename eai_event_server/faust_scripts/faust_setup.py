@@ -11,7 +11,7 @@ from .faust_monitor import populate_monitor_from_app
 
 from .faust_vars import worker_details, FaustAppVars
 
-from .faust_agent_manager import AgentCollection
+from .faust_agent_manager import AgentCollection, BusinessLogicAgentMapper, Agent
 
 from .faust_parsers.fake_profile_parser import FakeProfileParser
 from .faust_parsers.object_detection_parser import ObjectDetectionParser
@@ -24,6 +24,7 @@ class FaustAppSetup:
         self.app = faust.App(app_vars.faust_app_id, broker=app_vars.broker)
         
         self.app_vars = FaustAppVars(**app_vars.model_dump(), app=self.app)
+
         self.agent_collection = AgentCollection(
             business_logics=self.app_vars.business_logics
         )
@@ -46,6 +47,7 @@ class FaustAppSetup:
 
     def add_faust_parsers(self):
         print(self.agent_collection)
+        # import sys; sys.exit()
         if self.agent_collection.parsers.fake_profile_parser:
             FakeProfileParser(app_vars=self.app_vars, agent_collection=self.agent_collection)
         elif self.agent_collection.parsers.fake_profile_parser:
