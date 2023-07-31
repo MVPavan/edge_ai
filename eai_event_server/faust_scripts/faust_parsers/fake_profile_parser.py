@@ -4,8 +4,6 @@ from faust_scripts.faust_vars import (
 )
 
 from .parser_vars.fake_profile_vars import Data, DataOut
-from faust_scripts.faust_agents.fake_agents import FakeAgents
-
 
 class FakeProfileParser:
     def __init__(self, app_vars:FaustAppVars):
@@ -16,20 +14,19 @@ class FakeProfileParser:
         self.add_faust_worker_todo()
         
     def setup_faust_topics(self):
-        pipeline_topic = self.app.topic(self.app_vars.pipeline_topic_id, value_type=Data)
-        self.app_vars.pipeline_topic = pipeline_topic
+        self.app_vars.pipeline_topic = self.app.topic(self.app_vars.pipeline_topic_id, value_type=Data)
         self.app_vars.sink_topics = [self.app.topic(
             f"{self.app_vars.pipeline_topic_id}_sink", value_type=Data
         )]
-
-    def add_faust_worker_todo(self):
         assert self.app_vars.pipeline_topic is not None, \
             f"{worker_details(self.app)} pipeline_topic is None"
         
-        self.app.agent(channel=self.app_vars.pipeline_topic, sink=[self.parser_sink], concurrency=3)(self.process_messages)
+    def add_faust_worker_todo(self):        
+        self.app.agent(
+            channel=self.app_vars.pipeline_topic, sink=[self.parser_sink], concurrency=3
+            )(self.process_messages)
         # self.app.agent(channel=self.app_vars.pipeline_topic, concurrency=1)(self.process_messages)
-        self.app.timer(interval=1)(self.periodic_sender)
-        
+        self.app.timer(interval=10)(self.periodic_sender)
 
     def setup_variables(self):
         self.event_count = 0

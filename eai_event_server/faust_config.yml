@@ -2,10 +2,10 @@ faust_app_id: pipeline_1
 broker: kafka://localhost:8097
 pipeline_topic_id: test_kafka_topic
 business_logics:
-  fake_agent_1: true
-  fake_agent_2: true
-  fake_agent_3: true
-  count_all_objects: false
+  fake_agent_1: false
+  fake_agent_2: false
+  fake_agent_3: false
+  count_all_objects: true
   count_line_crosser: false
   count_objects_in_area: false
 sink_topic_ids: null
