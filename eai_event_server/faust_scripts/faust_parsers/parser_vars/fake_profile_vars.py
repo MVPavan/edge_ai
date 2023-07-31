@@ -16,9 +16,9 @@ class Data(faust.Record, serializer='json'):
     birthdate: date
 
 class DataOut(Data):
-    faker_agent_1:bool = False
-    faker_agent_2:bool = False
-    faker_agent_3:bool = False
+    fake_agent_1:bool = False
+    fake_agent_2:bool = False
+    fake_agent_3:bool = False
 
 class FakerDict(BaseModel):
     output: Dict[str, DataOut] = {}
