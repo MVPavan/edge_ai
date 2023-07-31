@@ -23,9 +23,10 @@ def repeat_spawner(repeat=1):
             broker="kafka://localhost:8097",
             pipeline_topic_id="test_kafka_topic",
             business_logics=BusinessLogics(
-                fake_agent_1=True,
-                fake_agent_2=True,
-                fake_agent_3=True,
+                # fake_agent_1=True,
+                # fake_agent_2=True,
+                # fake_agent_3=True,
+                count_all_objects=True,
             )
         )
         FaustConfig.create_faust_config(faust_vars=app_vars)

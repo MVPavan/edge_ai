@@ -2,7 +2,9 @@
 from imports import (
     BaseModel, Callable, Any,
 )
+
 from faust_scripts.faust_vars import BusinessLogics
+
 from .fake_profile_parser import FakeProfileParser
 from .object_detection_parser import ObjectDetectionParser
 
