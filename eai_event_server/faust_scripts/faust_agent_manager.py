@@ -1,7 +1,6 @@
-from typing import Any
 from imports import (
     BaseModel, field_validator, model_validator,
-    Optional, Dict, Callable,
+    Optional, Dict, Callable, Any
 )
 
 from faust_scripts.faust_agents.fake_agents import FakeAgents
@@ -32,42 +31,14 @@ class Agent(BaseModel):
             raise ValueError(f"Invalid agent name: {self.name}")
 
 
-class ParserLists(BaseModel):
-    fake_profile_parser: Callable = None
-    object_detection_parser: Callable = None
-    
-
 class AgentCollection(BaseModel):
     business_logics: BusinessLogics
-    parsers: ParserLists = ParserLists()
     business_logic_agents: Dict[str,Agent] = {}
 
     def model_post_init(self, __context: Any):
         self.business_logic_agents = {
             agent: Agent(name=agent) for agent,val in self.business_logics.model_dump().items() if val
         }
-    
-        if (
-            self.business_logics.fake_agent_1 or \
-            self.business_logics.fake_agent_2 or \
-            self.business_logics.fake_agent_3
-            ) and \
-            not self.parsers.fake_profile_parser:
-            self.parsers.fake_profile_parser = FakeProfileParser
-        
-        if (
-            self.business_logics.count_all_objects or \
-            self.business_logics.count_line_crosser or \
-            self.business_logics.count_objects_in_area
-            ) and not \
-            self.parsers.object_detection_parser:
-            self.parsers.object_detection_parser = ObjectDetectionParser
-
-        assert sum([
-            self.parsers.fake_profile_parser is not None,
-            self.parsers.object_detection_parser is not None
-        ]) == 1, "Only one parser can be enabled at a time"
-
 
 
     # @field_validator('fake_profile_parser', 'object_detection_parser')

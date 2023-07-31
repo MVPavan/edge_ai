@@ -1,20 +1,13 @@
+from typing import Any
 from imports import (
     os, BaseModel,
-    Optional, List,
+    Optional, List, Dict,
     faust,
 )
 
+from .faust_agents.agent_manager import BusinessLogics, Agent
 
 worker_details = lambda app: f"{app.conf._id}:{app.conf.web_port}:{os.getpid()}"
-
-
-class BusinessLogics(BaseModel):    
-    fake_agent_1: bool = False
-    fake_agent_2: bool = False
-    fake_agent_3: bool = False
-    count_all_objects: bool = False
-    count_line_crosser: bool = False
-    count_objects_in_area: bool = False
 
 class FaustAppCreateVars(BaseModel):
     faust_app_id: str
@@ -27,6 +20,9 @@ class FaustAppVars(FaustAppCreateVars):
     app: faust.App
     pipeline_topic: Optional[faust.Topic] = None
     sink_topics: Optional[List[faust.Topic]] = None
-
-
-
+    business_logic_agents: Dict[str, Agent] = {}
+    
+    def model_post_init(self, __context: Any):
+        self.business_logic_agents = {
+            agent: Agent(name=agent) for agent,val in self.business_logics.model_dump().items() if val
+        }

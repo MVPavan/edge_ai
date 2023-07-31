@@ -1,7 +1,7 @@
 from imports import (
     os,datetime,  Path, CWD,
     logging, logger,get_logger_with_file,
-    OmegaConf, 
+    OmegaConf, BaseModel, Callable, Dict, Any,
     asyncio, faust, Worker, codecs,
 )
 
@@ -11,11 +11,7 @@ from .faust_monitor import populate_monitor_from_app
 
 from .faust_vars import worker_details, FaustAppVars
 
-from .faust_agent_manager import AgentCollection, BusinessLogicAgentMapper, Agent
-
-from .faust_parsers.fake_profile_parser import FakeProfileParser
-from .faust_parsers.object_detection_parser import ObjectDetectionParser
-
+from .faust_parsers.parser_manager import FaustParserSelector
 
 class FaustAppSetup:
 
@@ -25,10 +21,6 @@ class FaustAppSetup:
         
         self.app_vars = FaustAppVars(**app_vars.model_dump(), app=self.app)
 
-        self.agent_collection = AgentCollection(
-            business_logics=self.app_vars.business_logics
-        )
-        
         self.logger_setup()
         self.add_faust_worker_todo()
         self.add_faust_parsers()
@@ -41,17 +33,17 @@ class FaustAppSetup:
 
     def add_faust_worker_todo(self):
         self.app.task(self.on_started)
-        self.app.task(self.on_stop)
         self.app.timer(interval=30)(self.heartbeat)
         self.app.timer(interval=60)(self.monitor_log)
 
     def add_faust_parsers(self):
-        print(self.agent_collection)
-        # import sys; sys.exit()
-        if self.agent_collection.parsers.fake_profile_parser:
-            FakeProfileParser(app_vars=self.app_vars, agent_collection=self.agent_collection)
-        elif self.agent_collection.parsers.fake_profile_parser:
-            ObjectDetectionParser(app_vars=self.app_vars)
+        faust_parsers = FaustParserSelector(
+            business_logics=self.app_vars.business_logics
+        )
+        if faust_parsers.fake_profile_parser is not None:
+            faust_parsers.fake_profile_parser(app_vars=self.app_vars)
+        elif faust_parsers.object_detection_parser is not None:
+            faust_parsers.object_detection_parser(app_vars=self.app_vars)
         else:
             raise NotImplementedError
 
@@ -60,9 +52,6 @@ class FaustAppSetup:
     
     async def heartbeat(self,):
         self.app.logger.info(f"Heartbeat -> {worker_details(self.app)}")
-    
-    async def on_stop(self,):
-        self.app.logger.info(f"Faust worker {worker_details(self.app)} stopped")
 
     async def monitor_log(self,):
         monitor_logs = populate_monitor_from_app(self.app)

@@ -11,7 +11,7 @@ def run_worker_spawner(app_name, pipeline_id):
     manager.spawn_workers(
         app_name=app_name,
         pipeline_id=pipeline_id,
-        number_of_workers=3
+        number_of_workers=1
     )
     time.sleep(20)
 

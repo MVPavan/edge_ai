@@ -12,7 +12,7 @@ import subprocess
 import signal
 
 from functools import partial, wraps
-from typing import Callable, Optional, Dict, Union, Type, List, cast
+from typing import Callable, Optional, Dict, Union, Type, List, cast, Any
 from mode.utils.typing import Counter, Deque
 from pydantic import field_validator, model_validator, BaseModel as BM, Field
 from omegaconf import OmegaConf
