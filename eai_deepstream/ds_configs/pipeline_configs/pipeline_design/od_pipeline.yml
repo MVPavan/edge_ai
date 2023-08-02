@@ -1,35 +1,18 @@
 
-from .ds_pipeline_base import (
-    DsPipelineBase, PipelineBaseVars,
-    infer_configs_folder
-)
+pipeline:
+  - multi_uri_src: nvmultiurisrcbin
+  - branchout:
+    - branch_infer:
+      - concurrency: 3
+      - pgie: nvinferserver
+  - tee_pgie: tee
 
-from pipeline_scripts.building_blocks.deepstream_plugins import DsPlugins
-from pipeline_scripts.building_blocks.pipeline_blocks import PipelineBlocks
 
 
 
-class ODSingleHead(DsPipelineBase):
-    """
-    Object Detection Single Head Pipeline
-    Consists of:
-        - Object Detection Single Head
-        - Tracker (Optional)
-        - Secondary GIE (Optional)
-        
-        - Tiled Display (Optional)
-        - On Screen Display (Optional)
-        - Fake Sink / File Sink / RTSP Sink (Optional)
-        - Kafka Output (Optional)
-    If props not provided loads default props based on pipeline choice
-    """
 
-    def __init__(self, pipeline_base_vars:PipelineBaseVars):
-        # Initialize the Object Detection Single Head pipeline
-        super().__init__(pipeline_base_vars=pipeline_base_vars)
 
-    # Define the pipeline building function
-    def build_pipeline(self,):
+def build_pipeline(self,):
         # Create an instance of the PipelineBlocks class
         pipeline_blocks = PipelineBlocks()
         # Create a multi-uri source element
@@ -108,3 +91,52 @@ class ODSingleHead(DsPipelineBase):
 
         # Return the complete pipeline
         return self.pipeline
+
+  
+  
+@dataclass(frozen=True)
+class DsPlugins:
+    # Input plugins
+    multi_uri_src = lambda _name: ("nvmultiurisrcbin", f"{_name}")
+
+    # Streammux plugins
+    stream_muxer = lambda _name: ("nvstreammux", f"{_name}")
+
+    # Inference plugins
+    triton_server = lambda _name: ("nvinferserver", f"{_name}")
+
+    # Tee plugins
+    tee = lambda _name: ("tee", f"{_name}") 
+
+    # Queue plugins
+    queue = lambda _name: ("queue", f"{_name}")
+    
+    # Filter plugins
+    caps_filter = lambda _name: ("capsfilter", f"{_name}")
+
+    # Video plugins
+    mpeg4_encoder = lambda _name: ("avenc_mpeg4", f"{_name}")
+    MPEG4_ENCODER_BITRATE:int = 2000000
+    mpeg4_parser = lambda _name: ("mpeg4videoparse", f"{_name}")
+    nvvideo_convert = lambda _name: ("nvvideoconvert", f"{_name}")
+    qtmux = lambda _name: ("qtmux", f"{_name}")
+        
+    # OSD plugins
+    nvosd = lambda _name: ("nvdsosd", f"{_name}")
+
+    # Output plugins
+    nvtiler = lambda _name: ("nvmultistreamtiler", f"{_name}")
+    encoder_h264 = lambda _name: ("nvv4l2h264enc", f"{_name}")
+    encoder_h265 = lambda _name: ("nvv4l2h265enc", f"{_name}")
+    rtppay_h264 = lambda _name: ("rtph264pay", f"{_name}")
+    rtppay_h265 = lambda _name: ("rtph265pay", f"{_name}")
+    
+    # Sink plugins
+    filesink = lambda _name: ("filesink", f"{_name}")
+    udpsink = lambda _name: ("udpsink", f"{_name}")
+    fakesink = lambda _name: ("fakesink", f"{_name}")
+
+    # Message broker plugins
+    nvmsgconv = lambda _name: ("nvmsgconv", f"{_name}")
+    nvmsgbroker = lambda _name: ("nvmsgbroker", f"{_name}")
+    

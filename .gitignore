@@ -11,7 +11,7 @@ FRModels/*
 *__pycache__*
 *.pkl
 *.npy
-*.vscode
+# *.vscode
 */Data/*
 gitignore_folder
 *.log*
@@ -19,3 +19,4 @@ gitignore_folder
 **/logs
 *.pytest_cache
 *.code-workspace
+*.VSCodeCounter

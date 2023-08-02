@@ -1,0 +1,27 @@
+[tool.poetry]
+name = "eai-event-server"
+version = "0.1.0"
+description = ""
+authors = ["mvpavan <mvpavan42@gmail.com>"]
+readme = "README.md"
+packages = [{include = "eai_event_server"}]
+
+[tool.poetry.dependencies]
+python = "^3.9"
+
+
+[tool.poetry.group.prod.dependencies]
+faust-streaming = "^0.10.14"
+asyncio = "^3.4.3"
+pydantic = "^2.0.3"
+confluent-kafka = "^2.2.0"
+omegaconf = "^2.3.0"
+
+
+[tool.poetry.group.dev.dependencies]
+faker = "^19.1.0"
+tqdm = "^4.65.0"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
