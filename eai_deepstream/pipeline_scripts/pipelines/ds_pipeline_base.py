@@ -1,6 +1,6 @@
 from imports import (
     Path, sys, logger, Dict,
-    BaseModel, OmegaConf, DictConfig, Field,
+    OmegaConf, DictConfig, Field,
     Gst, pyds, GstRtspServer
 )
 

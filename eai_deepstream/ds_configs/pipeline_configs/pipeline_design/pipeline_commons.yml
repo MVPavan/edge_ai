@@ -1,0 +1,32 @@
+osd_pipeline_components:
+  - queue_osd_pre: queue
+  - nvvideo_convert_osd_pre: nvvideoconvert
+  - caps_filter_osd: capsfilter
+  - nvtiler_osd: nvmultistreamtiler
+  - nvosd: nvdsosd
+  - nvvideo_convert_osd_post: nvvideoconvert
+  - queue_osd_post: queue
+  - tee_osd: tee
+
+fake_sink_tail_components:
+  - queue_fakesink: queue
+  - fake_sink: fakesink
+
+file_sink_tail_components:
+  - queue_filesink: queue
+  - mpeg4_encoder_filesink: avenc_mpeg4
+  - mpeg4_parser_filesink: mpeg4videoparse
+  - qtmux_filesink: qtmux
+  - file_sink: filesink
+
+rtsp_sink_tail_components:
+  - queue_rtsp: queue
+  - encoder_h264: nvv4l2h264enc
+  - rtppay_h264: rtph264pay
+  - udp_sink: udpsink
+
+kafka_tail_components:
+  - queue_kafka: queue
+  - msgconv_kafka: nvmsgconv
+  - msgbroker_kafka: nvmsgbroker
+
