@@ -26,7 +26,8 @@ rtsp_sink_tail_components:
   - udp_sink: udpsink
 
 kafka_tail_components:
-  - queue_kafka: queue
+  - queue_conv: queue
   - msgconv_kafka: nvmsgconv
+  - queue_kafka: queue
   - msgbroker_kafka: nvmsgbroker
 

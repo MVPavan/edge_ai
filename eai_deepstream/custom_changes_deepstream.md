@@ -3,7 +3,7 @@
 ## **Nvmsgconv**
 code: /opt/nvidia/deepstream-6.2/sources/libs/nvmsgconv
 
-1. deepstream_schema/dsmeta_payload.cpp
+1. deepstream_schema/dsmeta_payload.cpp -  generate_dsmeta_message_minimal
 
     If no config file provided for nvmsgconv *privData* will be nullptr. So we need to check for nullptr before using it.
 

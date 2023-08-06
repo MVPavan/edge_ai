@@ -15,7 +15,7 @@ from pipeline_scripts.probes.probe_funcs import (
 from utils.ds_vars import DsResultVars, PERF_DATA
 from utils.other_utils import get_label_names_from_file
 
-from ds_consts.pipeline_consts import PipelineBaseVars
+from ds_consts.base_consts import PipelineBaseVars
 
 class DspStaticMethods:
     CUDA_MEM_ELEMENTS = ["nvstreammux","nvvideoconvert","nvmultistreamtiler"]
@@ -92,6 +92,7 @@ class DspStaticMethods:
     def link_elements_within_seq(link_sequence):
         for i in range(len(link_sequence)-1):
             link_sequence[i].link(link_sequence[i+1])
+        return link_sequence
 
 
     @staticmethod
@@ -190,7 +191,7 @@ class DsPipelineBase(DspStaticMethods):
             )
             self.pipeline.add(element)
             link_sequence.append(element)
-        self.link_elements_within_seq(link_sequence=link_sequence)
+        link_sequence = self.link_elements_within_seq(link_sequence=link_sequence)
         return link_sequence
     
     def add_fps_probe(self, element, plugin_name:str=""):

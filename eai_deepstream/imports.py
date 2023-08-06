@@ -3,8 +3,7 @@ import time
 from pathlib import Path
 import logging
 from logging.handlers import TimedRotatingFileHandler
-from utils.logging import Logging, start_logging
-logger = start_logging()
+
 
 from urllib.request import pathname2url
 from urllib.parse import urljoin
@@ -21,6 +20,7 @@ class BaseModel(BM):
 from dataclasses import dataclass, field
 from omegaconf import OmegaConf
 from omegaconf.dictconfig import DictConfig
+from omegaconf.listconfig import ListConfig
 
 
 import requests
@@ -40,3 +40,6 @@ gi.require_version("Gst", "1.0")
 gi.require_version("GstRtspServer", "1.0")
 from gi.repository import GLib, Gst, GstRtspServer # noqa:F401,F402
 import pyds # noqa:F401,F402
+
+from utils.logging import Logging, start_logging
+logger = start_logging()
