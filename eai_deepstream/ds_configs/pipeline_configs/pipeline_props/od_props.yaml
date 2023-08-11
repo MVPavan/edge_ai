@@ -1,5 +1,6 @@
 # Pipeline Details
 pipeline_details:
+  id: od_single_head_1234
   name: od_single_head
   type: object_detection
   choice: od_single_head

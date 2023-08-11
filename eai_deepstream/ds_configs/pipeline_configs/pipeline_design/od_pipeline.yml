@@ -1,24 +1,5 @@
 
 pipeline:
   - multi_uri_src: nvmultiurisrcbin
-  - branch_out: # keywork to split into branches
-    - branch_infer: # branch name
-      # - concurrency: 3 # number of concurrent branches of branch_infer
-      - pgie: nvinferserver
-      - kafka_tail_components # check this
-
-  # working till here
-  - branch_in: # keyword to join branches
-    - branches: [branch_infer] # list of branches to join
-    - meta_mux: nvmetamux
-  - branch_out:
-    - kafka_tail_components
-    - osd_pipeline_components
-    - branch_out:
-      - file_sink_tail_components
-      - rtsp_sink_tail_components
-  - branch_in: # keyword to join branches
-    - branches: [branch_infer] # list of branches to join
-    - meta_mux: nvmetamux
-  - fake_sink_tail_components
-  
+  - pgie: nvinferserver
+  - kafka_tail_components

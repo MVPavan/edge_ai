@@ -6,7 +6,7 @@ from ds_utils.bus_call import bus_call
 import logging
 logger = logging.getLogger()
 
-from pipeline_scripts.pipelines.ds_pipeline_base import DsPipelineBase
+from pipeline_scripts.pipeline_builds.ds_pipeline_base import DsPipelineBase
 
 def graph_pipeline(ds_pipeline:DsPipelineBase):
     # GST_DEBUG_DUMP_DOT_DIR=/data/datasets/temp python3 run_ds.py
