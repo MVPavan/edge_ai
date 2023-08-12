@@ -38,8 +38,8 @@ class PipelineCreator(DsPipelineBase):
         # Check pipeline design
         assert is_dict(pipeline_design), "pipeline design must be a yml dict on parent level"
         assert 'pipeline' in pipeline_design, "Parent element of pipline design must have pipeline key"
-        pipeline_design = pipeline_design.pipeline
-        assert is_list(pipeline_design), "pipeline design must be a yml list at components level"
+        pipeline_tree = pipeline_design.pipeline
+        assert is_list(pipeline_tree), "pipeline design must be a yml list at components level"
         
         # Check pipeline props 
         assert is_dict(pipeline_props), "pipeline props must be a yml dict on parent level"
@@ -52,7 +52,9 @@ class PipelineCreator(DsPipelineBase):
         )
         super().__init__(pipeline_base_vars=pipeline_base_vars)
         self.reset_vars()
-        self.create_pipeline(pipeline_design, parent=True)
+        self.create_pipeline(pipeline_tree, parent=True)
+        if 'probes' in pipeline_design:
+            self.add_probes(probe_yml=pipeline_design.probes)
         self.create_rtsp_server(properties=self.pipeline_props.rtsp)
     
     def reset_vars(self):
@@ -139,9 +141,9 @@ class PipelineCreator(DsPipelineBase):
             self.Queue_Counter += 1
         return element_list
 
-    def create_pipeline(self, pipeline_yml, parent=False):
+    def create_pipeline(self, pipeline_tree, parent=False):
         element_list, link_sequence = [], []
-        for element in pipeline_yml:
+        for element in pipeline_tree:
 
             # Builds Common elements
             if is_str(element):
@@ -191,6 +193,12 @@ class PipelineCreator(DsPipelineBase):
         if not parent:
             return link_sequence_tail
 
-
+    def add_probes(self, probe_yml:DictConfig):
+        assert is_list(probe_yml), "probe_yml must be a yml list"
+        for probe in probe_yml:
+            assert is_dict(probe), "probe must be a yml dict"
+            for key, value in probe.items():
+                if key.lower()=="fps":
+                    self.add_fps_probe(self.pipeline, value)
 
         

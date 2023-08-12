@@ -195,14 +195,18 @@ class DsPipelineBase(DspStaticMethods):
         link_sequence = self.link_elements_within_seq(link_sequence=link_sequence)
         return link_sequence
     
-    def add_fps_probe(self, element, plugin_name:str=""):
-        if isinstance(element, list):
-            element = self.get_named_plugin_from_list(element, plugin_name)
+    def add_fps_probe(self, elements_or_pipeline, plugin_name:str=""):
+        if isinstance(elements_or_pipeline, list):
+            element = self.get_named_plugin_from_list(elements_or_pipeline, plugin_name)
+            assert element is not None, f"No plugin with name: {plugin_name}"
+        elif isinstance(elements_or_pipeline, Gst.Pipeline):
+            element = elements_or_pipeline.get_by_name(plugin_name)
             assert element is not None, f"No plugin with name: {plugin_name}"
 
         element.get_static_pad("src").add_probe(
             Gst.PadProbeType.BUFFER, read_obj_meta_probe, self.result_vars
         )
+        logger.info(f"Added FPS probe to {element.get_name()}")
 
     def add_parser_probe(self, element, plugin_name:str=""):
         if isinstance(element, list):
@@ -214,7 +218,8 @@ class DsPipelineBase(DspStaticMethods):
         element.get_static_pad("src").add_probe(
             Gst.PadProbeType.BUFFER, tensor_to_object_probe, self.result_vars
         )
- 
+        logger.info(f"Added parser probe to {element.get_name()}")
+        
     def get_pipeline_status(self):
         ret, current, pending = self.pipeline.get_state(Gst.CLOCK_TIME_NONE)
         if ret == Gst.StateChangeReturn.SUCCESS:
