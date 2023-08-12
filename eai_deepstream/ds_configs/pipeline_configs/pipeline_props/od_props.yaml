@@ -9,4 +9,4 @@ pipeline_details:
 
 pgie:
   # Give abs file path  or loads file name from infer_configs
-  config-file-path: config_triton_ensemble_yolox.txt
+  config-file-path: ds_configs/infer_configs/config_triton_ensemble_yolox.txt

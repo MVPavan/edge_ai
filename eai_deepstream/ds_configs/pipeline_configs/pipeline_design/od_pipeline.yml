@@ -2,4 +2,5 @@
 pipeline:
   - multi_uri_src: nvmultiurisrcbin
   - pgie: nvinferserver
-  - kafka_tail_components
+  - osd_pipeline_components
+  - rtsp_sink_tail_components

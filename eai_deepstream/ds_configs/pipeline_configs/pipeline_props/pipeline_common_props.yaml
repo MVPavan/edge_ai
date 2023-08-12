@@ -8,7 +8,7 @@ pipeline_details:
 # Plugin blocks To be enabled
 
 plugins:
-  kafka: true
+  kafka: false
   fakesink: false
   filesink: false
   rtsp: false
@@ -25,7 +25,7 @@ multi_uri_src:
   # uri-list: "file:///data/datasets/infer/org/videos/ds_test/sample.h264"
   sensor-id-list: "cam_1"
   ip-address: "localhost"
-  port: -1 # will be auto set by pipeline manager
+  port: 6300 # will be auto set by pipeline manager
   max-batch-size: 32
   # Gst-nvmultiurisrcbin nvurisrcbin specific properties
   file-loop: true

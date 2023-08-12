@@ -35,23 +35,31 @@ pipeline_base_vars = PipelineBaseVars(
 
 class PipelineCreator(DsPipelineBase):
     def __init__(self, pipeline_design:DictConfig, pipeline_props:DictConfig):
-        # Initialize the Object Detection Single Head pipeline
-        assert is_dict(pipeline_design), "pipeline_yml must be a list on parent level"
-        assert is_dict(pipeline_props), "pipeline_yml must be a list on parent level"
+        # Check pipeline design
+        assert is_dict(pipeline_design), "pipeline design must be a yml dict on parent level"
+        assert 'pipeline' in pipeline_design, "Parent element of pipline design must have pipeline key"
+        pipeline_design = pipeline_design.pipeline
+        assert is_list(pipeline_design), "pipeline design must be a yml list at components level"
         
-        # pipeline_design = p
+        # Check pipeline props 
+        assert is_dict(pipeline_props), "pipeline props must be a yml dict on parent level"
         self.pipeline_props = OmegaConf.merge(PIPELINE_COMMON_PROPERTIES, pipeline_props)
+        
         pipeline_base_vars = PipelineBaseVars(
             pipeline_id=self.pipeline_props.pipeline_details.id,
             pipeline_name=self.pipeline_props.pipeline_details.name,
             pipeline_props=self.pipeline_props
         )
         super().__init__(pipeline_base_vars=pipeline_base_vars)
-        
-        self.last_key, self.Queue_Counter = "", 0
+        self.reset_vars()
+        self.create_pipeline(pipeline_design, parent=True)
+        self.create_rtsp_server(properties=self.pipeline_props.rtsp)
+    
+    def reset_vars(self):
+        self.last_key = ""
+        self.Queue_Counter = 0
         self.unique_keys = []
         self.branch_link_dict = {}
-        self.create_pipeline(pipeline_design, parent=True)
 
     def pipeline_append(self, element:tuple, element_list:list):
         factory_name, user_name = element
@@ -78,7 +86,6 @@ class PipelineCreator(DsPipelineBase):
                 print(f"linking {branch_name}")
                 branch_link_sequence = self.branch_link_dict[branch_name]
         return branch_link_sequence
-
 
     def create_branch(self, branch):
         if is_dict(branch):
@@ -132,12 +139,14 @@ class PipelineCreator(DsPipelineBase):
             self.Queue_Counter += 1
         return element_list
 
-
     def create_pipeline(self, pipeline_yml, parent=False):
         element_list, link_sequence = [], []
         for element in pipeline_yml:
-            if is_str(element): # Builds Common elements
-                link_sequence = self.build_pipeline_from_list(element_list, self.pipeline_props)
+
+            # Builds Common elements
+            if is_str(element):
+                if element_list:
+                    link_sequence = self.build_pipeline_from_list(element_list, self.pipeline_props)
                 branch_name, branch_link_sequence = self.create_branch(element)
                 if link_sequence:
                     self.join_link_sequences(link_sequence, branch_link_sequence)
@@ -145,10 +154,10 @@ class PipelineCreator(DsPipelineBase):
                 self.last_key = element
                 element_list = []
                 continue
-
+            
+            # Build user defined elements
             assert is_dict(element), f"Pipeline element must be a dict: {element}"
             assert len(element)==1, "Should pass only one element"
-
             if not parent or element_list:
                 element_list = self.add_queue(element, element_list)
             for key,value in element.items():
@@ -179,17 +188,9 @@ class PipelineCreator(DsPipelineBase):
             else:
                 link_sequence_tail = link_sequence
         
-        if parent:
-            return self.pipeline
-        else:
+        if not parent:
             return link_sequence_tail
 
 
-pipeline_design_path = "ds_configs/pipeline_configs/pipeline_design/od_pipeline.yml"
-pipeline_properties_path = "ds_configs/pipeline_configs/pipeline_props/od_props.yaml"
-pipeline_design = OmegaConf.load(pipeline_design_path).pipeline
-pipeline_props = OmegaConf.load(pipeline_properties_path)
-   
-pipeline = PipelineCreator(pipeline_design=pipeline_design, pipeline_props=pipeline_props)
 
         

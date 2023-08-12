@@ -36,6 +36,7 @@ class DspStaticMethods:
         element = Gst.ElementFactory.make(factory_name, user_name)
         if not element:
             sys.stderr.write("Unable to create " + user_name + " \n")
+            sys.exit("Unable to create " + user_name)
 
         logger.info(f"Created Element :{element.get_name()}")
         if properties:
