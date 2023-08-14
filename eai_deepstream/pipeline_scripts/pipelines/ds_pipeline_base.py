@@ -4,7 +4,6 @@ from imports import (
     Gst, pyds, GstRtspServer
 )
 
-
 from ds_utils.is_aarch_64 import is_aarch64
 from ds_configs import (
     pipline_props_folder, plugin_props_folder, infer_configs_folder, COCO_LABELS_FILE
@@ -53,7 +52,6 @@ class DspStaticMethods:
             element = DspStaticMethods.set_memory_types(element=element)
         return element
 
-
     @staticmethod
     def check_file_path(file_path, load_folder:Path=Path("")):
         if Path(file_path).is_file():
@@ -64,7 +62,6 @@ class DspStaticMethods:
             raise FileNotFoundError(f"File {file_path} not found")
         return file_path.as_posix()
 
-
     @staticmethod
     def set_memory_types(element):
         if not is_aarch64():
@@ -73,12 +70,14 @@ class DspStaticMethods:
             mem_type = int(pyds.NVBUF_MEM_CUDA_UNIFIED)
             element.set_property("nvbuf-memory-type", mem_type)
         return element
-    
 
     @staticmethod
     def get_plugin_name(plugin:Gst.Plugin):
         return plugin.get_name()
-
+    
+    @staticmethod
+    def get_plugin_factory_name(plugin:Gst.Plugin):
+        return plugin.get_factory().get_name()
 
     @staticmethod
     def get_named_plugin_from_list(plugin_list:list, plugin_name:str):
@@ -88,13 +87,11 @@ class DspStaticMethods:
                 return plugin
         return None
 
-
     @staticmethod
     def link_elements_within_seq(link_sequence):
         for i in range(len(link_sequence)-1):
             link_sequence[i].link(link_sequence[i+1])
         return link_sequence
-
 
     @staticmethod
     def join_link_sequences(link_seq_head, link_seq_tail):
@@ -102,7 +99,6 @@ class DspStaticMethods:
             DspStaticMethods.link_tee_queue(link_seq_head[-1],link_seq_tail[0])
         else:
             link_seq_head[-1].link(link_seq_tail[0])
-
 
     @staticmethod
     def check_tail_tee_head_queue(link_seq_head, link_seq_tail):
@@ -116,12 +112,20 @@ class DspStaticMethods:
         return False
 
     @staticmethod
-    def link_tee_queue(tee_plugin,queue_plugin):
+    def link_tee_queue(tee_plugin:Gst.Plugin,queue_plugin:Gst.Plugin):
         assert "tee" in tee_plugin.get_name(), "tee_plugin must be a tee element"
         assert "queue" in queue_plugin.get_name(), "queue_plugin must be a queue element"
         tee_src_pad = tee_plugin.get_request_pad('src_%u')
         queue_sink_pad = queue_plugin.get_static_pad('sink')
         tee_src_pad.link(queue_sink_pad)
+    
+    @staticmethod
+    def link_metamux(any_plugin:Gst.Plugin, metamux_plugin:Gst.Plugin):
+        assert DspStaticMethods.get_plugin_factory_name(metamux_plugin) == "nvdsmetamux",\
+             "metamux_plugin must be a nvdsmetamux element"
+        any_src_pad = any_plugin.get_static_pad('src')
+        metamux_sink_pad = metamux_plugin.get_request_pad('sink_%u')
+        any_src_pad.link(metamux_sink_pad)
 
     @staticmethod
     def create_rtsp_server(properties:DictConfig):
@@ -159,7 +163,7 @@ class DsPipelineBase(DspStaticMethods):
         self.pipeline:Gst.Pipeline = self.__create_pipeline()
 
         self.result_vars:DsResultVars = DsResultVars()
-        self.result_vars.perf_data = PERF_DATA(delta_time=3000, exact_aggregate_fps=False)
+        self.result_vars.perf_data = PERF_DATA(delta_time=5000, exact_aggregate_fps=False)
         self.__load_labels_file()
 
     def __create_pipeline(self):

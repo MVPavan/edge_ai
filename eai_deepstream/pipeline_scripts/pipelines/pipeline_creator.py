@@ -1,5 +1,5 @@
 
-from imports import dataclass, OmegaConf, DictConfig, ListConfig
+from imports import dataclass,logger, OmegaConf, DictConfig, ListConfig
 from .ds_pipeline_base import DsPipelineBase, PipelineBaseVars
 
 import uuid
@@ -70,24 +70,41 @@ class PipelineCreator(DsPipelineBase):
         element_list.append(element)
         self.unique_keys.append(user_name)
         return element_list
-
+    
+    def add_queue(self, element, element_list):
+        if ("queue" in list(OmegaConf.to_container(element).keys())[0] or
+            "queue" in self.last_key):
+            return element_list
+        
+        element_list = self.pipeline_append(("queue", f"queue_{self.Queue_Counter}"), element_list)
+        self.Queue_Counter += 1
+        return element_list
+    
     def branch_out_tee(self, element_list:list):
         tee_element = ("tee", f"tee_{self.last_key}")
         element_list = self.pipeline_append(tee_element, element_list)
         return element_list
     
-    def branch_in_linking(self, link_element):
-        assert is_dict(link_element) and len(link_element)==1,\
-                "Branch in should have exact one branches_to_link elements"
-        for _key, _value in link_element.items():
+    def branch_in_linking(self, branches_to_link_element):
+        assert is_dict(branches_to_link_element) and len(branches_to_link_element)==1,\
+                "Branch in should have exact one 'branches_to_link' dict element"
+        
+        branches_suffix = '_'.join(list(OmegaConf.to_container(branches_to_link_element).values())[0])
+        meta_mux_user_name = f"metamux_{branches_suffix}"
+        self.pipeline_props[meta_mux_user_name] = self.pipeline_props.metamux_props
+        metamux_link_sequence = self.build_pipeline_from_list([("nvdsmetamux",meta_mux_user_name)], self.pipeline_props)
+        logger.warning(f"nvdsmetamux: file-loop not working for ///file:/ type sources")
+        for _key, _value in branches_to_link_element.items():
             assert _key==ElementKeys.branches_to_link, "Branch in should have branches_to_link key"
             assert is_list(_value)
             for branch_name in _value:
                 assert branch_name in self.branch_link_dict, \
                     f"Branch: {branch_name} does not exist for linking"
-                print(f"linking {branch_name}")
+                print(f"linking {branch_name} to metamux element")
                 branch_link_sequence = self.branch_link_dict[branch_name]
-        return branch_link_sequence
+                assert branch_link_sequence, f"Branch: {branch_name} link sequence is empty"
+                self.link_metamux(any_plugin=branch_link_sequence[-1], metamux_plugin=metamux_link_sequence[0])
+        return metamux_link_sequence
 
     def create_branch(self, branch):
         if is_dict(branch):
@@ -104,11 +121,11 @@ class PipelineCreator(DsPipelineBase):
         
     def create_branch_out(self, branch_out_elements, element_list, link_sequence):
         element_list = self.branch_out_tee(element_list)
-        link_sequence_head = self.build_pipeline_from_list(element_list, self.pipeline_props)
+        link_sequence_with_tee = self.build_pipeline_from_list(element_list, self.pipeline_props)
         if link_sequence:
-            self.join_link_sequences(link_sequence, link_sequence_head)
-        link_sequence = link_sequence_head
-
+            self.join_link_sequences(link_sequence, link_sequence_with_tee)
+        link_sequence = link_sequence + link_sequence_with_tee
+        
         for branch in branch_out_elements:
             branch_name, branch_link_sequence = self.create_branch(branch)
             self.join_link_sequences(link_sequence, branch_link_sequence)
@@ -132,14 +149,22 @@ class PipelineCreator(DsPipelineBase):
                 del _element[_k]        
         return common_elements
 
-    def add_queue(self, element, element_list):
-        if (
-            not "queue" in list(OmegaConf.to_container(element).keys())[0] and 
-            "queue" not in self.last_key
-            ):
-            element_list = self.pipeline_append(("queue", f"queue_{self.Queue_Counter}"), element_list)
-            self.Queue_Counter += 1
-        return element_list
+
+    
+    def build_common_elements(self, element, pre_element_list, link_sequence):
+        _link_sequence_pre = []
+        if pre_element_list:
+            _link_sequence_pre = self.build_pipeline_from_list(pre_element_list, self.pipeline_props)
+            if link_sequence:
+                self.join_link_sequences(link_sequence, _link_sequence_pre)
+        link_sequence = link_sequence + _link_sequence_pre
+        
+        branch_name, branch_link_sequence = self.create_branch(element)
+        if link_sequence:
+            self.join_link_sequences(link_sequence, branch_link_sequence)
+        link_sequence = link_sequence + branch_link_sequence
+        return link_sequence
+
 
     def create_pipeline(self, pipeline_tree, parent=False):
         element_list, link_sequence = [], []
@@ -147,12 +172,11 @@ class PipelineCreator(DsPipelineBase):
 
             # Builds Common elements
             if is_str(element):
-                if element_list:
-                    link_sequence = self.build_pipeline_from_list(element_list, self.pipeline_props)
-                branch_name, branch_link_sequence = self.create_branch(element)
-                if link_sequence:
-                    self.join_link_sequences(link_sequence, branch_link_sequence)
-                link_sequence = branch_link_sequence
+                link_sequence = self.build_common_elements(
+                    element=element,
+                    pre_element_list=element_list,
+                    link_sequence=link_sequence
+                )
                 self.last_key = element
                 element_list = []
                 continue
@@ -175,9 +199,14 @@ class PipelineCreator(DsPipelineBase):
                     self.last_key = ElementKeys.branch_out
                     element_list = []
                 elif key==ElementKeys.branch_in:
-                    # TODO: Implement nvmetamux, add to element list
                     assert self.last_key == ElementKeys.branch_out, "branch_in must follow branch_out"
+                    assert not element_list, "Element list should be empty for branch_in"
+                    assert is_list(value) and len(value)==1 and ElementKeys.branches_to_link in value[0],\
+                          "Branch in value should be a list of length 1 with 'branches_to_link' element \
+                            containing list of all branches to be merged"
                     link_sequence = self.branch_in_linking(value[0])
+                    element_list = self.add_queue(element, element_list)
+                    self.last_key = element_list[-1][-1]
                 else:
                     raise NotImplementedError
                 
@@ -196,9 +225,11 @@ class PipelineCreator(DsPipelineBase):
     def add_probes(self, probe_yml:DictConfig):
         assert is_list(probe_yml), "probe_yml must be a yml list"
         for probe in probe_yml:
-            assert is_dict(probe), "probe must be a yml dict"
+            assert is_dict(probe) and len(probe)==1, "each probe must be a single dict element"
             for key, value in probe.items():
                 if key.lower()=="fps":
                     self.add_fps_probe(self.pipeline, value)
+                else:
+                    logger.warning(f"Unknown probe request: {key}")
 
         

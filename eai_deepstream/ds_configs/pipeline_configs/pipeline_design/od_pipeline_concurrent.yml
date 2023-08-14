@@ -12,22 +12,20 @@ pipeline:
 
   # working till here
   - branch_in: # keyword to join branches
-    - branches_to_link: [pgie, pgie_1, pgie_2] # list of branches to join
-    - meta_mux: nvdsmetamux
+    - branches_to_link: [branch_infer, branch_infer_1, branch_infer_2] # list of branches to join
+    # - branches_to_link: [branch_infer] # list of branches to join
+  - test_queue: queue
+  - kafka_tail_components 
+  # - branch_out:
+  #   - branch_kafka:
+  #       - kafka_tail_components 
+  #   - branch_osd:
+  #     - osd_pipeline_components
+  #     - branch_out:
+  #       - branch_fakesink:
+  #         - fake_sink_tail_components
+  #       - branch_rtsp:
+  #         - rtsp_sink_tail_components
   
-  - branch_out:
-    - branch_kafka:
-        - kafka_tail_components 
-    - branch_osd:
-      - osd_pipeline_components
-      - branch_out:
-        - branch_filesink:
-          - file_sink_tail_components
-        - branch_rtsp:
-          - rtsp_sink_tail_components
-      
-  - branch_in: # keyword to join branches
-    - branches_to_link: [branch_rtsp, branch_kafka] # list of branches to join
-    - meta_mux: nvmetamux
-  - fake_sink_tail_components
-  
+probes:
+  - FPS: test_queue

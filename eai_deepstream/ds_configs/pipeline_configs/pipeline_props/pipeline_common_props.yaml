@@ -21,8 +21,8 @@ plugins:
 
 multi_uri_src:
   # Gst-nvmultiurisrcbin gstreamer properties directly configuring the bin
-  uri-list: "file:///data/datasets/infer/org/videos/ds_test/busy_1080p_12fps.h264"
-  # uri-list: "file:///data/datasets/infer/org/videos/ds_test/sample.h264"
+  # uri-list: "file:///data/datasets/infer/org/videos/ds_test/busy_1080p_12fps.h264"
+  # uri-list: "file:///data/datasets/infer/org/videos/ds_test/sample_30.h264"
   sensor-id-list: "cam_1"
   ip-address: "localhost"
   port: 6300 # will be auto set by pipeline manager
@@ -33,7 +33,8 @@ multi_uri_src:
   #  Old Streammux Properties
   width: 1280
   height: 720
-  batched-push-timeout: 83333 # in usecs. For 12 fps -> 10e6*1/12 = 83333
+  # batched-push-timeout: 83333 # in usecs. For 12 fps -> 10e6*1/12 = 83333
+  batched-push-timeout: 33333 # in usecs. For 12 fps -> 10e6*1/12 = 83333
   live-source: 1
   drop-pipeline-eos: 1
   sync-inputs: 0
@@ -42,6 +43,10 @@ multi_uri_src:
 pgie:
   # Give abs file path  or loads file name from infer_configs
   config-file-path: na
+
+metamux_props:
+  active-pad: sink_0
+  pts-tolerance: 20000
 
 fake_sink:
   sync: 1
