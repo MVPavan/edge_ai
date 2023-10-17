@@ -7,7 +7,7 @@ class Logging:
             formatter: Optional[logging.Formatter] = None
         ):
         if log_file is None:
-            log_file = Path().cwd()/"logs/edglog"
+            log_file = Path().cwd()/"logs/edgelog"
         log_file.parent.mkdir(parents=True, exist_ok=True)
         assert not log_file.is_dir()
         self.log_file = log_file.as_posix()
