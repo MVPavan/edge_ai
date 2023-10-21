@@ -6,18 +6,17 @@ from ds_utils.bus_call import bus_call
 import logging
 logger = logging.getLogger()
 
-from pipeline_scripts.pipelines.ds_pipeline_base import DsPipelineBase
-
-log_path = Path(logger.handlers[1].baseFilename) # type: ignore
-gst_log_folder = log_path.parent/"gst_logs"
-gst_graph_folder = gst_log_folder/"graph"
-gst_graph_folder.mkdir(exist_ok=True, parents=True)
-os.environ["GST_DEBUG_DUMP_DOT_DIR"] = gst_graph_folder.as_posix()
+from pipeline_scripts.pipeline_builds.ds_pipeline_base import DsPipelineBase
 
 def graph_pipeline(ds_pipeline:DsPipelineBase):
-    # Command to convert dot to svg
-    # dot -Tsvg 0.00.00.148599842-od_single_head.dot -o concurrent_od.svg
-    # dot -Tsvg 0.00.00.148599842-od_single_head.dot -O
+    # GST_DEBUG_DUMP_DOT_DIR=/data/datasets/temp python3 run_ds.py
+    # os.environ["GST_DEBUG_DUMP_DOT_DIR"] = "/tmp"
+    # os.putenv('GST_DEBUG_DUMP_DIR_DIR', '/tmp')
+    log_path = Path(logger.handlers[1].baseFilename) # type: ignore
+    gst_log_folder = log_path.parent/"gst_logs"
+    gst_graph_folder = gst_log_folder/"graph"
+    gst_graph_folder.mkdir(exist_ok=True, parents=True)
+    os.environ["GST_DEBUG_DUMP_DOT_DIR"] = gst_graph_folder.as_posix()
     Gst.debug_bin_to_dot_file_with_ts(
         ds_pipeline.pipeline,
         Gst.DebugGraphDetails.ALL,

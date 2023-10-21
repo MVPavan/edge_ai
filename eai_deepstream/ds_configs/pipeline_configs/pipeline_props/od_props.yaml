@@ -1,0 +1,12 @@
+# Pipeline Details
+pipeline_details:
+  id: od_single_head_1234
+  name: od_single_head
+  type: object_detection
+  choice: od_single_head
+  description: "Object Detection using single head inference"
+
+
+pgie:
+  # Give abs file path  or loads file name from infer_configs
+  config-file-path: ds_configs/infer_configs/config_triton_ensemble_yolox.txt

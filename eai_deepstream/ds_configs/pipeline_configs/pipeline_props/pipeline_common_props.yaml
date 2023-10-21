@@ -1,0 +1,104 @@
+# Pipeline Details
+pipeline_details:
+  name: common_pipeline_props
+  type: na
+  choice: na
+  description: "Common props for pipeline"
+
+# Plugin blocks To be enabled
+
+plugins:
+  kafka: false
+  fakesink: false
+  filesink: false
+  rtsp: false
+  fps: true
+  custom_parser: false
+
+
+# Properties to be used while creating deep stream elements
+# Make sure to match keys with user defined pipline plugin names
+
+multi_uri_src:
+  # Gst-nvmultiurisrcbin gstreamer properties directly configuring the bin
+  # uri-list: "file:///data/datasets/infer/org/videos/ds_test/busy_1080p_12fps.h264"
+  # uri-list: "file:///data/datasets/infer/org/videos/ds_test/sample_30.h264"
+  sensor-id-list: "cam_1"
+  ip-address: "localhost"
+  port: 6300 # will be auto set by pipeline manager
+  max-batch-size: 32
+  # Gst-nvmultiurisrcbin nvurisrcbin specific properties
+  file-loop: true
+  rtsp-reconnect-interval: 4 # timeout in sec 0-disabled
+  #  Old Streammux Properties
+  width: 1280
+  height: 720
+  # batched-push-timeout: 83333 # in usecs. For 12 fps -> 10e6*1/12 = 83333
+  batched-push-timeout: 33333 # in usecs. For 12 fps -> 10e6*1/12 = 83333
+  live-source: 1
+  drop-pipeline-eos: 1
+  sync-inputs: 0
+
+
+pgie:
+  # Give abs file path  or loads file name from infer_configs
+  config-file-path: na
+
+metamux_props:
+  active-pad: sink_0
+  pts-tolerance: 20000
+
+fake_sink:
+  sync: 1
+
+caps_filter_osd:
+  # Available choices: CAPS_NVMM_RGBA, CAPS_NVMM_I420, CAPS_I420
+  caps: CAPS_NVMM_RGBA
+
+nvtiler_osd:
+  rows: 1
+  columns: 1
+  width: 1920
+  height: 1080
+
+mpeg4_encoder_filesink:
+  bitrate: 2000000 # MPEG4_ENCODER_BITRATE
+
+file_sink:
+  location: null
+  sync: 1
+
+encoder_rtsp:
+  bitrate: 4000000 # RTSP Encoder Bitrate
+
+udp_sink:
+  host: "224.224.255.255"
+  port: 5400
+  async: 0
+  sync: 1
+
+rtsp:
+  RTSP_CODEC: "H264"
+  RTSP_PORT: 8554
+  RTSP_STREAM_NAME: /edgeai_od_single_head
+  UDPSINK_PORT: 5400
+
+# If plugins: fps/custom_parser is enabled
+# loads the txt file given at label_file path
+# if null, by default loads coco labels
+custom_parser_labels:
+  labels_file: null
+
+msgconv_kafka:
+  # config: ""
+  payload-type: 1
+  msg2p-newapi: 1
+  # debug-payload-dir: "logs/payloads"
+  frame-interval: 1
+  
+msgbroker_kafka:
+  proto-lib: /opt/nvidia/deepstream/deepstream/lib/libnvds_kafka_proto.so
+  config: "ds_configs/pipeline_configs/msgbroker_configs/kafka_config.txt"
+  sync: 0
+  conn-str: "localhost;8097;plaintext"
+  topic: "test_kafka_topic"

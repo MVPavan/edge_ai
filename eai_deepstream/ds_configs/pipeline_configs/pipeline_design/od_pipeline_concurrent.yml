@@ -1,0 +1,31 @@
+
+pipeline:
+  - multi_uri_src: nvmultiurisrcbin
+  - branch_out: # keywork to split into branches
+    - branch_infer: # branch name
+      # - concurrency: 3 # number of concurrent branches of branch_infer
+      - pgie: nvinferserver
+    - branch_infer_1:
+      - pgie_1: nvinferserver
+    - branch_infer_2:
+      - pgie_2: nvinferserver
+
+  # working till here
+  - branch_in: # keyword to join branches
+    - branches_to_link: [branch_infer, branch_infer_1, branch_infer_2] # list of branches to join
+    # - branches_to_link: [branch_infer] # list of branches to join
+  - test_queue: queue
+  - kafka_tail_components 
+  # - branch_out:
+  #   - branch_kafka:
+  #       - kafka_tail_components 
+  #   - branch_osd:
+  #     - osd_pipeline_components
+  #     - branch_out:
+  #       - branch_fakesink:
+  #         - fake_sink_tail_components
+  #       - branch_rtsp:
+  #         - rtsp_sink_tail_components
+  
+probes:
+  - FPS: test_queue

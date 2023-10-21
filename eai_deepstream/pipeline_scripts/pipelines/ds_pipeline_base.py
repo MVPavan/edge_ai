@@ -4,7 +4,6 @@ from imports import (
     Gst, pyds, GstRtspServer
 )
 
-
 from ds_utils.is_aarch_64 import is_aarch64
 from ds_configs import (
     pipline_props_folder, plugin_props_folder, infer_configs_folder, COCO_LABELS_FILE
@@ -15,7 +14,7 @@ from pipeline_scripts.probes.probe_funcs import (
 from utils.ds_vars import DsResultVars, PERF_DATA
 from utils.other_utils import get_label_names_from_file
 
-from ds_consts.pipeline_consts import PipelineBaseVars
+from ds_consts.base_consts import PipelineBaseVars
 
 class DspStaticMethods:
     CUDA_MEM_ELEMENTS = ["nvstreammux","nvvideoconvert","nvmultistreamtiler"]
@@ -36,6 +35,7 @@ class DspStaticMethods:
         element = Gst.ElementFactory.make(factory_name, user_name)
         if not element:
             sys.stderr.write("Unable to create " + user_name + " \n")
+            sys.exit("Unable to create " + user_name)
 
         logger.info(f"Created Element :{element.get_name()}")
         if properties:
@@ -52,7 +52,6 @@ class DspStaticMethods:
             element = DspStaticMethods.set_memory_types(element=element)
         return element
 
-
     @staticmethod
     def check_file_path(file_path, load_folder:Path=Path("")):
         if Path(file_path).is_file():
@@ -63,7 +62,6 @@ class DspStaticMethods:
             raise FileNotFoundError(f"File {file_path} not found")
         return file_path.as_posix()
 
-
     @staticmethod
     def set_memory_types(element):
         if not is_aarch64():
@@ -72,12 +70,14 @@ class DspStaticMethods:
             mem_type = int(pyds.NVBUF_MEM_CUDA_UNIFIED)
             element.set_property("nvbuf-memory-type", mem_type)
         return element
-    
 
     @staticmethod
     def get_plugin_name(plugin:Gst.Plugin):
         return plugin.get_name()
-
+    
+    @staticmethod
+    def get_plugin_factory_name(plugin:Gst.Plugin):
+        return plugin.get_factory().get_name()
 
     @staticmethod
     def get_named_plugin_from_list(plugin_list:list, plugin_name:str):
@@ -87,12 +87,11 @@ class DspStaticMethods:
                 return plugin
         return None
 
-
     @staticmethod
     def link_elements_within_seq(link_sequence):
         for i in range(len(link_sequence)-1):
             link_sequence[i].link(link_sequence[i+1])
-
+        return link_sequence
 
     @staticmethod
     def join_link_sequences(link_seq_head, link_seq_tail):
@@ -100,7 +99,6 @@ class DspStaticMethods:
             DspStaticMethods.link_tee_queue(link_seq_head[-1],link_seq_tail[0])
         else:
             link_seq_head[-1].link(link_seq_tail[0])
-
 
     @staticmethod
     def check_tail_tee_head_queue(link_seq_head, link_seq_tail):
@@ -114,12 +112,20 @@ class DspStaticMethods:
         return False
 
     @staticmethod
-    def link_tee_queue(tee_plugin,queue_plugin):
+    def link_tee_queue(tee_plugin:Gst.Plugin,queue_plugin:Gst.Plugin):
         assert "tee" in tee_plugin.get_name(), "tee_plugin must be a tee element"
         assert "queue" in queue_plugin.get_name(), "queue_plugin must be a queue element"
         tee_src_pad = tee_plugin.get_request_pad('src_%u')
         queue_sink_pad = queue_plugin.get_static_pad('sink')
         tee_src_pad.link(queue_sink_pad)
+    
+    @staticmethod
+    def link_metamux(any_plugin:Gst.Plugin, metamux_plugin:Gst.Plugin):
+        assert DspStaticMethods.get_plugin_factory_name(metamux_plugin) == "nvdsmetamux",\
+             "metamux_plugin must be a nvdsmetamux element"
+        any_src_pad = any_plugin.get_static_pad('src')
+        metamux_sink_pad = metamux_plugin.get_request_pad('sink_%u')
+        any_src_pad.link(metamux_sink_pad)
 
     @staticmethod
     def create_rtsp_server(properties:DictConfig):
@@ -157,7 +163,7 @@ class DsPipelineBase(DspStaticMethods):
         self.pipeline:Gst.Pipeline = self.__create_pipeline()
 
         self.result_vars:DsResultVars = DsResultVars()
-        self.result_vars.perf_data = PERF_DATA(delta_time=3000, exact_aggregate_fps=False)
+        self.result_vars.perf_data = PERF_DATA(delta_time=5000, exact_aggregate_fps=False)
         self.__load_labels_file()
 
     def __create_pipeline(self):
@@ -190,17 +196,21 @@ class DsPipelineBase(DspStaticMethods):
             )
             self.pipeline.add(element)
             link_sequence.append(element)
-        self.link_elements_within_seq(link_sequence=link_sequence)
+        link_sequence = self.link_elements_within_seq(link_sequence=link_sequence)
         return link_sequence
     
-    def add_fps_probe(self, element, plugin_name:str=""):
-        if isinstance(element, list):
-            element = self.get_named_plugin_from_list(element, plugin_name)
+    def add_fps_probe(self, elements_or_pipeline, plugin_name:str=""):
+        if isinstance(elements_or_pipeline, list):
+            element = self.get_named_plugin_from_list(elements_or_pipeline, plugin_name)
+            assert element is not None, f"No plugin with name: {plugin_name}"
+        elif isinstance(elements_or_pipeline, Gst.Pipeline):
+            element = elements_or_pipeline.get_by_name(plugin_name)
             assert element is not None, f"No plugin with name: {plugin_name}"
 
         element.get_static_pad("src").add_probe(
             Gst.PadProbeType.BUFFER, read_obj_meta_probe, self.result_vars
         )
+        logger.info(f"Added FPS probe to {element.get_name()}")
 
     def add_parser_probe(self, element, plugin_name:str=""):
         if isinstance(element, list):
@@ -212,7 +222,8 @@ class DsPipelineBase(DspStaticMethods):
         element.get_static_pad("src").add_probe(
             Gst.PadProbeType.BUFFER, tensor_to_object_probe, self.result_vars
         )
- 
+        logger.info(f"Added parser probe to {element.get_name()}")
+        
     def get_pipeline_status(self):
         ret, current, pending = self.pipeline.get_state(Gst.CLOCK_TIME_NONE)
         if ret == Gst.StateChangeReturn.SUCCESS:

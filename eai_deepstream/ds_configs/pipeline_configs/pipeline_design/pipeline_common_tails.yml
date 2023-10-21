@@ -1,3 +1,7 @@
+fake_sink_tail_components:
+  - queue_fakesink: queue
+  - fake_sink: fakesink
+
 osd_pipeline_components:
   - queue_osd_pre: queue
   - nvvideo_convert_osd_pre: nvvideoconvert
@@ -6,11 +10,6 @@ osd_pipeline_components:
   - nvosd: nvdsosd
   - nvvideo_convert_osd_post: nvvideoconvert
   - queue_osd_post: queue
-  - tee_osd: tee
-
-fake_sink_tail_components:
-  - queue_fakesink: queue
-  - fake_sink: fakesink
 
 file_sink_tail_components:
   - queue_filesink: queue
@@ -26,7 +25,8 @@ rtsp_sink_tail_components:
   - udp_sink: udpsink
 
 kafka_tail_components:
-  - queue_kafka: queue
+  - queue_conv: queue
   - msgconv_kafka: nvmsgconv
+  - queue_kafka: queue
   - msgbroker_kafka: nvmsgbroker
 

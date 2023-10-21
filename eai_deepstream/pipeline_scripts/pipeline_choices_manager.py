@@ -1,8 +1,8 @@
 from imports import (
     Optional, Union, Type
 )
-from .pipelines.od_single_head import ODSingleHead
 from .pipelines.ds_pipeline_base import DsPipelineBase
+from .pipelines.od_single_head import ODSingleHead
 
 
 class PipelineChoicesVars(str):
