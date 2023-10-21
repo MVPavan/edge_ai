@@ -3,8 +3,8 @@ version: '3'
 services:
   edgeai_deepstream:
     build:
-      context: ../
-      dockerfile: ds_docker/deepstream.Dockerfile
+      context: .
+      dockerfile: deepstream.Dockerfile
     image: egdeai_deepstream:v1
     container_name: egdeai_deepstream
     runtime: nvidia

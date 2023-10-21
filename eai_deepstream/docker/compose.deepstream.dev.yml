@@ -1,0 +1,26 @@
+version: '3'
+
+services:
+  edgeai_deepstream_dev:
+    # build:
+    #   context: .
+    #   dockerfile: deepstream.dev.Dockerfile
+    image: egdeai_deepstream_62:v1
+    container_name: edgeai_deepstream_dev
+    runtime: nvidia
+    volumes:
+      - /tmp/.X11-unix:/tmp/.X11-unix
+      - /etc/localtime:/etc/localtime:ro
+      - type: bind
+        source: ${LOCAL_MODEL_REPO_PATH}
+        target: ${TRITON_MODEL_REPO_PATH}
+      - type: bind
+        source: ${CODE}
+        target: ${CODE}
+      - type: bind
+        source: ${DATASET}
+        target: ${DATASET}
+    network_mode: host
+    shm_size: 2g
+    stdin_open: true 
+    tty: true

@@ -1,0 +1,28 @@
+{
+    "name": "Deepstream Dev Contianer",
+    "dockerComposeFile": "../docker/compose.deepstream.dev.yml",
+    "service": "edgeai_deepstream_dev",
+    "workspaceFolder": "/data/CODES/nvidia_manthana/opensource/edge_ai/eai_deepstream",
+    "customizations": {
+        "vscode": {
+            "settings": {
+                "terminal.integrated.shell.linux": "/bin/bash"
+            },
+            "extensions": [
+				"sugatoray.vscode-git-extension-pack",
+				"franneck94.vscode-python-dev-extension-pack",
+				"franneck94.vscode-c-cpp-dev-extension-pack",
+				"franneck94.vscode-coding-tools-extension-pack",
+				"gruntfuggly.todo-tree",
+				"vscode-icons-team.vscode-icons",
+				"streetsidesoftware.code-spell-checker",
+				"oderwat.indent-rainbow",
+				"mechatroner.rainbow-csv",
+				"moshfeu.compare-folders",
+				"mikestead.dotenv"
+			]
+        }
+    },
+	"remoteUser": "root",
+    "shutdownAction": "none"
+}
